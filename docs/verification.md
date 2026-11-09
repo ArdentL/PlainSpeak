@@ -4,6 +4,10 @@
 
 The public source repository is [ArdentL/PlainSpeak](https://github.com/ArdentL/PlainSpeak). The initial publication uses the audited 86-file allowlist, including dotfiles, built adapter, licenses and synthetic evidence. Model weights, runtime binaries, credentials, local databases and real conversation records are excluded. Release assets and hosted CI results are available on the repository Releases and Actions pages. Earlier sections retain their historical publication status.
 
+## Hosted Windows path-alias regression (0.7.0)
+
+The first hosted CI run passed both Linux Python jobs and the Node adapter job. Windows Python 3.13 exposed a test-fixture path alias problem: TemporaryDirectory returned a RUNNER~1 short path, while the installer correctly resolved the home/source to the long path. Raw Path equality prevented fault injection and made equivalent cwd/source strings compare unequal. The fixture now resolves its temporary root before constructing expected paths. Production installer code and every recovery/user-edit assertion are unchanged. Local validation also explicitly uses a real Windows 8.3 temporary-root alias. Final hosted results are available on the [Actions page](https://github.com/ArdentL/PlainSpeak/actions).
+
 ## Contextual round trips (0.7.0)
 
 Both passes now receive bounded nearby original prose from the same assistant renderer. The frontend excludes the target, reasoning, tool output, code-containing paragraphs, media and host-hidden content; PlainSpeak-hidden original text remains available. Tests cover dispatch-time collection, root isolation, UTF-16 boundaries, streaming with at most one final refresh, cancellation/late-result races, Host/bridge validation, context-keyed cache reuse across restart and no separate background plaintext column. Schema 4 keeps older history but does not reuse older cache keys.

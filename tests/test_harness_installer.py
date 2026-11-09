@@ -1,6 +1,7 @@
 """Installer checks catch unwanted writes, lost user files and wrong child cwd."""
 import json
 import importlib.util
+from contextlib import contextmanager
 import os
 from pathlib import Path
 import subprocess
@@ -14,6 +15,15 @@ SCRIPT = ROOT / 'scripts/install_harness.py'
 SPEC = importlib.util.spec_from_file_location('harness_installer_test', SCRIPT)
 installer = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(installer)
+
+
+@contextmanager
+def temporary_directory():
+    # Windows runners can return an 8.3 temp alias (RUNNER~1), while the
+    # installer resolves home/source paths. Use one spelling for fixtures,
+    # fault-injection targets and the exact subprocess path assertions.
+    with tempfile.TemporaryDirectory() as directory:
+        yield Path(directory).resolve()
 
 
 class HarnessInstallerTests(unittest.TestCase):
@@ -43,7 +53,7 @@ class HarnessInstallerTests(unittest.TestCase):
                               capture_output=True, text=True, encoding='utf-8')
 
     def test_dry_run_creates_nothing(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home = Path(directory) / 'source', Path(directory) / 'install'
             self.fixture(root)
             result = self.run_installer(root, home, '--dry-run')
@@ -52,7 +62,7 @@ class HarnessInstallerTests(unittest.TestCase):
             self.assertFalse((home.parent / 'profile').exists())
 
     def test_real_setup_uses_installed_package_and_rerun_preserves_user_files(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home = Path(directory) / 'source', Path(directory) / 'install'
             self.fixture(root)
             result = self.run_installer(root, home)
@@ -71,7 +81,7 @@ class HarnessInstallerTests(unittest.TestCase):
             self.assertEqual((home / 'app/plainspeak/__init__.py').read_text(encoding='utf-8'), '# user change')
 
     def test_existing_unowned_destination_is_refused_before_writes(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home = Path(directory) / 'source', Path(directory) / 'install'
             self.fixture(root)
             target = home / 'app/plainspeak/__init__.py'
@@ -83,7 +93,7 @@ class HarnessInstallerTests(unittest.TestCase):
             self.assertFalse((home / 'install-harness-manifest.json').exists())
 
     def test_source_path_with_spaces_reaches_setup_as_one_argument(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home = Path(directory) / 'source', Path(directory) / 'install'
             self.fixture(root)
             source = Path(directory) / 'official model.gguf'
@@ -94,7 +104,7 @@ class HarnessInstallerTests(unittest.TestCase):
             self.assertEqual(call['args'], ['setup', '--model', 'small', '--source', str(source)])
 
     def test_unowned_app_directory_and_unknown_model_are_refused(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home = Path(directory) / 'source', Path(directory) / 'install'
             self.fixture(root)
             result = self.run_installer(root, home, '--model', 'unknown', '--prepare-only')
@@ -108,7 +118,7 @@ class HarnessInstallerTests(unittest.TestCase):
             self.assertEqual(list(existing.parent.iterdir()), [existing])
 
     def test_unowned_profile_plugin_is_not_overwritten(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home = Path(directory) / 'source', Path(directory) / 'install'
             self.fixture(root)
             existing = Path(directory) / 'profile/node_modules/@plainspeak/harness-ui/user.txt'
@@ -125,7 +135,7 @@ class HarnessInstallerTests(unittest.TestCase):
                                 ('profile', 'src/index.js'),
                                 ('profile', '.plainspeak-install-manifest.json'),
                                 ('home', 'install-harness-manifest.json')]:
-                with self.subTest(upgrade=upgrade, scope=scope, name=name), tempfile.TemporaryDirectory() as directory:
+                with self.subTest(upgrade=upgrade, scope=scope, name=name), temporary_directory() as directory:
                     root, home = Path(directory) / 'source', Path(directory) / 'install'
                     profile = Path(directory) / 'profile'
                     self.fixture(root)
@@ -168,7 +178,7 @@ class HarnessInstallerTests(unittest.TestCase):
         return subprocess.run([sys.executable, '-c', code], capture_output=True, text=True, encoding='utf-8')
 
     def test_hard_process_crash_resumes_in_new_invocation(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home = Path(directory) / 'source', Path(directory) / 'install'
             self.fixture(root)
             self.assertEqual(self.crash_install(root, home).returncode, 73)
@@ -179,7 +189,7 @@ class HarnessInstallerTests(unittest.TestCase):
 
     def test_recovery_preserves_real_user_modification_and_unknown_collision(self):
         for relative in ('app/plainspeak/__init__.py', 'app/plainspeak/__main__.py'):
-            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as directory:
+            with self.subTest(relative=relative), temporary_directory() as directory:
                 root, home = Path(directory) / 'source', Path(directory) / 'install'
                 self.fixture(root)
                 self.assertEqual(self.crash_install(root, home).returncode, 73)
@@ -191,7 +201,7 @@ class HarnessInstallerTests(unittest.TestCase):
                 self.assertFalse((home.parent / 'profile').exists())
 
     def test_pending_profile_modification_is_refused_and_dry_run_does_not_recover(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home = Path(directory) / 'source', Path(directory) / 'install'
             profile = Path(directory) / 'profile'
             self.fixture(root)
@@ -227,7 +237,7 @@ class HarnessInstallerTests(unittest.TestCase):
         return manifest
 
     def test_desktop_bundle_activation_preserves_profile_and_is_idempotent(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home, profile = (Path(directory) / name for name in ('source', 'install', 'profile'))
             self.fixture(root)
             before = self.desktop_profile(profile)
@@ -251,7 +261,7 @@ class HarnessInstallerTests(unittest.TestCase):
             self.assertFalse((home / 'setup-call.json').exists())
 
     def test_desktop_requires_initialized_profile_before_any_writes(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home = Path(directory) / 'source', Path(directory) / 'install'
             self.fixture(root)
             result = self.run_installer(root, home, '--client', 'desktop', '--prepare-only')
@@ -261,7 +271,7 @@ class HarnessInstallerTests(unittest.TestCase):
             self.assertFalse((home.parent / 'profile').exists())
 
     def test_default_desktop_profile_uses_selected_dsh_home_and_dry_run_is_read_only(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home = Path(directory) / 'source', Path(directory) / 'install'
             profile = Path(directory) / 'dsh/profiles/desktop'
             self.fixture(root)
@@ -275,7 +285,7 @@ class HarnessInstallerTests(unittest.TestCase):
             self.assertFalse((profile / 'node_modules').exists())
 
     def test_desktop_shared_manifest_failure_recovers_and_wrong_client_refuses(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home, profile = (Path(directory) / name for name in ('source', 'install', 'profile'))
             self.fixture(root)
             before = self.desktop_profile(profile)
@@ -297,7 +307,7 @@ class HarnessInstallerTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_desktop_pending_shared_manifest_user_edit_is_never_overwritten(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home, profile = (Path(directory) / name for name in ('source', 'install', 'profile'))
             self.fixture(root)
             self.desktop_profile(profile)
@@ -320,7 +330,7 @@ class HarnessInstallerTests(unittest.TestCase):
             self.assertTrue((home / installer.TRANSACTION).exists())
 
     def test_desktop_hard_crash_after_activation_recovers_and_other_profile_refuses(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with temporary_directory() as directory:
             root, home, profile = (Path(directory) / name for name in ('source', 'install', 'profile'))
             self.fixture(root)
             self.desktop_profile(profile)
