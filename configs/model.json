@@ -1,0 +1,13 @@
+{
+  "repository": "tencent/Hy-MT2-1.8B-GGUF",
+  "revision": "a0c709d9fac510f2c807aa3af52872340dc37a4a",
+  "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+  "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699",
+  "bytes": 1133080448,
+  "model_card": "https://huggingface.co/tencent/Hy-MT2-1.8B-GGUF",
+  "declared_license": "Apache-2.0",
+  "license_url": "https://huggingface.co/tencent/Hy-MT2-1.8B-GGUF/blob/a0c709d9fac510f2c807aa3af52872340dc37a4a/LICENSE.txt",
+  "weights_bundled": false,
+  "download_on_start": false,
+  "notice": "Model license is separate from PlainSpeak's MIT license. Verify upstream terms at your selected revision."
+}

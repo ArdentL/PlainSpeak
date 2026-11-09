@@ -1,0 +1,6 @@
+{
+  "name": "plainspeak",
+  "version": "0.7.0",
+  "description": "Plain writing skills and optional local translation round trips.",
+  "skills": "./skills/"
+}

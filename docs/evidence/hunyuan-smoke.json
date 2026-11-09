@@ -1,0 +1,141 @@
+{
+  "model": "plainspeak-hy",
+  "provider": "ollama",
+  "python": "3.13.12",
+  "synthetic_only": true,
+  "interpretation": "Execution smoke only, not a multilingual quality benchmark.",
+  "results": [
+    {
+      "language": "zh-CN",
+      "scenario": "研究讨论",
+      "source": "这个想法用共享失败记录减少重复尝试。先固定任务和模型预算，再比较是否共享记录。",
+      "output": "这种方法通过共享失败的记录来减少重复尝试。首先确定任务和模型预算，然后判断共享的记录是否有用。",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 1.753284699996584,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 39,
+            "output_chars": 47,
+            "warnings": [],
+            "seconds": 1.7530963999997766
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "language": "en",
+      "scenario": "project question",
+      "source": "The first version supports local translation. Keep the original next to the result when explaining code.",
+      "output": "The first version supports local translation. When explaining the code, the original text and the result are presented together.",
+      "report": {
+        "language": "en",
+        "pivot": "zh-CN",
+        "seconds": 0.17998380000062753,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 104,
+            "output_chars": 128,
+            "warnings": [],
+            "seconds": 0.17995950000113226
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "language": "ja",
+      "scenario": "daily conversation",
+      "source": "今日は疲れています。長い説明ではなく、明日やることを一つだけ決めたいです。",
+      "output": "今日は疲れています。長い説明はやめに、明日何をすべきかだけを決めたいです。",
+      "report": {
+        "language": "ja",
+        "pivot": "en",
+        "seconds": 0.20561559999987367,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 37,
+            "output_chars": 37,
+            "warnings": [],
+            "seconds": 0.20559420000063255
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "language": "fr",
+      "scenario": "paper explanation",
+      "source": "La méthode partage les erreurs entre les agents pour éviter les tentatives répétées.",
+      "output": "La méthode répartit les erreurs entre les agents afin d’éviter des essais répétés.",
+      "report": {
+        "language": "fr",
+        "pivot": "en",
+        "seconds": 0.16276850000213017,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 84,
+            "output_chars": 82,
+            "warnings": [],
+            "seconds": 0.1627494000022125
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "language": "es",
+      "scenario": "project writing",
+      "source": "El complemento mejora la redacción inicial y ofrece una traducción de ida y vuelta opcional.",
+      "output": "El complemento mejora el texto inicial y ofrece una traducción alternativa opcional.",
+      "report": {
+        "language": "es",
+        "pivot": "en",
+        "seconds": 0.1620255999987421,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 92,
+            "output_chars": 84,
+            "warnings": [],
+            "seconds": 0.16200340000068536
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "language": "zh-Hant",
+      "scenario": "traditional script",
+      "source": "這個工具保留原文，讓讀者比較改寫前後的表達。請保留必要的技術說明。",
+      "output": "此工具能保留原始文本，讓讀者能比較修改前與修改後的表達方式。請保留所有必要的技術說明。",
+      "report": {
+        "language": "zh-Hant",
+        "pivot": "en",
+        "seconds": 0.2352202000001853,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 33,
+            "output_chars": 43,
+            "warnings": [],
+            "seconds": 0.23519909999959054
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    }
+  ]
+}

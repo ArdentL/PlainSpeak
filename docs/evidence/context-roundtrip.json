@@ -1,0 +1,102 @@
+{
+  "date": "2026-11-09",
+  "version": "0.7.0",
+  "model": "Hy-MT2-1.8B-Q4_K_M",
+  "runtime": "managed llama.cpp CPU",
+  "temperature": 0,
+  "cases": [
+    {
+      "id": "bus-dialogue",
+      "source": "“师傅，”她说，“今天不下。”",
+      "context": "老周开27路末班车，开了十一年。夜里十一点四十从火车站发车，终点是江边的纺织厂宿舍。有个女人，每周三坐他的车。她在一个叫“毛纺新村”的站下车。\n\n有一年冬天，周三下雪。她上车时保温桶没盖严，一股姜汤味散出来。她坐在靠门的位置，一路没说话。到毛纺新村，老周停稳，等了一会儿，她没起身。\n\n“我妈上个月走了。”她把桶放在腿上，两只手捂着，“我每周三去看她，她爱喝我煮的姜汤，放红糖。这三年我天天想来，可只有周三抽得出空。今天我想坐到底，看看终点站什么模样。”",
+      "language": "zh-CN",
+      "pivot": "en",
+      "isolated": {
+        "pivot": "“Master,” she said, “there’s no rain today.”",
+        "text": "“主人，”她说，“今天没有雨。”",
+        "seconds": 0.81
+      },
+      "contextual": {
+        "pivot": "“Driver,” she said, “I won’t ride today.”",
+        "text": "“司机，”她说，“我今天不坐车了。”",
+        "seconds": 1.03
+      }
+    },
+    {
+      "id": "last-bus-title",
+      "source": "## 末班车",
+      "context": "老周开27路末班车，开了十一年。夜里十一点四十从火车站发车，终点是江边的纺织厂宿舍。有个女人，每周三坐他的车。她在一个叫“毛纺新村”的站下车。\n\n有一年冬天，周三下雪。她上车时保温桶没盖严，一股姜汤味散出来。她坐在靠门的位置，一路没说话。到毛纺新村，老周停稳，等了一会儿，她没起身。",
+      "language": "zh-CN",
+      "pivot": "en",
+      "isolated": {
+        "pivot": "## Last train",
+        "text": "## 最后一班火车",
+        "seconds": 0.32
+      },
+      "contextual": {
+        "pivot": "## Last bus",
+        "text": "## 最后一班车",
+        "seconds": 0.36
+      }
+    },
+    {
+      "id": "bus-stop-names",
+      "source": "有一年冬天，周三下雪。她上车时保温桶没盖严，一股姜汤味散出来。她坐在靠门的位置，一路没说话。到毛纺新村，老周停稳，等了一会儿，她没起身。",
+      "context": "老周开27路末班车，开了十一年。夜里十一点四十从火车站发车，终点是江边的纺织厂宿舍。有个女人，每周三坐他的车。她在一个叫“毛纺新村”的站下车。\n\n“师傅，”她说，“今天不下。”\n\n“我妈上个月走了。”她把桶放在腿上，两只手捂着，“我每周三去看她，她爱喝我煮的姜汤，放红糖。这三年我天天想来，可只有周三抽得出空。今天我想坐到底，看看终点站什么模样。”",
+      "language": "zh-CN",
+      "pivot": "en",
+      "isolated": {
+        "pivot": "One winter, on a Wednesday, it snowed. When she got into the car, the thermos was not tightly covered, and the smell of ginger soup wafted out. She sat near the door and said nothing throughout the journey. When they reached Maofu New Village, Old Zhou stopped the car and waited for a while; she didn’t get up.",
+        "text": "一个冬天，星期三那天下雪了。她上车后，保温瓶没有盖好，姜汤的香味便飘了出来。她坐在门边，整个旅程上一言不发。当他们到达毛富新村时，老周停下了车，等了一会儿；她却没有起身。",
+        "seconds": 4.33
+      },
+      "contextual": {
+        "pivot": "One winter, it snowed on Wednesday. When she got on the bus, the thermos bucket wasn’t tightly covered, and the smell of ginger soup spread out. She sat by the door and said nothing the whole time. When they reached Maofu New Village, Lao Zhou stopped smoothly and waited for a while, but she didn’t get up.",
+        "text": "一个冬天，周三下雪了。她上公交车时，保温瓶没有盖紧，姜汤的香味便弥漫开来。她坐在门边，全程一言不发。当车子到达毛纺新村时，老周平稳地停住，等了一会儿，但她没有起身。",
+        "seconds": 4.37
+      }
+    },
+    {
+      "id": "research-ellipsis",
+      "source": "它只在第二轮打开，之后就关掉。",
+      "context": "我们测试多智能体讨论中的证据检索开关。第一轮各自作答，第二轮允许调用检索工具，第三轮汇总答案。这里的“打开”指启用检索工具。",
+      "language": "zh-CN",
+      "pivot": "en",
+      "isolated": {
+        "pivot": "It only opens in the second round, and then it closes.",
+        "text": "它只在第二轮开放，然后就关闭了。",
+        "seconds": 0.78
+      },
+      "contextual": {
+        "pivot": "It is activated only in the second round and then turned off.",
+        "text": "它仅在第二轮被启用，随后被关闭。",
+        "seconds": 0.85
+      }
+    },
+    {
+      "id": "english-pronoun",
+      "source": "It is only enabled in the second round, then disabled.",
+      "context": "We evaluate an evidence retrieval switch during multi-agent discussion. Agents answer independently in round one. The retrieval tool is enabled in round two. Round three combines the answers.",
+      "language": "en",
+      "pivot": "zh-CN",
+      "isolated": {
+        "pivot": "它仅在第二轮时启用，之后便被禁用。",
+        "text": "It is activated only in the second round, and then disabled.",
+        "seconds": 0.84
+      },
+      "contextual": {
+        "pivot": "它仅在第二轮被启用，之后便被禁用。",
+        "text": "It is activated only in the second round, and then disabled.",
+        "seconds": 0.94
+      }
+    }
+  ],
+  "scope": "Five fixed paired cases, not a benchmark. Fictional story excerpts adapted from the reported example; research examples are synthetic. Raw failures retained.",
+  "observations": {
+    "last_bus": "Last train becomes Last bus; final 最后一班火车 becomes 最后一班车.",
+    "place_name": "毛富新村 becomes 毛纺新村 on return with context.",
+    "dialogue_failure": "今天不下 still becomes 我今天不坐车了 with context, which changes the intended meaning.",
+    "research": "第二轮开放 becomes 第二轮被启用.",
+    "english": "Same final output in the fixed English pronoun case."
+  }
+}

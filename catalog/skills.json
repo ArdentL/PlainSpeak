@@ -1,0 +1,420 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-09",
+  "scope": "Curated source audit, not exhaustive; repository identity deduplicated, related derivatives explicitly grouped.",
+  "entries": [
+    {
+      "id": "blader--humanizer",
+      "upstream": "blader/humanizer",
+      "url": "https://github.com/blader/humanizer",
+      "commit": "0ef9fe5bc3572734fd3ae6c448fe00a30cd5dcf0",
+      "skill_path": "SKILL.md",
+      "languages": [
+        "en",
+        "multilingual"
+      ],
+      "problems": [
+        "AI-sounding prose",
+        "repetitive framing",
+        "verbosity"
+      ],
+      "lineage": "humanizer-family",
+      "distribution": "vendored",
+      "license": "MIT",
+      "license_paths": [
+        "LICENSE"
+      ],
+      "verification": "pinned-tree-and-skill-read",
+      "source_url": "https://github.com/blader/humanizer/blob/0ef9fe5bc3572734fd3ae6c448fe00a30cd5dcf0/SKILL.md",
+      "license_urls": [
+        "https://github.com/blader/humanizer/blob/0ef9fe5bc3572734fd3ae6c448fe00a30cd5dcf0/LICENSE"
+      ],
+      "notes": "Self-contained text; external Wikipedia link is background, not a required local file.",
+      "vendor_path": "third_party/blader--humanizer",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "upstream_path": "SKILL.md",
+          "git_blob_sha": "19fc634208e8cc6ae55d4ff287152583216fd244"
+        },
+        {
+          "path": "LICENSE",
+          "upstream_path": "LICENSE",
+          "git_blob_sha": "625297fb778f32eb39d3a5b97e3e3b611b7304d6"
+        }
+      ]
+    },
+    {
+      "id": "kiterlin--anti-defensive-writing",
+      "upstream": "Kiterlin/anti-defensive-writing",
+      "url": "https://github.com/Kiterlin/anti-defensive-writing",
+      "commit": "f516147d017a3fe43ae99192cb89d8261b0c8679",
+      "skill_path": "SKILL.md",
+      "languages": [
+        "en",
+        "zh-CN"
+      ],
+      "problems": [
+        "defensive caveats",
+        "stacked hedges",
+        "scientific prose"
+      ],
+      "lineage": "anti-defensive",
+      "distribution": "vendored",
+      "license": "MIT",
+      "license_paths": [
+        "LICENSE"
+      ],
+      "verification": "pinned-tree-and-skill-read",
+      "source_url": "https://github.com/Kiterlin/anti-defensive-writing/blob/f516147d017a3fe43ae99192cb89d8261b0c8679/SKILL.md",
+      "license_urls": [
+        "https://github.com/Kiterlin/anti-defensive-writing/blob/f516147d017a3fe43ae99192cb89d8261b0c8679/LICENSE"
+      ],
+      "notes": "Single-file skill; root and installable mirror share a repository. No installer or example assets needed.",
+      "vendor_path": "third_party/Kiterlin--anti-defensive-writing",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "upstream_path": "SKILL.md",
+          "git_blob_sha": "c756be063b4cdc344394a5e7d4e9ae95d839e5f8"
+        },
+        {
+          "path": "LICENSE",
+          "upstream_path": "LICENSE",
+          "git_blob_sha": "50c4372f587d3bd31e635fe892d386091ad7f1f9"
+        }
+      ]
+    },
+    {
+      "id": "op7418--humanizer-zh",
+      "upstream": "op7418/Humanizer-zh",
+      "url": "https://github.com/op7418/Humanizer-zh",
+      "commit": "f4518a8eab97b8bfebc66a89d34320a89bef6930",
+      "skill_path": "SKILL.md",
+      "languages": [
+        "zh-CN"
+      ],
+      "problems": [
+        "AI-sounding Chinese",
+        "translation-like prose",
+        "empty jargon"
+      ],
+      "lineage": "humanizer-family",
+      "distribution": "vendored",
+      "license": "MIT",
+      "license_paths": [
+        "LICENSE"
+      ],
+      "verification": "pinned-tree-and-skill-read",
+      "source_url": "https://github.com/op7418/Humanizer-zh/blob/f4518a8eab97b8bfebc66a89d34320a89bef6930/SKILL.md",
+      "license_urls": [
+        "https://github.com/op7418/Humanizer-zh/blob/f4518a8eab97b8bfebc66a89d34320a89bef6930/LICENSE"
+      ],
+      "notes": "Single-file skill; external source links retained. Includes supplemental MIT notices for credited humanizer and stop-slop upstreams.",
+      "vendor_path": "third_party/op7418--Humanizer-zh",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "upstream_path": "SKILL.md",
+          "git_blob_sha": "ef07b54da21a41d4a7e4fe0b0afb928f597eb684"
+        },
+        {
+          "path": "LICENSE",
+          "upstream_path": "LICENSE",
+          "git_blob_sha": "e43848adc64286ff652e9be646e18ae0606162c7"
+        }
+      ],
+      "supplemental_license_sources": [
+        {
+          "upstream": "blader/humanizer",
+          "commit": "0ef9fe5bc3572734fd3ae6c448fe00a30cd5dcf0",
+          "path": "LICENSE",
+          "local_path": "licenses/blader-humanizer-MIT.txt",
+          "source_url": "https://github.com/blader/humanizer/blob/0ef9fe5bc3572734fd3ae6c448fe00a30cd5dcf0/LICENSE"
+        },
+        {
+          "upstream": "hardikpandya/stop-slop",
+          "commit": "8da1f030185bdfe8471220585162991eaeb970e9",
+          "path": "LICENSE",
+          "local_path": "licenses/hardikpandya-stop-slop-MIT.txt",
+          "source_url": "https://github.com/hardikpandya/stop-slop/blob/8da1f030185bdfe8471220585162991eaeb970e9/LICENSE"
+        }
+      ]
+    },
+    {
+      "id": "ai-zixun--humanizer-zh",
+      "upstream": "ai-zixun/humanizer-zh",
+      "url": "https://github.com/ai-zixun/humanizer-zh",
+      "commit": "f75f1ac9735c4f10da1bba0148e0ea7228c5c3b3",
+      "skill_path": "SKILL.md",
+      "languages": [
+        "zh-CN"
+      ],
+      "problems": [
+        "translation-like prose",
+        "Chinese paragraph rhythm",
+        "AI-sounding prose"
+      ],
+      "lineage": "humanizer-family",
+      "distribution": "link-only",
+      "license": "MIT",
+      "license_paths": [
+        "LICENSE"
+      ],
+      "verification": "pinned-tree-and-skill-read",
+      "source_url": "https://github.com/ai-zixun/humanizer-zh/blob/f75f1ac9735c4f10da1bba0148e0ea7228c5c3b3/SKILL.md",
+      "license_urls": [
+        "https://github.com/ai-zixun/humanizer-zh/blob/f75f1ac9735c4f10da1bba0148e0ea7228c5c3b3/LICENSE"
+      ],
+      "notes": "Requires references/patterns.md, corpus files, and optional author-voice references; not bundled."
+    },
+    {
+      "id": "leoluyi--skills",
+      "upstream": "leoluyi/skills",
+      "url": "https://github.com/leoluyi/skills",
+      "commit": "8a85670f155490a413014065066ff46f3f37e103",
+      "skill_path": "skills/humanizer-zh/SKILL.md",
+      "languages": [
+        "zh-TW",
+        "en"
+      ],
+      "problems": [
+        "preserving meaning",
+        "translation-like prose",
+        "AI-sounding prose"
+      ],
+      "lineage": "humanizer-family",
+      "distribution": "link-only",
+      "license": "MIT",
+      "license_paths": [
+        "LICENSE"
+      ],
+      "verification": "pinned-tree-and-skill-read",
+      "source_url": "https://github.com/leoluyi/skills/blob/8a85670f155490a413014065066ff46f3f37e103/skills/humanizer-zh/SKILL.md",
+      "license_urls": [
+        "https://github.com/leoluyi/skills/blob/8a85670f155490a413014065066ff46f3f37e103/LICENSE"
+      ],
+      "notes": "Requires several workflow/routing/reference files; NOTICE describes multiple derivative sources. Full chain not vendored."
+    },
+    {
+      "id": "zeddyu--humanizer_zh",
+      "upstream": "ZeddYu/humanizer_zh",
+      "url": "https://github.com/ZeddYu/humanizer_zh",
+      "commit": "c743bc12f72fdf3a392035df139671bb539fc77a",
+      "skill_path": "SKILL.md",
+      "languages": [
+        "zh-CN"
+      ],
+      "problems": [
+        "empty jargon",
+        "formulaic Chinese",
+        "technical prose"
+      ],
+      "lineage": "humanizer-family",
+      "distribution": "link-only",
+      "license": "MIT",
+      "license_paths": [
+        "LICENSE"
+      ],
+      "verification": "pinned-tree-and-skill-read",
+      "source_url": "https://github.com/ZeddYu/humanizer_zh/blob/c743bc12f72fdf3a392035df139671bb539fc77a/SKILL.md",
+      "license_urls": [
+        "https://github.com/ZeddYu/humanizer_zh/blob/c743bc12f72fdf3a392035df139671bb539fc77a/LICENSE"
+      ],
+      "notes": "GitHub identifies a fork of blader/humanizer. README links examples/zh-before-after.md and NOTICE.md absent from pinned tree; not bundled."
+    },
+    {
+      "id": "iizcm--stop-slop-skill",
+      "upstream": "iizcm/stop-slop-skill",
+      "url": "https://github.com/iizcm/stop-slop-skill",
+      "commit": "32e767117e20f9aceff05a2fde427b48d67d1825",
+      "skill_path": "SKILL.md",
+      "languages": [
+        "en"
+      ],
+      "problems": [
+        "stock phrases",
+        "forced structures",
+        "AI-sounding prose"
+      ],
+      "lineage": "stop-slop",
+      "distribution": "link-only",
+      "license": "unlicensed-or-not-found",
+      "license_paths": [],
+      "verification": "pinned-tree-and-skill-read",
+      "source_url": "https://github.com/iizcm/stop-slop-skill/blob/32e767117e20f9aceff05a2fde427b48d67d1825/SKILL.md",
+      "license_urls": [],
+      "notes": "No license file or GitHub license metadata found in pinned tree; do not redistribute."
+    },
+    {
+      "id": "obra--the-elements-of-style",
+      "upstream": "obra/the-elements-of-style",
+      "url": "https://github.com/obra/the-elements-of-style",
+      "commit": "05fc4f0d2b97b7c042dd9949ad658568e4a1324e",
+      "skill_path": "skills/writing-clearly-and-concisely/SKILL.md",
+      "languages": [
+        "en"
+      ],
+      "problems": [
+        "verbosity",
+        "abstract language",
+        "composition"
+      ],
+      "lineage": "strunk",
+      "distribution": "link-only",
+      "license": "Public-Domain-declared; packaging-unclear",
+      "license_paths": [],
+      "verification": "pinned-tree-and-skill-read",
+      "source_url": "https://github.com/obra/the-elements-of-style/blob/05fc4f0d2b97b7c042dd9949ad658568e4a1324e/skills/writing-clearly-and-concisely/SKILL.md",
+      "license_urls": [],
+      "notes": "Corrects seed obra/elements-of-style (404). README/package declare Public Domain for 1918 text; packaging has no standalone license. Requires elements-of-style.md."
+    },
+    {
+      "id": "softaworks--agent-toolkit",
+      "upstream": "softaworks/agent-toolkit",
+      "url": "https://github.com/softaworks/agent-toolkit",
+      "commit": "3027f20f3181758385a1bb8c022d4041dfb4de84",
+      "skill_path": "skills/writing-clearly-and-concisely/SKILL.md",
+      "languages": [
+        "en"
+      ],
+      "problems": [
+        "verbosity",
+        "jargon",
+        "AI patterns"
+      ],
+      "lineage": "strunk",
+      "distribution": "link-only",
+      "license": "MIT",
+      "license_paths": [
+        "LICENSE"
+      ],
+      "verification": "pinned-tree-and-skill-read",
+      "source_url": "https://github.com/softaworks/agent-toolkit/blob/3027f20f3181758385a1bb8c022d4041dfb4de84/skills/writing-clearly-and-concisely/SKILL.md",
+      "license_urls": [
+        "https://github.com/softaworks/agent-toolkit/blob/3027f20f3181758385a1bb8c022d4041dfb4de84/LICENSE"
+      ],
+      "notes": "Repository MIT verified. Requires five Strunk reference files and signs-of-ai-writing.md; reference-specific rights and content not fully audited."
+    },
+    {
+      "id": "mlwelles--technical-writing-density",
+      "upstream": "mlwelles/technical-writing-density",
+      "url": "https://github.com/mlwelles/technical-writing-density",
+      "commit": "55d9dc6ddb969eb24d4a8d99a64a4b423f18c72c",
+      "skill_path": "skills/technical-writing-density/SKILL.md",
+      "languages": [
+        "en"
+      ],
+      "problems": [
+        "technical precision",
+        "needless words",
+        "information density"
+      ],
+      "lineage": "strunk",
+      "distribution": "link-only",
+      "license": "MIT",
+      "license_paths": [
+        "LICENSE"
+      ],
+      "verification": "pinned-tree-and-skill-read",
+      "source_url": "https://github.com/mlwelles/technical-writing-density/blob/55d9dc6ddb969eb24d4a8d99a64a4b423f18c72c/skills/technical-writing-density/SKILL.md",
+      "license_urls": [
+        "https://github.com/mlwelles/technical-writing-density/blob/55d9dc6ddb969eb24d4a8d99a64a4b423f18c72c/LICENSE"
+      ],
+      "notes": "Repository MIT verified. Explicitly requires writing-clearly-and-concisely; dependency not bundled, so this extension is link-only."
+    },
+    {
+      "id": "alexbybye--humanizer-cn",
+      "upstream": "AlexBybye/humanizer-CN",
+      "url": "https://github.com/AlexBybye/humanizer-CN",
+      "commit": "b597875bbf4d7a424e4a837c45b094bc9cfb4d8e",
+      "skill_path": "SKILL.md",
+      "languages": [
+        "zh-CN"
+      ],
+      "problems": [
+        "AI-sounding Chinese",
+        "conditional editing modes"
+      ],
+      "lineage": "humanizer-family",
+      "distribution": "link-only",
+      "license": "upstream-MIT-only",
+      "license_paths": [
+        "UPSTREAM-LICENSE.txt"
+      ],
+      "verification": "pinned-tree-and-skill-read",
+      "source_url": "https://github.com/AlexBybye/humanizer-CN/blob/b597875bbf4d7a424e4a837c45b094bc9cfb4d8e/SKILL.md",
+      "license_urls": [
+        "https://github.com/AlexBybye/humanizer-CN/blob/b597875bbf4d7a424e4a837c45b094bc9cfb4d8e/UPSTREAM-LICENSE.txt"
+      ],
+      "notes": "UPSTREAM-LICENSE.txt preserves blader MIT; license for downstream additions not separately established. Requires references/conditional-modes.md."
+    },
+    {
+      "id": "hardikpandya--stop-slop",
+      "upstream": "hardikpandya/stop-slop",
+      "url": "https://github.com/hardikpandya/stop-slop",
+      "commit": "8da1f030185bdfe8471220585162991eaeb970e9",
+      "skill_path": "SKILL.md",
+      "languages": [
+        "en"
+      ],
+      "problems": [
+        "stock phrases",
+        "formulaic structures",
+        "empty prose"
+      ],
+      "lineage": "stop-slop",
+      "distribution": "link-only",
+      "license": "MIT",
+      "license_paths": [
+        "LICENSE"
+      ],
+      "verification": "pinned-tree-and-skill-read",
+      "source_url": "https://github.com/hardikpandya/stop-slop/blob/8da1f030185bdfe8471220585162991eaeb970e9/SKILL.md",
+      "license_urls": [
+        "https://github.com/hardikpandya/stop-slop/blob/8da1f030185bdfe8471220585162991eaeb970e9/LICENSE"
+      ],
+      "notes": "MIT verified; skill has reference resources. Supplemental license only bundled as provenance for op7418, not this skill."
+    },
+    {
+      "id": "goldengrape--anti-defensive-gist",
+      "upstream": "goldengrape/1e271b01520bc9c60da3f35c91021d6f",
+      "url": "https://gist.github.com/goldengrape/1e271b01520bc9c60da3f35c91021d6f",
+      "commit": "78eb9ebc7df2c97bbc5590161288f9a5f47f614a",
+      "skill_path": null,
+      "languages": [
+        "zh-CN"
+      ],
+      "problems": [
+        "defensive caveats",
+        "jargon",
+        "verbosity"
+      ],
+      "lineage": "anti-defensive",
+      "distribution": "link-only",
+      "license": "not-established",
+      "verification": "public-gist-page-and-raw-link-revision",
+      "notes": "System prompt, not a packaged SKILL.md. Gist page read; revision extracted from its raw link. API endpoint unsupported by connector; direct API rate-limited. No license established; no text copied."
+    },
+    {
+      "id": "hogansteven449--gpt-anti-defensive",
+      "upstream": "hogansteven449/Gpt-anti-defensive",
+      "url": "https://github.com/hogansteven449/Gpt-anti-defensive",
+      "commit": null,
+      "skill_path": "SKILL.md",
+      "languages": [
+        "en",
+        "zh-CN"
+      ],
+      "problems": [
+        "defensive writing",
+        "document workflow"
+      ],
+      "lineage": "anti-defensive",
+      "distribution": "link-only",
+      "license": "not-established",
+      "verification": "README-page-only; unresolved-api-redirect",
+      "notes": "Public README describes Codex-authenticated multi-agent harness, not a single portable prompt. Commit and license unresolved: connector returned moved API endpoint, alternative connector authentication failed, direct public API rate-limited. Do not vendor or execute."
+    }
+  ]
+}

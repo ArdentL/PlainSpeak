@@ -1,0 +1,10 @@
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+const root = new URL('../', import.meta.url);
+const markdown = (await readFile(new URL('src/markdown.js', root), 'utf8')).replace(/^export /gm, '');
+const paragraphs = (await readFile(new URL('src/paragraphs.js', root), 'utf8')).replace(/^import .*?;\r?\n/gm, '').replace(/^export /gm, '');
+const settings = (await readFile(new URL('src/settings.js', root), 'utf8')).replace(/^export /gm, '');
+const client = (await readFile(new URL('src/client.js', root), 'utf8')).replace(/^import .*?;\r?\n/gm, '').replace(/^export /gm, '');
+const bundle = `// Built from src/client.js, src/markdown.js, src/paragraphs.js and src/settings.js; do not edit.\nwindow.__ModuleLoader__.load({id:"@plainspeak/harness-ui",factory:(require)=>{\n${markdown}\n${paragraphs}\n${settings}\n${client}\nreturn createClientPlugin(require("react"),require("react-dom"),require("@deepseek-ai/dsh-client-ui-primitives"));\n}});\n`;
+await mkdir(new URL('lib/', root), { recursive: true });
+await writeFile(new URL('lib/client.js', root), bundle, 'utf8');
+console.log('Built lib/client.js using Harness shared React identity.');

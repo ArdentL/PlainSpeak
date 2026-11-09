@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-09",
+  "version": "0.3.0",
+  "platform": "Windows",
+  "harness_version": "0.1.1-rc.2",
+  "model": "hy-mt2-1.8b-q4",
+  "synthetic_records": 12,
+  "gui_checks": {
+    "visible_settings_panel": true,
+    "record_source_and_translation_details": true,
+    "export_reported_count": 12,
+    "disabled_state_survived_host_restart": true,
+    "disabled_state_visible_translations": 0,
+    "records_survived_host_restart": 12,
+    "reenabled_ready_translations": 12,
+    "reenabled_pending_translations": 0,
+    "reenabled_translation_errors": 0,
+    "runtime_log_bytes_before_restart": 92191,
+    "runtime_log_bytes_after_reuse": 92191,
+    "llama_server_running_after_reuse": false,
+    "clear_confirmation_and_cancel": true,
+    "actual_gui_delete_executed": false
+  },
+  "automated_tests": {"python_passed": 66, "native_node_passed": 18},
+  "final_settings": {"enabled": true, "language": "zh-CN", "clearWriting": true, "saveHistory": true},
+  "notes": "Only synthetic paragraph records were used. No private paths, credentials or hidden reasoning are included. Automated HTTP tests cover actual deletion and in-flight save fencing; GUI clear was canceled to preserve the demonstration records."
+}

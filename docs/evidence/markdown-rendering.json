@@ -1,0 +1,523 @@
+{
+  "date": "2026-11-09",
+  "version": "0.5.0",
+  "synthetic": true,
+  "description": "One fixed synthetic Markdown response generated through actual DeepSeek Harness and rewritten by the real local translation model. Rendering and literal preservation test, not a semantic quality comparison. No private conversation or hidden reasoning included.",
+  "host": "DeepSeek Harness 0.1.1-rc.2",
+  "assistant_model": "DeepSeek-V4-Flash",
+  "translation_model": "Hy-MT2-1.8B-Q4_K_M",
+  "backend": "managed llama.cpp CPU",
+  "before": {
+    "code": [
+      "print(\"hello\")\nbatch_size = 8"
+    ],
+    "outputs": [
+      {
+        "code": 0,
+        "links": 0,
+        "math": 0,
+        "status": "retained",
+        "strong": 0,
+        "text": "译文部分保留原文（1 段）\n先检查状态，再运行 `python -m plainspeak`。这是一句补充说明，这句话已经取消。文档链接是 Python 文档 (https://www.python.org/)。"
+      },
+      {
+        "code": 0,
+        "links": 0,
+        "math": 0,
+        "status": "retained",
+        "strong": 0,
+        "text": "译文部分保留原文（1 段）\n公式 x2+y2=1x^2 + y^2 = 1x2+y2=1 表示一个圆，符号和数值应保持不变。"
+      },
+      {
+        "code": 0,
+        "links": 0,
+        "math": 0,
+        "status": "ready",
+        "strong": 0,
+        "text": "安装步骤：首先准备模型，然后启动本地服务。"
+      },
+      {
+        "code": 0,
+        "links": 0,
+        "math": 0,
+        "status": "ready",
+        "strong": 0,
+        "text": "使用步骤：打开设置，选择中文，然后保存。"
+      },
+      {
+        "code": 0,
+        "links": 0,
+        "math": 0,
+        "status": "ready",
+        "strong": 0,
+        "text": "这是真正的引用；应保留引用格式。"
+      }
+    ],
+    "running": 0,
+    "tableRows": 4
+  },
+  "rendered_dom": {
+    "attributes": [
+      [
+        [
+          "data-plainspeak-translation",
+          ""
+        ],
+        [
+          "data-source-kind",
+          "heading"
+        ],
+        [
+          "class",
+          "plainspeak-translation"
+        ],
+        [
+          "aria-live",
+          "polite"
+        ],
+        [
+          "data-source-hidden",
+          "true"
+        ],
+        [
+          "data-status",
+          "ready"
+        ]
+      ],
+      [
+        [
+          "data-plainspeak-translation",
+          ""
+        ],
+        [
+          "data-source-kind",
+          "paragraph"
+        ],
+        [
+          "class",
+          "plainspeak-translation"
+        ],
+        [
+          "aria-live",
+          "polite"
+        ],
+        [
+          "data-source-hidden",
+          "true"
+        ],
+        [
+          "data-status",
+          "ready"
+        ]
+      ]
+    ],
+    "codeBlocks": [
+      "print(\"hello\")\nbatch_size = 8"
+    ],
+    "formats": {
+      "code": [
+        "python -m plainspeak",
+        "python -m plainspeak"
+      ],
+      "del": 1,
+      "em": 1,
+      "links": [
+        "https://www.python.org/"
+      ],
+      "math": [
+        "x^2 + y^2 = 1"
+      ],
+      "strong": 4
+    },
+    "outputs": 13,
+    "styles": [
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      },
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      },
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      },
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      },
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      },
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      },
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      },
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      },
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      },
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      },
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      },
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      },
+      {
+        "before": "\"\"",
+        "border": "0px",
+        "padding": "0px"
+      }
+    ],
+    "tables": [
+      [
+        2,
+        2,
+        2,
+        2
+      ]
+    ]
+  },
+  "roundtrips": [
+    {
+      "source": "## Markdown 排版实验",
+      "text": "## Markdown 格式实验",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:07.376545+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 0.3921666999995068,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 16,
+            "output_chars": 16,
+            "warnings": [],
+            "seconds": 0.3915902999979153
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "source": "**先检查状态**，再运行 `python -m plainspeak`。*这是一句补充说明*，~~这句话已经取消~~。文档链接是 [Python 文档](<https://www.python.org/>)。",
+      "text": "**首先，检查状态**，然后运行 `python -m plainspeak`。*这是补充说明*；~~此说明已被删除~~。文档链接为 [Python 文档](<https://www.python.org/>)。",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:10.304768+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 2.9064092000007804,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 105,
+            "output_chars": 106,
+            "warnings": [],
+            "seconds": 2.9063386999987415
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "source": "公式 $x^2 + y^2 = 1$ 表示一个圆，符号和数值应保持不变。",
+      "text": "方程 $x^2 + y^2 = 1$ 表示一个圆；符号和数值均保持不变。",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:11.990917+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 1.6649843999985023,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 36,
+            "output_chars": 36,
+            "warnings": [],
+            "seconds": 1.6649269000008644
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "source": "**安装步骤**：先准备模型，再启动本地服务。",
+      "text": "**安装步骤**：首先准备模型，然后启动本地服务。",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:13.094357+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 1.081113500000356,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 23,
+            "output_chars": 25,
+            "warnings": [],
+            "seconds": 1.0810667000005196
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "source": "**使用步骤**：打开设置，选择中文并保存。",
+      "text": "**使用步骤**：打开设置，选择中文，然后保存。",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:14.007134+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 0.8910288000006403,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 22,
+            "output_chars": 24,
+            "warnings": [],
+            "seconds": 0.8909805999974196
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "source": "这是真实引用，应该保留引用格式。",
+      "text": "这是真正的引用；应保留引用格式。",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:14.789286+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 0.7616682000007131,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 16,
+            "output_chars": 16,
+            "warnings": [],
+            "seconds": 0.761612199999945
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "source": "项目",
+      "text": "项目",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:14.970244+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 0.15962910000234842,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 2,
+            "output_chars": 2,
+            "warnings": [],
+            "seconds": 0.15958640000098967
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "source": "当前状态",
+      "text": "当前状况",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:15.197859+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 0.20600779999949737,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 4,
+            "output_chars": 4,
+            "warnings": [],
+            "seconds": 0.2059536000015214
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "source": "本地服务",
+      "text": "本地服务",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:15.405521+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 0.18653189999895403,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 4,
+            "output_chars": 4,
+            "warnings": [],
+            "seconds": 0.18648880000182544
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "source": "**已开启**，可以翻译说明文字",
+      "text": "**已启用**，可以翻译说明文本",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:15.960706+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 0.5340962000009313,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 16,
+            "output_chars": 16,
+            "warnings": [],
+            "seconds": 0.5340451999982179
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "source": "启动命令",
+      "text": "启动命令",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:16.204095+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 0.2229148999977042,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 4,
+            "output_chars": 4,
+            "warnings": [],
+            "seconds": 0.22285959999862825
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "source": "运行 `python -m plainspeak` 后等待完成",
+      "text": "运行 `python -m plainspeak` 并等待其完成。",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:17.191758+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 0.9643697999999858,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 31,
+            "output_chars": 33,
+            "warnings": [],
+            "seconds": 0.9643168999973568
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    },
+    {
+      "source": "固定参数",
+      "text": "固定参数",
+      "language": "zh-CN",
+      "pivot": "en",
+      "model": "hy-mt2-1.8b-q4",
+      "created_at": "2026-11-09T09:48:17.437568+00:00",
+      "report": {
+        "language": "zh-CN",
+        "pivot": "en",
+        "seconds": 0.22504400000252645,
+        "chunks": [
+          {
+            "status": "rewritten",
+            "source_chars": 4,
+            "output_chars": 4,
+            "warnings": [],
+            "seconds": 0.22500399999989895
+          }
+        ],
+        "retained_chunks": 0,
+        "notice": "Literal guards do not verify semantic equivalence."
+      }
+    }
+  ]
+}

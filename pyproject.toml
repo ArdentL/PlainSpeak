@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plainspeak-local"
+version = "0.7.0"
+description = "Portable clear-writing skills and guarded local translation round trips"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "PlainSpeak contributors"}]
+dependencies = []
+
+[project.optional-dependencies]
+mcp = ["mcp>=1.30,<2"]
+dev = ["mcp>=1.30,<2", "build>=1.2"]
+
+[project.scripts]
+plainspeak = "plainspeak.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+plainspeak = ["data/*.json", "data/*.txt"]

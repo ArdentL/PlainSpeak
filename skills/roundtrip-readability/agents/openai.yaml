@@ -1,0 +1,6 @@
+interface:
+  display_name: "PlainSpeak · Round trip"
+  short_description: "Optional local backtranslation with code and number guards"
+  default_prompt: "Use $roundtrip-readability to backtranslate this draft and compare it with the original."
+policy:
+  allow_implicit_invocation: true
