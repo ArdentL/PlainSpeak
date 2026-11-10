@@ -1,0 +1,139 @@
+{
+  "case": {
+    "id": "04-paper-explanation",
+    "title": "论文讲解：理解 PPO 的裁剪目标",
+    "prompt": "我在读 PPO，不理解为什么要对新旧策略的概率比做 clip。请结合“某个动作更新前概率为0.2，更新后为0.3，优势为正，epsilon为0.2”这个例子讲清楚：原目标和裁剪目标分别鼓励什么，clip 是否真的把新概率锁死在某个区间。"
+  },
+  "baseline": {
+    "case_id": "04-paper-explanation",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:09.091Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "我在读 PPO，不理解为什么要对新旧策略的概率比做 clip。请结合“某个动作更新前概率为0.2，更新后为0.3，优势为正，epsilon为0.2”这个例子讲清楚：原目标和裁剪目标分别鼓励什么，clip 是否真的把新概率锁死在某个区间。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281528,
+    "finish_reason": "stop",
+    "content": "这个问题问得很关键。很多人第一次读 PPO 时，会误以为 clip 是把新策略概率“锁死”在某个区间里，其实不是。下面结合你的例子讲清楚。\n\n## 先设定例子\n\n- 旧策略下某动作概率：$\\pi_{\\text{old}}(a|s)=0.2$\n- 更新后新策略概率：$\\pi_{\\theta}(a|s)=0.3$\n- 优势：$A>0$（这个动作比平均好）\n- $\\epsilon=0.2$\n\n概率比：\n\n$$\nr_t(\\theta)=\\frac{\\pi_\\theta(a|s)}{\\pi_{\\text{old}}(a|s)}=\\frac{0.3}{0.2}=1.5\n$$\n\n---\n\n## 1. 原目标（未裁剪）鼓励什么\n\nPPO 的原目标（surrogate）是：\n\n$$\nL^{\\text{CPI}}(\\theta)=\\mathbb{E}\\left[r_t(\\theta)\\,A_t\\right]\n$$\n\n当 $A>0$ 时，这个目标**鼓励增大 $r_t$**，也就是鼓励提高这个好动作的概率。因为 $A$ 是正常数，$r_t$ 越大，乘积越大，目标越大。\n\n在你的例子里，$r_t=1.5$，原目标贡献是 $1.5A$。如果新概率继续涨到 0.4、0.5……$r_t$ 变成 2、2.5，原目标会继续变大，**没有任何上限**。这就是问题：一步更新可能把好动作概率推得过高，策略变化太大，训练不稳定。\n\n---\n\n## 2. 裁剪目标鼓励什么\n\n裁剪后的目标是：\n\n$$\nL^{\\text{CLIP}}(\\theta)=\\mathbb{E}\\left[\\min\\left(r_t A,\\ \\text{clip}(r_t,1-\\epsilon,1+\\epsilon)A\\right)\\right]\n$$\n\n这里 $\\epsilon=0.2$，所以 clip 区间是 $[0.8, 1.2]$。\n\n- $r_t=1.5 > 1.2$，所以 $\\text{clip}(r_t)=1.2$\n- 因为 $A>0$，$\\min(1.5A,\\ 1.2A)=1.2A$\n\n**关键点：** 当 $r_t>1+\\epsilon$ 且 $A>0$ 时，裁剪目标对 $r_t$ 的梯度是 **0**。也就是说，一旦新概率已经比旧概率高出 20% 以上，裁剪目标**不再奖励继续增大它**。它把“继续推高这个好动作概率”的激励**截断**在 $r_t=1.2$ 处。\n\n所以裁剪目标鼓励的是：好动作概率可以提高，但**提高幅度超过旧概率的 20% 之后，就不再额外鼓励**。它防止单步更新把策略推得太远。\n\n---\n\n## 3. clip 是否真的把新概率锁死在某个区间？\n\n**不是。** 这是最常见的误解。\n\nclip 作用在**目标函数**上，不是作用在**参数更新**上，也不是把 $\\pi_\\theta$ 硬性投影到某个区间。具体说：\n\n- clip 修改的是**损失/目标的形状**，从而改变梯度。\n- 当 $r_t$ 落在 $[0.8,1.2]$ 内，梯度正常。\n- 当 $r_t>1.2$ 且 $A>0$，这一项的梯度被截断为 0（对 $r_t$ 而言），但**其他样本、其他项、以及 KL/熵等正则项仍可能推动参数变化**。\n- 而且优化器一步更新后，新概率完全可能跑到 0.35、0.4，甚至更远。clip 只是让**这一项不再提供继续推高的梯度**，并不能保证 $\\pi_\\theta$ 停在 1.2 倍处。\n\n换句话说：**clip 限制的是“激励”，不是“取值”。** 它让目标函数在 $r_t$ 超出区间后变成平坦的（对该样本而言），从而不再主动把概率往外推，但不会把已经跑出去的概率拉回来，也不会硬性截断参数。\n\n在你的例子里，$r_t=1.5$ 已经超出 1.2。裁剪目标对这一项的梯度贡献为 0，所以它**不再鼓励**把 0.3 继续推高；但它也**不惩罚** 0.3 这个值本身（对 $A>0$ 且 $r>1+\\epsilon$ 的情形，min 取的是 clip 项，梯度为 0，不是负梯度）。真正把概率拉回区间的是后续更新中旧策略被刷新、比率重新计算，以及其他样本的梯度共同作用。\n\n---\n\n## 4. 一句话总结\n\n- **原目标**：好动作（$A>0$）概率比越大越好，无上限，容易一步更新过猛。\n- **裁剪目标**：好动作概率比超过 $1+\\epsilon$ 后不再给额外奖励，把“继续推高”的激励截断，换取训练稳定。\n- **clip 不是锁死概率区间**，它只改变目标函数的梯度形状；新概率仍可能超出 $[0.8,1.2]$ 倍旧概率，只是不再被这一项主动往外推。\n\n补充一个对称情形帮助理解：如果 $A<0$（坏动作），原目标鼓励减小 $r_t$；当 $r_t<1-\\epsilon$ 时，裁剪目标同样截断“继续减小”的激励。所以 clip 对好动作和坏动作都是“超出舒适区就不再奖励”，而不是硬约束。",
+    "usage": {
+      "prompt_tokens": 73,
+      "completion_tokens": 1219,
+      "total_tokens": 1292,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 73
+    },
+    "seconds": 10.635
+  },
+  "skill_only": {
+    "case_id": "04-paper-explanation",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:06.494Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "我在读 PPO，不理解为什么要对新旧策略的概率比做 clip。请结合“某个动作更新前概率为0.2，更新后为0.3，优势为正，epsilon为0.2”这个例子讲清楚：原目标和裁剪目标分别鼓励什么，clip 是否真的把新概率锁死在某个区间。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281525,
+    "finish_reason": "stop",
+    "content": "先给结论：clip 限制的是**概率比** \\(r=\\pi_\\text{new}/\\pi_\\text{old}\\) 进入目标函数的有效范围，不是把新策略的概率本身锁死在某个区间。你举的例子中，\\(r=0.3/0.2=1.5\\)，\\(\\epsilon=0.2\\)，上界是 \\(1.2\\)，所以裁剪目标里这一项被截到 \\(1.2\\)；但新策略的概率仍可以是 0.3，甚至更高，只是超出 1.2 倍的那部分不再给目标函数带来额外收益。\n\n**原目标鼓励什么**\n\nPPO 的未裁剪项是 \\(r\\cdot A\\)。优势 \\(A>0\\) 时，它鼓励增大 \\(r\\)，也就是让这个动作在新策略下比旧策略下更可能被选中。你的例子里原目标这项是 \\(1.5A\\)，比 \\(1.0A\\) 大，所以梯度会继续推高这个动作的概率。\n\n**裁剪目标鼓励什么**\n\n裁剪项是 \\(\\min(rA,\\ \\text{clip}(r,1-\\epsilon,1+\\epsilon)A)\\)。\\(A>0\\) 时，\\(\\text{clip}(r,0.8,1.2)=1.2\\)，裁剪项为 \\(1.2A\\)。取 min 后目标函数这项是 \\(1.2A\\)，而不是 \\(1.5A\\)。也就是说：概率比从 1 涨到 1.2 时，目标还在增加，更新有动力；超过 1.2 后，目标不再随 \\(r\\) 增加，超出部分的“额外奖励”被拿掉，梯度在这一侧被截断。它鼓励的是“把这个好动作的概率提高，但一次更新别提高太多”，防止策略一步跳太远。\n\n**clip 是否把新概率锁死**\n\n没有。clip 只作用在目标函数里的 \\(r\\) 上，不作用在策略参数或实际概率上。你的例子中新概率 0.3 是允许存在的；如果优化器因为其他项、其他动作或后续更新把它推到 0.4，目标函数里这一项仍按 1.2 算，不会按 2.0 算。所以准确说法是：clip 让“超过 1.2 倍的部分不产生额外目标收益”，从而抑制过大更新，而不是硬约束 \\(\\pi_\\text{new}\\le 1.2\\pi_\\text{old}\\)。\n\n**一个容易忽略的对称情形**\n\n如果 \\(A<0\\)，clip 的作用方向相反：它防止概率比降得太低。比如 \\(r=0.5\\)、\\(A<0\\)，原目标 \\(0.5A\\) 比 \\(1.0A\\) 更负，裁剪项把 \\(r\\) 截到 0.8，取 min 后目标按 \\(0.8A\\) 算，避免对坏动作过度惩罚式地压低概率。所以 clip 的本质是：**对优势为正的动作限制上调幅度，对优势为负的动作限制下调幅度**，两边都只截断“继续朝同一方向走太远”的收益。",
+    "usage": {
+      "prompt_tokens": 254,
+      "completion_tokens": 678,
+      "total_tokens": 932,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 254
+    },
+    "seconds": 6.108
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "04-paper-explanation",
+    "source_sha256": "cadca0f7621ca301cd8abfc4b1ef11ca43736c06f40e65bffb13983cd6f5fb6e",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "首先，让我们得出结论：这种“裁剪”操作只是将概率比 \\(r=\\pi_\\text{new}/\\pi_\\text{old}\\) 限制在目标函数的有效范围内，而并未固定新策略的概率值。在您提供的例子中，\\(r=0.3/0.2=1.5\\)，\\(\\epsilon=0.2\\)；上限为 \\(1.2\\)，因此该值被裁剪为 \\(1.2\\)。不过，新策略的概率仍可以是 0.3 甚至更高；只有超过 1.2 的部分才不再对目标函数产生贡献。\n\n**原始目标究竟鼓励什么？**\n\nPPO中未被裁剪的项为 \\(r\\cdot A\\)。当 \\(A>0\\) 时，它会促使 \\(r\\) 增加，意味着该行动在新策略下比在旧策略下更可能被选择。在您的例子中，原始目标项为 \\(1.5A\\)，大于 \\(1.0A\\)；因此，梯度会继续增加该行动的概率。\n\n**被裁剪的项又鼓励什么？**\n\n被裁剪的项为 \\(\\min(rA,\\ \\text{clip}(r,1-\\epsilon,1+\\epsilon)A)\\)。当 \\(A>0\\) 时，\\(\\text{clip}(r,0.8,1.2)=1.2\\)，因此被裁剪的项变为 \\(1.2A\\)。经过取最小值后，目标函数变为 \\(1.2A\\)，而非 \\(1.5A\\)。换句话说，当概率比从 1 增加到 1.2 时，目标仍然会增加，因此有更新策略的动力；一旦超过 1.2，目标就不会随 \\(r\\) 增加而继续增加。与超出部分相关的“额外奖励”被移除，该侧的梯度也被截断。鼓励的是“增加该好行动的概率，但不要一次性增加太多”，这样策略就不会在一步中偏离太远。\n\n**“裁剪”是否解决了新概率的问题？**\n\n不是。“裁剪”只影响目标函数中的 \\(r\\)，并不影响策略参数或实际概率。在您的例子中，0.3 的概率是被允许的，它仍然可能存在。如果由于其他因素、其他操作或后续更新，优化器将值推至0.4，那么目标函数中的该项仍为1.2，而非2.0。因此，更准确地说，这种“裁剪”机制的作用是防止超过1.2的值带来额外的目标收益；它限制了过度更新，而非严格强制要求\\(\\pi_\\text{new}\\le 1.2\\pi_\\text{old}\\)。\n\n**一个常被忽视的对称场景**\n\n如果\\(A<0\\)，“裁剪”的作用则相反：它防止概率比率降得太低。例如，当\\(r=0.5\\)且\\(A<0\\)时，原始目标\\(0.5A\\)比\\(1.0A\\)更负。裁剪机制将\\(r\\)限制在0.8，经过最小化处理后，目标值变为\\(0.8A\\)，从而避免了对不良行为的过度惩罚，即不会过度降低其概率。换句话说，“裁剪”的本质是：**限制具有正优势的行为带来的收益增加，并限制具有负优势的行为带来的收益减少**；两侧都只在继续朝同一方向发展过远时被截断。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 51.468619100007345,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 726,
+          "output_chars": 765,
+          "warnings": [],
+          "seconds": 33.53375409998989
+        },
+        {
+          "status": "rewritten",
+          "source_chars": 377,
+          "output_chars": 391,
+          "warnings": [],
+          "seconds": 17.934407299995655
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "先给结论：clip 限制的是**概率比** \\(r=\\pi_\\text{new}/\\pi_\\text{old}\\) 进入目标函数的有效范围，不是把新策略的概率本身锁死在某个区间。你举的例子中，\\(r=0.3/0.2=1.5\\)，\\(\\epsilon=0.2\\)，上界是 \\(1.2\\)，所以裁剪目标里这一项被截到 \\(1.2\\)；但新策略的概率仍可以是 0.3，甚至更高，只是超出 1.2 倍的那部分不再给目标函数带来额外收益。\n\n**原目标鼓励什么**\n\nPPO 的未裁剪项是 \\(r\\cdot A\\)。优势 \\(A>0\\) 时，它鼓励增大 \\(r\\)，也就是让这个动作在新策略下比旧策略下更可能被选中。你的例子里原目标这项是 \\(1.5A\\)，比 \\(1.0A\\) 大，所以梯度会继续推高这个动作的概率。\n\n**裁剪目标鼓励什么**\n\n裁剪项是 \\(\\min(rA,\\ \\text{clip}(r,1-\\epsilon,1+\\epsilon)A)\\)。\\(A>0\\) 时，\\(\\text{clip}(r,0.8,1.2)=1.2\\)，裁剪项为 \\(1.2A\\)。取 min 后目标函数这项是 \\(1.2A\\)，而不是 \\(1.5A\\)。也就是说：概率比从 1 涨到 1.2 时，目标还在增加，更新有动力；超过 1.2 后，目标不再随 \\(r\\) 增加，超出部分的“额外奖励”被拿掉，梯度在这一侧被截断。它鼓励的是“把这个好动作的概率提高，但一次更新别提高太多”，防止策略一步跳太远。\n\n**clip 是否把新概率锁死**\n\n没有。clip 只作用在目标函数里的 \\(r\\) 上，不作用在策略参数或实际概率上。你的例子中新概率 0.3 是允许存在的；",
+        "target": "en",
+        "context": "",
+        "output": "First, let’s get to the conclusion: the “clip” limits the **probability ratio** \\(r=\\pi_\\text{new}/\\pi_\\text{old}\\) within the valid range of the objective function, rather than fixing the probability of the new strategy within a certain interval. In the example you provided, \\(r=0.3/0.2=1.5\\) and \\(\\epsilon=0.2\\); the upper limit is \\(1.2\\), so this term is clipped to \\(1.2\\). However, the probability of the new strategy can still be 0.3 or even higher; only the portion exceeding 1.2 no longer contributes to the objective function.\n\n**What does the original objective encourage?**\n\nThe unclipped term in PPO is \\(r\\cdot A\\). When \\(A>0\\), it encourages an increase in \\(r\\), meaning that this action is more likely to be selected under the new strategy than under the old one. In your example, the original objective term is \\(1.5A\\), which is greater than \\(1.0A\\); therefore, the gradient continues to increase the probability of this action.\n\n**What does the clipped term encourage?**\n\nThe clipped term is \\(\\min(rA,\\ \\text{clip}(r,1-\\epsilon,1+\\epsilon)A)\\). When \\(A>0\\), \\(\\text{clip}(r,0.8,1.2)=1.2\\), so the clipped term becomes \\(1.2A\\). After taking the minimum, the objective function becomes \\(1.2A\\), not \\(1.5A\\). In other words, when the probability ratio increases from 1 to 1.2, the objective still increases, and there is motivation for updating; once it exceeds 1.2, the objective no longer increases with \\(r\\). The “extra reward” associated with that excess portion is removed, and the gradient is truncated on that side. What is encouraged is to “increase the probability of this good action, but not too much at once”, so that the strategy doesn’t move too far in one step.\n\n**Does the “clip” fix the new probability?**\n\nNo. The “clip” only affects \\(r\\) in the objective function; it does not affect the strategy parameters or the actual probability. In your example, a probability of 0.3 is allowed; it can exist.",
+        "seconds": 17.8747
+      },
+      {
+        "source": "First, let’s get to the conclusion: the “clip” limits the **probability ratio** \\(r=\\pi_\\text{new}/\\pi_\\text{old}\\) within the valid range of the objective function, rather than fixing the probability of the new strategy within a certain interval. In the example you provided, \\(r=0.3/0.2=1.5\\) and \\(\\epsilon=0.2\\); the upper limit is \\(1.2\\), so this term is clipped to \\(1.2\\). However, the probability of the new strategy can still be 0.3 or even higher; only the portion exceeding 1.2 no longer contributes to the objective function.\n\n**What does the original objective encourage?**\n\nThe unclipped term in PPO is \\(r\\cdot A\\). When \\(A>0\\), it encourages an increase in \\(r\\), meaning that this action is more likely to be selected under the new strategy than under the old one. In your example, the original objective term is \\(1.5A\\), which is greater than \\(1.0A\\); therefore, the gradient continues to increase the probability of this action.\n\n**What does the clipped term encourage?**\n\nThe clipped term is \\(\\min(rA,\\ \\text{clip}(r,1-\\epsilon,1+\\epsilon)A)\\). When \\(A>0\\), \\(\\text{clip}(r,0.8,1.2)=1.2\\), so the clipped term becomes \\(1.2A\\). After taking the minimum, the objective function becomes \\(1.2A\\), not \\(1.5A\\). In other words, when the probability ratio increases from 1 to 1.2, the objective still increases, and there is motivation for updating; once it exceeds 1.2, the objective no longer increases with \\(r\\). The “extra reward” associated with that excess portion is removed, and the gradient is truncated on that side. What is encouraged is to “increase the probability of this good action, but not too much at once”, so that the strategy doesn’t move too far in one step.\n\n**Does the “clip” fix the new probability?**\n\nNo. The “clip” only affects \\(r\\) in the objective function; it does not affect the strategy parameters or the actual probability. In your example, a probability of 0.3 is allowed; it can exist.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "首先，让我们得出结论：这种“裁剪”操作只是将概率比 \\(r=\\pi_\\text{new}/\\pi_\\text{old}\\) 限制在目标函数的有效范围内，而并未固定新策略的概率值。在您提供的例子中，\\(r=0.3/0.2=1.5\\)，\\(\\epsilon=0.2\\)；上限为 \\(1.2\\)，因此该值被裁剪为 \\(1.2\\)。不过，新策略的概率仍可以是 0.3 甚至更高；只有超过 1.2 的部分才不再对目标函数产生贡献。\n\n**原始目标究竟鼓励什么？**\n\nPPO中未被裁剪的项为 \\(r\\cdot A\\)。当 \\(A>0\\) 时，它会促使 \\(r\\) 增加，意味着该行动在新策略下比在旧策略下更可能被选择。在您的例子中，原始目标项为 \\(1.5A\\)，大于 \\(1.0A\\)；因此，梯度会继续增加该行动的概率。\n\n**被裁剪的项又鼓励什么？**\n\n被裁剪的项为 \\(\\min(rA,\\ \\text{clip}(r,1-\\epsilon,1+\\epsilon)A)\\)。当 \\(A>0\\) 时，\\(\\text{clip}(r,0.8,1.2)=1.2\\)，因此被裁剪的项变为 \\(1.2A\\)。经过取最小值后，目标函数变为 \\(1.2A\\)，而非 \\(1.5A\\)。换句话说，当概率比从 1 增加到 1.2 时，目标仍然会增加，因此有更新策略的动力；一旦超过 1.2，目标就不会随 \\(r\\) 增加而继续增加。与超出部分相关的“额外奖励”被移除，该侧的梯度也被截断。鼓励的是“增加该好行动的概率，但不要一次性增加太多”，这样策略就不会在一步中偏离太远。\n\n**“裁剪”是否解决了新概率的问题？**\n\n不是。“裁剪”只影响目标函数中的 \\(r\\)，并不影响策略参数或实际概率。在您的例子中，0.3 的概率是被允许的，它仍然可能存在。",
+        "seconds": 15.6589
+      },
+      {
+        "source": "如果优化器因为其他项、其他动作或后续更新把它推到 0.4，目标函数里这一项仍按 1.2 算，不会按 2.0 算。所以准确说法是：clip 让“超过 1.2 倍的部分不产生额外目标收益”，从而抑制过大更新，而不是硬约束 \\(\\pi_\\text{new}\\le 1.2\\pi_\\text{old}\\)。\n\n**一个容易忽略的对称情形**\n\n如果 \\(A<0\\)，clip 的作用方向相反：它防止概率比降得太低。比如 \\(r=0.5\\)、\\(A<0\\)，原目标 \\(0.5A\\) 比 \\(1.0A\\) 更负，裁剪项把 \\(r\\) 截到 0.8，取 min 后目标按 \\(0.8A\\) 算，避免对坏动作过度惩罚式地压低概率。所以 clip 的本质是：**对优势为正的动作限制上调幅度，对优势为负的动作限制下调幅度**，两边都只截断“继续朝同一方向走太远”的收益。",
+        "target": "en",
+        "context": "",
+        "output": "If the optimizer pushes the value to 0.4 due to other factors, other actions, or subsequent updates, that term in the objective function remains at 1.2, and not at 2.0. Therefore, it is more accurate to say that the “clip” mechanism prevents the portion exceeding 1.2 from providing additional objective benefits; it thus limits excessive updates, rather than strictly enforcing \\(\\pi_\\text{new}\\le 1.2\\pi_\\text{old}\\).\n\n**A commonly overlooked symmetric scenario**\n\nIf \\(A<0\\), the effect of the “clip” is opposite: it prevents the probability ratio from dropping too low. For example, when \\(r=0.5\\) and \\(A<0\\), the original objective \\(0.5A\\) is more negative than \\(1.0A\\). The clipping term limits \\(r\\) to 0.8, and after taking the minimum, the objective is calculated as \\(0.8A\\), thereby avoiding over-punishing bad actions by reducing their probabilities too much. In other words, the essence of the “clip” is: **to limit the increase in benefits for actions with positive advantages, and to limit the decrease in benefits for actions with negative advantages**; both sides are truncated only at the point where continuing in the same direction too far would be undesirable.",
+        "seconds": 9.8689
+      },
+      {
+        "source": "If the optimizer pushes the value to 0.4 due to other factors, other actions, or subsequent updates, that term in the objective function remains at 1.2, and not at 2.0. Therefore, it is more accurate to say that the “clip” mechanism prevents the portion exceeding 1.2 from providing additional objective benefits; it thus limits excessive updates, rather than strictly enforcing \\(\\pi_\\text{new}\\le 1.2\\pi_\\text{old}\\).\n\n**A commonly overlooked symmetric scenario**\n\nIf \\(A<0\\), the effect of the “clip” is opposite: it prevents the probability ratio from dropping too low. For example, when \\(r=0.5\\) and \\(A<0\\), the original objective \\(0.5A\\) is more negative than \\(1.0A\\). The clipping term limits \\(r\\) to 0.8, and after taking the minimum, the objective is calculated as \\(0.8A\\), thereby avoiding over-punishing bad actions by reducing their probabilities too much. In other words, the essence of the “clip” is: **to limit the increase in benefits for actions with positive advantages, and to limit the decrease in benefits for actions with negative advantages**; both sides are truncated only at the point where continuing in the same direction too far would be undesirable.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "如果由于其他因素、其他操作或后续更新，优化器将值推至0.4，那么目标函数中的该项仍为1.2，而非2.0。因此，更准确地说，这种“裁剪”机制的作用是防止超过1.2的值带来额外的目标收益；它限制了过度更新，而非严格强制要求\\(\\pi_\\text{new}\\le 1.2\\pi_\\text{old}\\)。\n\n**一个常被忽视的对称场景**\n\n如果\\(A<0\\)，“裁剪”的作用则相反：它防止概率比率降得太低。例如，当\\(r=0.5\\)且\\(A<0\\)时，原始目标\\(0.5A\\)比\\(1.0A\\)更负。裁剪机制将\\(r\\)限制在0.8，经过最小化处理后，目标值变为\\(0.8A\\)，从而避免了对不良行为的过度惩罚，即不会过度降低其概率。换句话说，“裁剪”的本质是：**限制具有正优势的行为带来的收益增加，并限制具有负优势的行为带来的收益减少**；两侧都只在继续朝同一方向发展过远时被截断。",
+        "seconds": 8.0653
+      }
+    ],
+    "seconds": 51.469
+  },
+  "character_counts_including_markdown": {
+    "baseline": 2069,
+    "skill_only": 1103,
+    "final": 1156
+  },
+  "editorial_observation": "模型内容存在原始数学错误：skill 原稿已写成 A<0 时 0.5A 比 1.0A“更负”；取 A=-1 即可看出相反。回译保留了该错误，并把最后一段“目标按 0.8A 算”中的 A 丢掉。保留原输出以区分源回答错误与回译新增错误，不能把本案例作为 PPO 教材。"
+}

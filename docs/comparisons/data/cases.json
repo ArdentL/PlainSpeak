@@ -1,0 +1,12 @@
+[
+  {"id":"01-debug","title":"修 Bug：找出可变默认参数的问题","prompt":"帮我看这段 Python 为什么第二次调用会带上上一次的数据，并给出修改后的代码和原因：\n```python\ndef add_item(item, items=[]):\n    items.append(item)\n    return items\n\nprint(add_item(\"a\"))\nprint(add_item(\"b\"))\n```"},
+  {"id":"02-environment","title":"环境排错：终端能导入，编辑器不能","prompt":"我的 Windows 终端里 `python -c \"import numpy\"` 正常，但 VS Code 运行同一个脚本提示 `ModuleNotFoundError: No module named 'numpy'`。项目里有 `.venv`，我也装过 Conda。你建议先查哪里？给我可执行的排查顺序。"},
+  {"id":"03-review","title":"代码审查：缓存是否会返回旧权限","prompt":"请 review 下面这段服务端代码，优先指出真实影响行为的问题，再给修改建议。`load_user` 每次从数据库读取用户，角色可能在运行中被管理员修改。\n```python\nfrom functools import lru_cache\n\n@lru_cache(maxsize=1000)\ndef get_permissions(user_id):\n    user = load_user(user_id)\n    return user.permissions\n\ndef can_delete(user_id):\n    return \"delete\" in get_permissions(user_id)\n```"},
+  {"id":"04-paper-explanation","title":"论文讲解：理解 PPO 的裁剪目标","prompt":"我在读 PPO，不理解为什么要对新旧策略的概率比做 clip。请结合“某个动作更新前概率为0.2，更新后为0.3，优势为正，epsilon为0.2”这个例子讲清楚：原目标和裁剪目标分别鼓励什么，clip 是否真的把新概率锁死在某个区间。"},
+  {"id":"05-experiment-design","title":"实验设计：检索是否帮助 Agent 协作","prompt":"我有一个想法：让三个 Agent 在第二轮讨论时才拿到检索证据，第一轮先独立回答，最后汇总。现有代码已经支持三 Agent 讨论和检索开关。我想先判断“第二轮给证据”有没有用。请帮我设计一个小实验，明确对照、预算怎么对齐、看什么结果，以及什么结果会让你建议停止。"},
+  {"id":"06-result-interpretation","title":"结果判断：小幅提升是否足够继续","prompt":"虚构实验结果：同一组100道任务，方法A在三个随机种子上的成功率是52%、54%、56%，基线是47%、48%、49%；按题目配对 bootstrap，平均差值的95%置信区间是−1到13个百分点。这轮实验花了两天。你觉得现在该继续还是放弃？请解释这些结果支持什么判断，并给下一步最省钱的检查。"},
+  {"id":"07-requirements","title":"需求澄清：把模糊想法变成可确认需求","prompt":"我想做一个桌面插件：回答太绕的时候自动显示更好读的版本，支持开关，数据最好留在本地。先只支持一个聊天客户端。你现在需要问我哪些问题？请选真正影响第一版实现的点，别一次丢一大堆问题。"},
+  {"id":"08-project-plan","title":"项目计划：两个人，两周做第一版","prompt":"我们两个人准备在两周内做一个本地文本改写插件。已经有能运行的小翻译模型，聊天客户端有公开插件接口。第一版要有自动处理、原文对照、开关和本地记录，暂时不做云同步。请给一个具体分工与交付计划，说明先做什么、怎么验收，以及时间不够时砍什么。"},
+  {"id":"09-status-report","title":"进度汇报：如实说明完成项与阻塞","prompt":"帮我把这些虚构工作记录整理成一条发给项目负责人的进度更新：今天完成了翻译开关和本地SQLite记录；12段测试文本有11段完成，1段超时后保留原文；代码块没变；重启后记录还在；安装包还没在新电脑上试；明天准备检查超时日志并找一台新Windows机器测试。负责人关心能不能交给别人试用。"},
+  {"id":"10-handoff","title":"任务交接：保留失败证据，不提前宣布修复","prompt":"请把这份虚构排查记录整理成给下一个 Agent 的交接说明：用户说应用偶发变卡，重启能恢复；今天只做了只读检查，没有改驱动或网络设置；卡顿时CPU约18%，内存占用22GB/32GB，GPU利用率5%；还没采集卡顿期间的进程级记录，所以没定位原因；日志保存在项目的 `logs/slow-session.log`；下一步希望复现一次并对齐时间戳。交接里写清做过什么、没确定什么、接下来做什么。"}
+]

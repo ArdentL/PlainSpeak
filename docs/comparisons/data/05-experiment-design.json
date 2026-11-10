@@ -1,0 +1,139 @@
+{
+  "case": {
+    "id": "05-experiment-design",
+    "title": "实验设计：检索是否帮助 Agent 协作",
+    "prompt": "我有一个想法：让三个 Agent 在第二轮讨论时才拿到检索证据，第一轮先独立回答，最后汇总。现有代码已经支持三 Agent 讨论和检索开关。我想先判断“第二轮给证据”有没有用。请帮我设计一个小实验，明确对照、预算怎么对齐、看什么结果，以及什么结果会让你建议停止。"
+  },
+  "baseline": {
+    "case_id": "05-experiment-design",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:12.604Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "我有一个想法：让三个 Agent 在第二轮讨论时才拿到检索证据，第一轮先独立回答，最后汇总。现有代码已经支持三 Agent 讨论和检索开关。我想先判断“第二轮给证据”有没有用。请帮我设计一个小实验，明确对照、预算怎么对齐、看什么结果，以及什么结果会让你建议停止。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281531,
+    "finish_reason": "stop",
+    "content": "# 小实验设计：第二轮才给检索证据，值不值得？\n\n## 1. 先明确你要验证的假设\n\n你的设计本质上是把\"检索证据\"从**全程可用**改成**第二轮才注入**。要判断它有没有用，需要拆成两个可证伪的问题：\n\n- **H1（相对无证据）**：第二轮给证据，是否比\"全程不给证据\"更好？\n- **H2（相对全程给证据）**：第二轮给证据，是否不劣于（或优于）\"第一轮就给证据\"？\n\n只做 H1 容易得出\"有用\"的结论，但那可能只是\"有证据比没证据好\"，不能说明\"延迟给\"这个设计本身有价值。**建议两个对照都做**，否则结论会误导后续决策。\n\n## 2. 对照臂设计（4 个臂，最小充分集）\n\n| 臂 | 第一轮 | 第二轮 | 用途 |\n|---|---|---|---|\n| A. 无证据 | 无 | 无 | 下界基线 |\n| B. 全程证据 | 有 | 有 | 上界基线 / 现行方案 |\n| C. 延迟证据（你的想法） | 无 | 有 | 待测 |\n| D. 仅第一轮证据 | 有 | 无 | 排除\"证据只在第一轮起作用\"的混淆 |\n\nD 臂很关键：如果 C ≈ D，说明第二轮的证据根本没被用上，你的\"延迟\"设计是无效的，只是碰巧第一轮有证据。没有 D，你无法区分\"延迟注入有效\"和\"第一轮注入就够\"。\n\n如果预算紧张，最低配是 **A / B / C** 三臂，但要在报告里注明无法排除 D 的混淆。\n\n## 3. 预算对齐（这是最容易做错的地方）\n\n\"预算\"要分三层对齐，否则比较不公平：\n\n1. **Token 预算**：每个臂的总 token 上限相同（输入+输出）。注意 B 臂第一轮就带证据，输入 token 天然更高——要么给所有臂相同的**总**预算并允许 B 臂第二轮少检索，要么按\"每轮预算\"对齐并单独报告总消耗。**推荐前者**，因为总成本才是你真正关心的。\n2. **检索预算**：C 臂只在第二轮检索一次，B 臂若两轮都检索就是两次。要么让 B 臂也只检索一次（第一轮检索、第二轮复用），要么明确记录检索次数差异并在分析中控制。**建议统一为\"每任务最多一次检索\"**，让差异只来自\"何时注入\"。\n3. **轮次/调用预算**：所有臂都是两轮讨论 + 一次汇总，Agent 数量、轮数、汇总 prompt 完全一致。唯一变量是证据注入时机。\n\n另外固定：同一批问题、同一模型版本、同一 temperature、同一检索器与 top-k、同一随机种子集（每问题跑 3–5 次取均值以降方差）。\n\n## 4. 看什么结果\n\n**主指标（决定去留）**\n- 任务准确率 / 正确率（按你的任务定义，最好有自动可判定的 ground truth）。\n- 相对 A 的提升（H1）和相对 B 的差距（H2）。\n\n**机制指标（解释为什么）**\n- **证据采纳率**：第二轮回答中，最终结论是否引用了证据内容（可用 LLM 判官或关键词/引用检测）。这是判断\"延迟注入是否真被用上\"的核心。\n- **第一轮答案 vs 最终答案的翻转率**：C 臂里有多少比例因第二轮证据而改变结论。翻转率高且翻转后更准 = 设计有效；翻转率低 = 证据没起作用。\n- **Agent 间分歧度**：第一轮三 Agent 答案的一致性，以及第二轮后是否收敛。延迟证据的一个理论好处是\"先独立、后纠偏\"，这个指标能验证该机制。\n- **成本**：总 token、检索次数、延迟（wall-clock）。\n\n**统计**：每臂每问题多次运行，报告均值 ± 置信区间；用配对检验（同问题跨臂比较），样本量建议至少 50–100 题，否则差异会被噪声淹没。\n\n## 5. 什么结果会让你建议停止\n\n建议**停止（不做这个改动）**的信号：\n\n1. **C 不显著优于 A**：延迟证据没带来可测收益 → 直接停。\n2. **C 显著劣于 B**：延迟注入损失了准确率，且差距超过你预设的实用阈值（比如 >3–5 个百分点）→ 停，除非你有明确的成本理由。\n3. **C ≈ D**：说明收益来自\"第一轮有证据\"，第二轮注入是摆设 → 停，改回第一轮注入。\n4. **证据采纳率低**（比如 <30%）：第二轮 Agent 基本无视证据 → 设计无效，停或先修 prompt。\n5. **翻转率低但准确率也没提升**：证据既没改变结论也没帮忙 → 停。\n6. **成本不降反升**：如果延迟注入没省下检索/token，却增加了复杂度和延迟 → 没有工程理由继续。\n\n建议**继续/扩大实验**的信号：C 显著优于 A、与 B 差距在阈值内（非劣）、证据采纳率和\"翻转后变准\"的比例都高——这时才值得投入更大规模验证或上线 A/B。\n\n## 6. 一个提醒\n\n你这个设计的隐含卖点是\"第一轮独立回答避免证据锚定，第二轮再纠偏\"。如果这是你的真实动机，**除了准确率，一定要测\"锚定效应\"**：比较 B 臂第一轮答案与最终答案的相似度 vs C 臂。如果 B 臂第一轮就被证据带偏、C 臂第一轮更独立，这才是延迟注入的独特价值，也是唯一能让 C 在准确率不占优时仍值得保留的理由。否则，单看准确率，B 臂通常不会输。\n\n需要的话，我可以帮你把这个设计落成具体的实验配置文件（臂定义、预算参数、指标计算脚本的接口）。",
+    "usage": {
+      "prompt_tokens": 75,
+      "completion_tokens": 1314,
+      "total_tokens": 1389,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 75
+    },
+    "seconds": 12.42
+  },
+  "skill_only": {
+    "case_id": "05-experiment-design",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:19.728Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "我有一个想法：让三个 Agent 在第二轮讨论时才拿到检索证据，第一轮先独立回答，最后汇总。现有代码已经支持三 Agent 讨论和检索开关。我想先判断“第二轮给证据”有没有用。请帮我设计一个小实验，明确对照、预算怎么对齐、看什么结果，以及什么结果会让你建议停止。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281538,
+    "finish_reason": "stop",
+    "content": "先给判断：这个实验值得做，但要把“第二轮给证据”和“证据本身有用”分开。最小设计是 2×2 对照，固定总 token 和检索次数，主看最终答案正确率，次看第一轮独立答案的多样性、第二轮是否真的改变了答案，以及证据被引用的比例。\n\n**对照设计**\n\n四个条件，同一批问题、同一模型、同一随机种子集合：\n\n1. 无证据：三轮都不给检索证据。\n2. 仅第一轮给证据：第一轮就带证据，后两轮沿用。\n3. 仅第二轮给证据：第一轮独立回答，第二轮起给证据。这是你的目标条件。\n4. 两轮都给证据：第一轮和第二轮都给同一批证据。\n\n关键比较是 3 对 1，回答“延迟给证据是否比完全不给有用”；3 对 2，回答“延迟是否比一开始就给更好”；4 对 2 和 3，看证据重复出现是否有额外收益。1 是基线，用来确认证据整体有效。\n\n**预算对齐**\n\n总预算按每个问题固定，不按轮次固定。具体做法：\n\n- 固定总输入 token 上限和总输出 token 上限，四个条件相同。\n- 固定检索次数和每次返回的文档数、截断长度。条件 1 不检索，但把省下的预算折算成等量的讨论轮次或更长的单轮输出，避免“无证据组只是算力更少”。\n- 固定 Agent 数量和轮数，都是三轮三 Agent。\n- 温度、最大生成长度、汇总提示词完全一致，只改证据注入时机。\n- 每个问题跑多个随机种子（比如 3 个），报告均值而不是单次结果。\n\n如果条件 1 无法用等量预算，就明确报告“无证据组预算更低”，并把结论收窄为“在相同轮数下”。\n\n**看什么结果**\n\n主指标：最终汇总答案的正确率，用固定评分标准或人工盲评，评分者不知道条件。\n\n次指标：\n\n- 第一轮三个 Agent 答案的一致率。如果第一轮高度一致，第二轮给证据的纠错空间就小。\n- 第二轮答案相对第一轮的改变率，以及改变中“从错变对”和“从对变错”的比例。这是判断机制的核心。\n- 证据引用率：第二轮回答中明确引用检索内容的比例。\n- 证据采纳后的正确率：引用了证据的样本里，最终是否正确。\n- 答案多样性：第一轮不同答案的数量，用来判断独立回答是否真的独立。\n\n**什么结果建议停止**\n\n出现以下任一情况，建议停止或缩小范围：\n\n- 条件 3 对条件 1 的正确率提升在多个种子下都接近零，且置信区间跨零。\n- 条件 3 明显不如条件 2，说明延迟给证据损失了信息，机制方向不对。\n- 第二轮改变率很低，且改变中“从对变错”不少于“从错变对”，说明证据没被有效利用或引入噪声。\n- 证据引用率很低，说明 Agent 实际上没读证据，实验测的不是你想测的机制。\n- 提升只出现在少数问题上，且这些问题第一轮本来就高度分歧，说明收益来自个例而非稳定机制。\n\n如果条件 3 对 1 有稳定正提升，但对 2 没有优势，结论应写成“证据有用，但延迟给没有额外价值”，而不是“第二轮给证据有用”。",
+    "usage": {
+      "prompt_tokens": 256,
+      "completion_tokens": 744,
+      "total_tokens": 1000,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 256
+    },
+    "seconds": 7.11
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "05-experiment-design",
+    "source_sha256": "2b6a8686a3b5fefb91fcda7a4093cfeef0cb6e7c2ace93363a80812ce4807169",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "首先，让我们做出判断：这项实验值得进行，但我们需要区分“第二轮提供证据”与“证据本身的实用性”。最小设计是一种2×2对照设计；标记总数和检索次数都是固定的。我们将重点关注最终答案的准确性，以及第一轮的独立答案的多样性，同时考察第二轮是否真的改变了答案，以及所使用证据的比例。\n\n**控制设计**\n\n共有四种条件：相同的问题集、相同的模型，以及相同的随机种子：\n\n1. 无证据：在三个轮次中均不提供任何证据。\n2. 仅在第一轮提供证据：在第一轮提供证据，后续轮次保持相同条件。\n3. 仅在第二轮提供证据：第一轮给出独立答案，第二轮提供证据。这就是目标条件。\n4. 两轮都提供证据：第一轮和第二轮都提供相同的证据集。\n\n关键的比较点是3对1：延迟提供证据是否比完全不提供证据更有意义；3对2：延迟提供是否比从一开始就提供证据更好；4对2和3：反复使用证据是否能带来额外好处。1则作为基准，用于验证证据的整体效果。\n\n**预算分配**\n\n每个问题的总预算是固定的，而非按轮次分配。具体分配方式如下：\n\n- 输入标记总数和输出标记总数的上限是固定的；四种条件均相同。\n- 检索次数以及每次检索返回的文档数量，以及截断长度都是固定的。在条件1中，不进行检索，但节省的预算会被转化为等效的讨论轮次或更长的单轮输出，因此“无证据组”的计算资源并不少于其他组。\n- 智能体的数量和轮次数量都是固定的；每轮有三个智能体。\n- 温度、最大生成长度和摘要提示均相同；只有证据注入的时间不同。\n- 每个问题使用多个随机种子（例如3个种子），报告的是平均值，而非个体结果。\n\n如果条件1无法用相同的预算完成，应明确说明“无证据组的预算较低”，结论应限制在“在相同轮次数量下”。\n\n**需测量的指标**\n\n主要指标：使用固定评分标准或人工盲评估来衡量最终总结答案的准确性，评估者不知道具体条件。\n\n次要指标：\n\n- 第一轮中三个智能体答案的一致性率。如果第一轮的表现稳定，那么第二轮的修正空间就会很小。  \n- 第二轮答案与第一轮的变化率，以及“从错误变为正确”和“从正确变为错误”的比例。这是评估机制的核心。  \n- 证据使用率：在第二轮回答中明确引用证据的比例。  \n- 使用证据后的准确性：使用证据后，回答是否仍然正确。  \n- 答案的多样性：第一轮中不同答案的数量，以此判断是否真的存在独立的回答。  \n\n**哪些结果表明应停止实验**  \n如果出现以下情况，建议停止实验或缩小实验范围：  \n- 多个种子实验中，条件3的准确率与条件1相比几乎没有提升，且置信区间为零。  \n- 条件3明显低于条件2，说明延迟提供证据导致信息损失，机制存在错误。  \n- 第二轮的变化率非常低，且“从正确变为错误”的比例至少与“从错误变为正确”相等，说明证据未被有效利用或存在噪声。  \n- 证据使用率极低，表明智能体实际上没有阅读证据，实验所测量的机制并非预期中的机制。  \n- 改进仅出现在少数问题上，而这些问题在第一轮中已存在显著分歧；这表明好处来自个别案例，而非稳定的机制。  \n\n如果条件3的准确率相对于条件1有稳定且积极的提升，但在条件2中没有优势，那么结论应为“证据是有用的，但延迟提供它不会带来额外价值”，而非“第二轮提供的证据是有用的”。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 63.86331299999438,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 729,
+          "output_chars": 811,
+          "warnings": [],
+          "seconds": 38.82854449999286
+        },
+        {
+          "status": "rewritten",
+          "source_chars": 480,
+          "output_chars": 549,
+          "warnings": [],
+          "seconds": 25.034370100009255
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "先给判断：这个实验值得做，但要把“第二轮给证据”和“证据本身有用”分开。最小设计是 2×2 对照，固定总 token 和检索次数，主看最终答案正确率，次看第一轮独立答案的多样性、第二轮是否真的改变了答案，以及证据被引用的比例。\n\n**对照设计**\n\n四个条件，同一批问题、同一模型、同一随机种子集合：\n\n1. 无证据：三轮都不给检索证据。\n2. 仅第一轮给证据：第一轮就带证据，后两轮沿用。\n3. 仅第二轮给证据：第一轮独立回答，第二轮起给证据。这是你的目标条件。\n4. 两轮都给证据：第一轮和第二轮都给同一批证据。\n\n关键比较是 3 对 1，回答“延迟给证据是否比完全不给有用”；3 对 2，回答“延迟是否比一开始就给更好”；4 对 2 和 3，看证据重复出现是否有额外收益。1 是基线，用来确认证据整体有效。\n\n**预算对齐**\n\n总预算按每个问题固定，不按轮次固定。具体做法：\n\n- 固定总输入 token 上限和总输出 token 上限，四个条件相同。\n- 固定检索次数和每次返回的文档数、截断长度。条件 1 不检索，但把省下的预算折算成等量的讨论轮次或更长的单轮输出，避免“无证据组只是算力更少”。\n- 固定 Agent 数量和轮数，都是三轮三 Agent。\n- 温度、最大生成长度、汇总提示词完全一致，只改证据注入时机。\n- 每个问题跑多个随机种子（比如 3 个），报告均值而不是单次结果。\n\n如果条件 1 无法用等量预算，就明确报告“无证据组预算更低”，并把结论收窄为“在相同轮数下”。\n\n**看什么结果**\n\n主指标：最终汇总答案的正确率，用固定评分标准或人工盲评，评分者不知道条件。\n\n次指标：\n\n- 第一轮三个 Agent 答案的一致率。",
+        "target": "en",
+        "context": "",
+        "output": "First, let’s make a judgment: This experiment is worth conducting, but we need to separate “providing evidence in the second round” from “the usefulness of the evidence itself”. The minimal design is a 2×2 control design; the total number of tokens and the number of retrieval attempts are fixed. We will focus on the accuracy of the final answers, as well as the diversity of the independent answers in the first round, whether the second round actually changed the answers, and the proportion of evidence that is used.\n\n**Control Design**\n\nThere are four conditions: the same set of questions, the same model, and the same set of random seeds:\n\n1. No evidence: No evidence is provided in any of the three rounds.\n2. Only evidence in the first round: Evidence is provided in the first round, and the same conditions apply in the subsequent rounds.\n3. Only evidence in the second round: Independent answers are given in the first round, and evidence is provided in the second round. This is your target condition.\n4. Evidence in both rounds: The same set of evidence is provided in both the first and second rounds.\n\nThe key comparison is 3 vs. 1: whether delaying the provision of evidence is more useful than not providing any evidence at all; 3 vs. 2: whether delaying is better than providing evidence from the beginning; 4 vs. 2 and 3: whether repeated use of evidence brings additional benefits. 1 serves as a baseline to confirm the overall effectiveness of the evidence.\n\n**Budget Alignment**\n\nThe total budget is fixed per question, not per round. The specific approach is as follows:\n\n- The upper limits for total input tokens and total output tokens are fixed; all four conditions are the same.\n- The number of retrieval attempts and the number of documents returned per attempt, as well as the truncation length, are fixed. In condition 1, no retrieval occurs, but the saved budget is converted into an equivalent number of discussion rounds or longer single-round outputs, so that the “no-evidence group” does not appear to have fewer computational resources.\n- The number of agents and the number of rounds are fixed; both are three agents per round.\n- The temperature, maximum generation length, and summary prompts are identical; only the timing of evidence injection is changed.\n- Multiple random seeds are used for each question (e.g., 3 seeds), and the mean value is reported instead of individual results.\n\nIf condition 1 cannot be handled with the same budget, it should be clearly stated as “the budget for the no-evidence group is lower”, and the conclusion should be limited to “under the same number of rounds”.\n\n**What to Measure**\n\nMain indicator: The accuracy of the final summary answers, using a fixed scoring criterion or manual blind evaluation, with the evaluators not knowing the conditions.\n\nSecondary indicators:\n\n- The consistency rate of the answers from the three agents in the first round.",
+        "seconds": 22.044
+      },
+      {
+        "source": "First, let’s make a judgment: This experiment is worth conducting, but we need to separate “providing evidence in the second round” from “the usefulness of the evidence itself”. The minimal design is a 2×2 control design; the total number of tokens and the number of retrieval attempts are fixed. We will focus on the accuracy of the final answers, as well as the diversity of the independent answers in the first round, whether the second round actually changed the answers, and the proportion of evidence that is used.\n\n**Control Design**\n\nThere are four conditions: the same set of questions, the same model, and the same set of random seeds:\n\n1. No evidence: No evidence is provided in any of the three rounds.\n2. Only evidence in the first round: Evidence is provided in the first round, and the same conditions apply in the subsequent rounds.\n3. Only evidence in the second round: Independent answers are given in the first round, and evidence is provided in the second round. This is your target condition.\n4. Evidence in both rounds: The same set of evidence is provided in both the first and second rounds.\n\nThe key comparison is 3 vs. 1: whether delaying the provision of evidence is more useful than not providing any evidence at all; 3 vs. 2: whether delaying is better than providing evidence from the beginning; 4 vs. 2 and 3: whether repeated use of evidence brings additional benefits. 1 serves as a baseline to confirm the overall effectiveness of the evidence.\n\n**Budget Alignment**\n\nThe total budget is fixed per question, not per round. The specific approach is as follows:\n\n- The upper limits for total input tokens and total output tokens are fixed; all four conditions are the same.\n- The number of retrieval attempts and the number of documents returned per attempt, as well as the truncation length, are fixed. In condition 1, no retrieval occurs, but the saved budget is converted into an equivalent number of discussion rounds or longer single-round outputs, so that the “no-evidence group” does not appear to have fewer computational resources.\n- The number of agents and the number of rounds are fixed; both are three agents per round.\n- The temperature, maximum generation length, and summary prompts are identical; only the timing of evidence injection is changed.\n- Multiple random seeds are used for each question (e.g., 3 seeds), and the mean value is reported instead of individual results.\n\nIf condition 1 cannot be handled with the same budget, it should be clearly stated as “the budget for the no-evidence group is lower”, and the conclusion should be limited to “under the same number of rounds”.\n\n**What to Measure**\n\nMain indicator: The accuracy of the final summary answers, using a fixed scoring criterion or manual blind evaluation, with the evaluators not knowing the conditions.\n\nSecondary indicators:\n\n- The consistency rate of the answers from the three agents in the first round.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "首先，让我们做出判断：这项实验值得进行，但我们需要区分“第二轮提供证据”与“证据本身的实用性”。最小设计是一种2×2对照设计；标记总数和检索次数都是固定的。我们将重点关注最终答案的准确性，以及第一轮的独立答案的多样性，同时考察第二轮是否真的改变了答案，以及所使用证据的比例。\n\n**控制设计**\n\n共有四种条件：相同的问题集、相同的模型，以及相同的随机种子：\n\n1. 无证据：在三个轮次中均不提供任何证据。\n2. 仅在第一轮提供证据：在第一轮提供证据，后续轮次保持相同条件。\n3. 仅在第二轮提供证据：第一轮给出独立答案，第二轮提供证据。这就是目标条件。\n4. 两轮都提供证据：第一轮和第二轮都提供相同的证据集。\n\n关键的比较点是3对1：延迟提供证据是否比完全不提供证据更有意义；3对2：延迟提供是否比从一开始就提供证据更好；4对2和3：反复使用证据是否能带来额外好处。1则作为基准，用于验证证据的整体效果。\n\n**预算分配**\n\n每个问题的总预算是固定的，而非按轮次分配。具体分配方式如下：\n\n- 输入标记总数和输出标记总数的上限是固定的；四种条件均相同。\n- 检索次数以及每次检索返回的文档数量，以及截断长度都是固定的。在条件1中，不进行检索，但节省的预算会被转化为等效的讨论轮次或更长的单轮输出，因此“无证据组”的计算资源并不少于其他组。\n- 智能体的数量和轮次数量都是固定的；每轮有三个智能体。\n- 温度、最大生成长度和摘要提示均相同；只有证据注入的时间不同。\n- 每个问题使用多个随机种子（例如3个种子），报告的是平均值，而非个体结果。\n\n如果条件1无法用相同的预算完成，应明确说明“无证据组的预算较低”，结论应限制在“在相同轮次数量下”。\n\n**需测量的指标**\n\n主要指标：使用固定评分标准或人工盲评估来衡量最终总结答案的准确性，评估者不知道具体条件。\n\n次要指标：\n\n- 第一轮中三个智能体答案的一致性率。",
+        "seconds": 16.7844
+      },
+      {
+        "source": "如果第一轮高度一致，第二轮给证据的纠错空间就小。\n- 第二轮答案相对第一轮的改变率，以及改变中“从错变对”和“从对变错”的比例。这是判断机制的核心。\n- 证据引用率：第二轮回答中明确引用检索内容的比例。\n- 证据采纳后的正确率：引用了证据的样本里，最终是否正确。\n- 答案多样性：第一轮不同答案的数量，用来判断独立回答是否真的独立。\n\n**什么结果建议停止**\n\n出现以下任一情况，建议停止或缩小范围：\n\n- 条件 3 对条件 1 的正确率提升在多个种子下都接近零，且置信区间跨零。\n- 条件 3 明显不如条件 2，说明延迟给证据损失了信息，机制方向不对。\n- 第二轮改变率很低，且改变中“从对变错”不少于“从错变对”，说明证据没被有效利用或引入噪声。\n- 证据引用率很低，说明 Agent 实际上没读证据，实验测的不是你想测的机制。\n- 提升只出现在少数问题上，且这些问题第一轮本来就高度分歧，说明收益来自个例而非稳定机制。\n\n如果条件 3 对 1 有稳定正提升，但对 2 没有优势，结论应写成“证据有用，但延迟给没有额外价值”，而不是“第二轮给证据有用”。",
+        "target": "en",
+        "context": "",
+        "output": "If the first round has consistent performance, there is less room for correction in the second round.  \n- The rate of change in the second round’s answers compared to the first round, as well as the proportions of “changing from wrong to correct” and “changing from correct to wrong”. This is the core of the evaluation mechanism.  \n- Rate of evidence usage: The proportion of cases where evidence is explicitly cited in the second round’s responses.  \n- Accuracy after evidence is adopted: Whether the responses are correct after the evidence is used.  \n- Diversity of answers: The number of different answers in the first round, used to determine whether independent responses are truly independent.\n\n**What results suggest stopping the experiment**\n\nIf any of the following occur, it is recommended to stop the experiment or narrow its scope:  \n- The improvement in the accuracy of condition 3 over condition 1 is close to zero across multiple seeds, and the confidence intervals cross zero.  \n- Condition 3 is significantly inferior to condition 2, indicating that delaying the provision of evidence resulted in loss of information, and the mechanism is incorrect.  \n- The rate of change in the second round is very low, and the proportion of “changing from correct to wrong” is at least equal to “changing from wrong to correct”, suggesting that the evidence was not effectively utilized or there was noise introduced.  \n- The rate of evidence usage is very low, indicating that the agent actually did not read the evidence, and the experiment measures a mechanism that is not what you intended to measure.  \n- The improvement occurs only in a few issues, and these issues already had significant disagreement in the first round; this suggests that the benefit comes from individual cases rather than a stable mechanism.\n\nIf there is a stable positive improvement in condition 3 over condition 1, but no advantage in condition 2, the conclusion should be “The evidence is useful, but delaying its provision adds no extra value”, rather than “The evidence provided in the second round is useful”.",
+        "seconds": 14.2499
+      },
+      {
+        "source": "If the first round has consistent performance, there is less room for correction in the second round.  \n- The rate of change in the second round’s answers compared to the first round, as well as the proportions of “changing from wrong to correct” and “changing from correct to wrong”. This is the core of the evaluation mechanism.  \n- Rate of evidence usage: The proportion of cases where evidence is explicitly cited in the second round’s responses.  \n- Accuracy after evidence is adopted: Whether the responses are correct after the evidence is used.  \n- Diversity of answers: The number of different answers in the first round, used to determine whether independent responses are truly independent.\n\n**What results suggest stopping the experiment**\n\nIf any of the following occur, it is recommended to stop the experiment or narrow its scope:  \n- The improvement in the accuracy of condition 3 over condition 1 is close to zero across multiple seeds, and the confidence intervals cross zero.  \n- Condition 3 is significantly inferior to condition 2, indicating that delaying the provision of evidence resulted in loss of information, and the mechanism is incorrect.  \n- The rate of change in the second round is very low, and the proportion of “changing from correct to wrong” is at least equal to “changing from wrong to correct”, suggesting that the evidence was not effectively utilized or there was noise introduced.  \n- The rate of evidence usage is very low, indicating that the agent actually did not read the evidence, and the experiment measures a mechanism that is not what you intended to measure.  \n- The improvement occurs only in a few issues, and these issues already had significant disagreement in the first round; this suggests that the benefit comes from individual cases rather than a stable mechanism.\n\nIf there is a stable positive improvement in condition 3 over condition 1, but no advantage in condition 2, the conclusion should be “The evidence is useful, but delaying its provision adds no extra value”, rather than “The evidence provided in the second round is useful”.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "如果第一轮的表现稳定，那么第二轮的修正空间就会很小。  \n- 第二轮答案与第一轮的变化率，以及“从错误变为正确”和“从正确变为错误”的比例。这是评估机制的核心。  \n- 证据使用率：在第二轮回答中明确引用证据的比例。  \n- 使用证据后的准确性：使用证据后，回答是否仍然正确。  \n- 答案的多样性：第一轮中不同答案的数量，以此判断是否真的存在独立的回答。  \n\n**哪些结果表明应停止实验**  \n如果出现以下情况，建议停止实验或缩小实验范围：  \n- 多个种子实验中，条件3的准确率与条件1相比几乎没有提升，且置信区间为零。  \n- 条件3明显低于条件2，说明延迟提供证据导致信息损失，机制存在错误。  \n- 第二轮的变化率非常低，且“从正确变为错误”的比例至少与“从错误变为正确”相等，说明证据未被有效利用或存在噪声。  \n- 证据使用率极低，表明智能体实际上没有阅读证据，实验所测量的机制并非预期中的机制。  \n- 改进仅出现在少数问题上，而这些问题在第一轮中已存在显著分歧；这表明好处来自个别案例，而非稳定的机制。  \n\n如果条件3的准确率相对于条件1有稳定且积极的提升，但在条件2中没有优势，那么结论应为“证据是有用的，但延迟提供它不会带来额外价值”，而非“第二轮提供的证据是有用的”。",
+        "seconds": 10.7844
+      }
+    ],
+    "seconds": 63.864
+  },
+  "character_counts_including_markdown": {
+    "baseline": 2202,
+    "skill_only": 1209,
+    "final": 1360
+  },
+  "editorial_observation": "回译把“置信区间跨零”变成“置信区间为零”，这是实质性语义变化。skill 原稿还同时要求无证据组可增加讨论轮次、以及所有组固定轮数，预算约束本来就有冲突；该冲突未被回译修复。"
+}

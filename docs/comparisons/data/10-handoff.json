@@ -1,0 +1,118 @@
+{
+  "case": {
+    "id": "10-handoff",
+    "title": "任务交接：保留失败证据，不提前宣布修复",
+    "prompt": "请把这份虚构排查记录整理成给下一个 Agent 的交接说明：用户说应用偶发变卡，重启能恢复；今天只做了只读检查，没有改驱动或网络设置；卡顿时CPU约18%，内存占用22GB/32GB，GPU利用率5%；还没采集卡顿期间的进程级记录，所以没定位原因；日志保存在项目的 `logs/slow-session.log`；下一步希望复现一次并对齐时间戳。交接里写清做过什么、没确定什么、接下来做什么。"
+  },
+  "baseline": {
+    "case_id": "10-handoff",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:49.958Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "请把这份虚构排查记录整理成给下一个 Agent 的交接说明：用户说应用偶发变卡，重启能恢复；今天只做了只读检查，没有改驱动或网络设置；卡顿时CPU约18%，内存占用22GB/32GB，GPU利用率5%；还没采集卡顿期间的进程级记录，所以没定位原因；日志保存在项目的 `logs/slow-session.log`；下一步希望复现一次并对齐时间戳。交接里写清做过什么、没确定什么、接下来做什么。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281569,
+    "finish_reason": "stop",
+    "content": "# 交接说明：应用偶发卡顿排查\n\n## 一、背景与现象\n- 用户反馈：应用**偶发变卡**，**重启后可恢复**。\n- 本次会话仅做了**只读检查**，未修改驱动、未调整网络设置。\n\n## 二、已做过的检查与观测数据\n- 卡顿发生时资源概况：\n  - CPU 约 **18%**\n  - 内存占用 **22GB / 32GB**\n  - GPU 利用率约 **5%**\n- 已保存日志：`logs/slow-session.log`（项目内路径）。\n\n## 三、尚未确定 / 未做的事\n- **未采集卡顿期间的进程级记录**（如各进程 CPU/内存/IO、线程栈等），因此**卡顿根因尚未定位**。\n- 现有数据（CPU 18%、GPU 5%、内存 22/32GB）不足以指向具体瓶颈，不能据此下结论。\n- 未验证驱动、网络配置是否相关（本次未改动，也未做对比测试）。\n\n## 四、下一步建议\n1. **复现一次卡顿**，并在复现期间采集**进程级记录**（进程/线程级 CPU、内存、IO、必要时抓栈）。\n2. **对齐时间戳**：将进程级采集记录与 `logs/slow-session.log` 的时间轴对齐，确认卡顿窗口内哪些进程/操作异常。\n3. 基于对齐结果再判断是否与驱动、网络或其他因素相关，避免在无证据前改动配置。\n\n## 五、注意事项\n- 保持只读排查原则，未定位前**不要随意改驱动或网络设置**。\n- 复现时请记录卡顿起止时间点，便于与日志时间戳比对。",
+    "usage": {
+      "prompt_tokens": 114,
+      "completion_tokens": 380,
+      "total_tokens": 494,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 114
+    },
+    "seconds": 3.038
+  },
+  "skill_only": {
+    "case_id": "10-handoff",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:48.458Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "请把这份虚构排查记录整理成给下一个 Agent 的交接说明：用户说应用偶发变卡，重启能恢复；今天只做了只读检查，没有改驱动或网络设置；卡顿时CPU约18%，内存占用22GB/32GB，GPU利用率5%；还没采集卡顿期间的进程级记录，所以没定位原因；日志保存在项目的 `logs/slow-session.log`；下一步希望复现一次并对齐时间戳。交接里写清做过什么、没确定什么、接下来做什么。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281567,
+    "finish_reason": "stop",
+    "content": "**交接说明**\n\n今天只做了只读检查，没有改驱动或网络设置。用户反馈应用偶发变卡，重启能恢复。\n\n已确认的现象：卡顿时 CPU 约 18%，内存占用 22GB/32GB，GPU 利用率 5%。这些数字说明卡顿发生时 CPU 和 GPU 都不忙，但内存已用约七成，不能据此排除内存压力或进程级问题。\n\n尚未确定：卡顿原因未定位。还没采集卡顿期间的进程级记录，因此无法判断是哪个进程或哪类资源导致变卡。\n\n日志位置：`logs/slow-session.log`。\n\n下一步：复现一次卡顿，并让进程级记录与日志时间戳对齐，再据此分析。",
+    "usage": {
+      "prompt_tokens": 295,
+      "completion_tokens": 156,
+      "total_tokens": 451,
+      "prompt_tokens_details": {
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 167
+    },
+    "seconds": 1.496
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "10-handoff",
+    "source_sha256": "6c00e2c39e6a1eb0400271d75a87ed79ebbebf031e25d9b39ce9277a152acb9b",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "**切换说明**\n\n今天仅进行了只读检查，没有修改任何驱动或网络设置。用户报告称应用程序偶尔出现延迟现象，通过重启设备即可解决该问题。\n\n已确认的问题：在延迟期间，CPU使用率约为18%，内存使用量为22GB/32GB，GPU使用率为5%。这些数据表明，在延迟期间，CPU和GPU均没有处于忙碌状态，但内存几乎被使用了70%，因此无法排除内存压力或进程相关问题的可能性。\n\n未解决的问题：延迟的原因尚未确定。在延迟期间没有收集到任何进程层面的数据，因此无法判断是哪种进程或资源导致了问题。\n\n日志位置：`logs/slow-session.log`。\n\n下一步：再次重现延迟现象，将进程层面的数据与日志时间戳进行比对，然后分析结果。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 11.183209199996782,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 266,
+          "output_chars": 316,
+          "warnings": [],
+          "seconds": 11.183113699997193
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "**交接说明**\n\n今天只做了只读检查，没有改驱动或网络设置。用户反馈应用偶发变卡，重启能恢复。\n\n已确认的现象：卡顿时 CPU 约 18%，内存占用 22GB/32GB，GPU 利用率 5%。这些数字说明卡顿发生时 CPU 和 GPU 都不忙，但内存已用约七成，不能据此排除内存压力或进程级问题。\n\n尚未确定：卡顿原因未定位。还没采集卡顿期间的进程级记录，因此无法判断是哪个进程或哪类资源导致变卡。\n\n日志位置：`logs/slow-session.log`。\n\n下一步：复现一次卡顿，并让进程级记录与日志时间戳对齐，再据此分析。",
+        "target": "en",
+        "context": "",
+        "output": "**Handover Notes**\n\nToday, only read-only checks were performed; no driver or network settings were modified. Users reported occasional lag in the application; the issue is resolved by restarting the device.\n\nConfirmed issues: During lag, the CPU usage is approximately 18%, memory usage is 22GB/32GB, and GPU utilization is 5%. These figures indicate that neither the CPU nor the GPU is busy during the lag, but the memory is nearly 70% used, so memory pressure or process-related issues cannot be ruled out.\n\nUnresolved: The cause of the lag has not been identified. No process-level data has been collected during the lag, so it is impossible to determine which process or resource is responsible for the issue.\n\nLog location: `logs/slow-session.log`.\n\nNext step: Reproduce the lag situation again, align the process-level data with the log timestamps, and then analyze the results.",
+        "seconds": 6.0203
+      },
+      {
+        "source": "**Handover Notes**\n\nToday, only read-only checks were performed; no driver or network settings were modified. Users reported occasional lag in the application; the issue is resolved by restarting the device.\n\nConfirmed issues: During lag, the CPU usage is approximately 18%, memory usage is 22GB/32GB, and GPU utilization is 5%. These figures indicate that neither the CPU nor the GPU is busy during the lag, but the memory is nearly 70% used, so memory pressure or process-related issues cannot be ruled out.\n\nUnresolved: The cause of the lag has not been identified. No process-level data has been collected during the lag, so it is impossible to determine which process or resource is responsible for the issue.\n\nLog location: `logs/slow-session.log`.\n\nNext step: Reproduce the lag situation again, align the process-level data with the log timestamps, and then analyze the results.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "**切换说明**\n\n今天仅进行了只读检查，没有修改任何驱动或网络设置。用户报告称应用程序偶尔出现延迟现象，通过重启设备即可解决该问题。\n\n已确认的问题：在延迟期间，CPU使用率约为18%，内存使用量为22GB/32GB，GPU使用率为5%。这些数据表明，在延迟期间，CPU和GPU均没有处于忙碌状态，但内存几乎被使用了70%，因此无法排除内存压力或进程相关问题的可能性。\n\n未解决的问题：延迟的原因尚未确定。在延迟期间没有收集到任何进程层面的数据，因此无法判断是哪种进程或资源导致了问题。\n\n日志位置：`logs/slow-session.log`。\n\n下一步：再次重现延迟现象，将进程层面的数据与日志时间戳进行比对，然后分析结果。",
+        "seconds": 5.1627
+      }
+    ],
+    "seconds": 11.184
+  },
+  "character_counts_including_markdown": {
+    "baseline": 638,
+    "skill_only": 266,
+    "final": 316
+  },
+  "editorial_observation": "回译把标题“交接说明”改成“切换说明”，属于术语误译；原稿只说“重启能恢复”，回译明确为“重启设备”，也擅自收窄了指代。它仍保留了只读检查和未定位根因的主要信息。"
+}

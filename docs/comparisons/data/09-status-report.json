@@ -1,0 +1,118 @@
+{
+  "case": {
+    "id": "09-status-report",
+    "title": "进度汇报：如实说明完成项与阻塞",
+    "prompt": "帮我把这些虚构工作记录整理成一条发给项目负责人的进度更新：今天完成了翻译开关和本地SQLite记录；12段测试文本有11段完成，1段超时后保留原文；代码块没变；重启后记录还在；安装包还没在新电脑上试；明天准备检查超时日志并找一台新Windows机器测试。负责人关心能不能交给别人试用。"
+  },
+  "baseline": {
+    "case_id": "09-status-report",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:45.965Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "帮我把这些虚构工作记录整理成一条发给项目负责人的进度更新：今天完成了翻译开关和本地SQLite记录；12段测试文本有11段完成，1段超时后保留原文；代码块没变；重启后记录还在；安装包还没在新电脑上试；明天准备检查超时日志并找一台新Windows机器测试。负责人关心能不能交给别人试用。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281565,
+    "finish_reason": "stop",
+    "content": "项目负责人您好，进度更新如下：今天已完成翻译开关和本地 SQLite 记录；12 段测试文本中 11 段完成，1 段超时后保留原文；代码块未改动；重启后记录仍然保留。安装包尚未在新电脑上测试。明天计划检查超时日志，并找一台新的 Windows 机器做测试。关于能否交给别人试用：目前核心记录与开关功能已可用，但安装包还未在新 Windows 环境验证，建议明天完成新机测试后再确认是否可交付他人试用。",
+    "usage": {
+      "prompt_tokens": 86,
+      "completion_tokens": 115,
+      "total_tokens": 201,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 86
+    },
+    "seconds": 1.242
+  },
+  "skill_only": {
+    "case_id": "09-status-report",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:47.212Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "帮我把这些虚构工作记录整理成一条发给项目负责人的进度更新：今天完成了翻译开关和本地SQLite记录；12段测试文本有11段完成，1段超时后保留原文；代码块没变；重启后记录还在；安装包还没在新电脑上试；明天准备检查超时日志并找一台新Windows机器测试。负责人关心能不能交给别人试用。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281566,
+    "finish_reason": "stop",
+    "content": "项目负责人您好，进度更新如下：今天完成了翻译开关和本地 SQLite 记录；12 段测试文本中 11 段完成，1 段超时后保留原文；代码块未改动；重启后记录仍在。安装包还没在新电脑上试。明天计划检查超时日志，并找一台新 Windows 机器测试。目前还不能交给别人试用，等新机器安装包验证通过后再确认。",
+    "usage": {
+      "prompt_tokens": 267,
+      "completion_tokens": 90,
+      "total_tokens": 357,
+      "prompt_tokens_details": {
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 139
+    },
+    "seconds": 1.241
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "09-status-report",
+    "source_sha256": "2811a55b97d5631faa4a6e819aeaf57d7de7c08126225cc46b559d3b2caec261",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "亲爱的项目经理，以下是当前进展情况：翻译切换和本地 SQLite 记录已于今日完成。12篇测试文本中已有11篇被处理完毕，还有1篇因超时问题保持不变。代码块也保持不变。重启后这些记录仍然可用。安装包尚未在新电脑上测试。明天我打算查看超时日志，并在新的 Windows 机器上进行测试。目前无法让他人进行测试；我们会在在新机器上确认安装包正常后再决定。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 6.684452000001329,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 151,
+          "output_chars": 175,
+          "warnings": [],
+          "seconds": 6.6843774000008125
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "项目负责人您好，进度更新如下：今天完成了翻译开关和本地 SQLite 记录；12 段测试文本中 11 段完成，1 段超时后保留原文；代码块未改动；重启后记录仍在。安装包还没在新电脑上试。明天计划检查超时日志，并找一台新 Windows 机器测试。目前还不能交给别人试用，等新机器安装包验证通过后再确认。",
+        "target": "en",
+        "context": "",
+        "output": "Dear project manager, here is the progress update: The translation switch and local SQLite records have been completed today. Eleven out of the 12 test texts have been processed, and one text remains unchanged due to a timeout. The code blocks remain unchanged as well. The records are still available after a restart. The installation package has not yet been tested on the new computer. Tomorrow, I plan to check the timeout logs and test it on a new Windows machine. It cannot be given to others for testing at present; we will confirm after verifying the installation package on the new machine.",
+        "seconds": 3.6937
+      },
+      {
+        "source": "Dear project manager, here is the progress update: The translation switch and local SQLite records have been completed today. Eleven out of the 12 test texts have been processed, and one text remains unchanged due to a timeout. The code blocks remain unchanged as well. The records are still available after a restart. The installation package has not yet been tested on the new computer. Tomorrow, I plan to check the timeout logs and test it on a new Windows machine. It cannot be given to others for testing at present; we will confirm after verifying the installation package on the new machine.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "亲爱的项目经理，以下是当前进展情况：翻译切换和本地 SQLite 记录已于今日完成。12篇测试文本中已有11篇被处理完毕，还有1篇因超时问题保持不变。代码块也保持不变。重启后这些记录仍然可用。安装包尚未在新电脑上测试。明天我打算查看超时日志，并在新的 Windows 机器上进行测试。目前无法让他人进行测试；我们会在在新机器上确认安装包正常后再决定。",
+        "seconds": 2.9906
+      }
+    ],
+    "seconds": 6.685
+  },
+  "character_counts_including_markdown": {
+    "baseline": 200,
+    "skill_only": 151,
+    "final": 175
+  },
+  "editorial_observation": "两边都保留了 12/11/1 的结果与新机未测的事实。skill 已把“建议验证后再确认”收紧为“目前还不能交给别人试用”；回译又加入“亲爱的项目经理”和重复的“会在在”。这些是原样生成的措辞，不是人工润色。"
+}

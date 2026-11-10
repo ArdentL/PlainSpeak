@@ -1,0 +1,118 @@
+{
+  "case": {
+    "id": "03-review",
+    "title": "代码审查：缓存是否会返回旧权限",
+    "prompt": "请 review 下面这段服务端代码，优先指出真实影响行为的问题，再给修改建议。`load_user` 每次从数据库读取用户，角色可能在运行中被管理员修改。\n```python\nfrom functools import lru_cache\n\n@lru_cache(maxsize=1000)\ndef get_permissions(user_id):\n    user = load_user(user_id)\n    return user.permissions\n\ndef can_delete(user_id):\n    return \"delete\" in get_permissions(user_id)\n```"
+  },
+  "baseline": {
+    "case_id": "03-review",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:00.675Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "请 review 下面这段服务端代码，优先指出真实影响行为的问题，再给修改建议。`load_user` 每次从数据库读取用户，角色可能在运行中被管理员修改。\n```python\nfrom functools import lru_cache\n\n@lru_cache(maxsize=1000)\ndef get_permissions(user_id):\n    user = load_user(user_id)\n    return user.permissions\n\ndef can_delete(user_id):\n    return \"delete\" in get_permissions(user_id)\n```"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281519,
+    "finish_reason": "stop",
+    "content": "# Code Review\n\n## 真实影响行为的问题（按严重程度）\n\n### 1. 权限缓存导致管理员修改无法生效（严重，安全相关）\n\n`get_permissions` 被 `@lru_cache` 缓存，key 是 `user_id`。一旦某个用户被查询过，其权限列表就被永久缓存（直到进程重启或缓存被逐出）。\n\n结合你给出的前提——**\"角色可能在运行中被管理员修改\"**——这意味着：\n\n- 管理员撤销了某用户的 `delete` 权限，但该用户仍能通过 `can_delete` 检查继续删除，**直到进程重启或该条目被 LRU 逐出**。\n- 管理员授予权限同理，新权限也不会立即生效。\n- 这是一个**权限提升 / 权限撤销失效**的安全问题，不只是\"数据陈旧\"。\n\n### 2. `load_user` 每次读库，但缓存让它实际上只读一次\n\n注释说\"`load_user` 每次从数据库读取用户\"，但 `lru_cache` 让这个\"每次\"变成\"每个 user_id 一次\"。代码意图（实时读库）与实现（缓存）矛盾，容易误导后续维护者。\n\n### 3. 缓存的是可变对象引用\n\n`user.permissions` 若是一个 list/set，缓存返回的是**同一个对象引用**。任何调用方若原地修改它（如 `perms.append(...)`），会污染缓存，影响所有后续调用。即使当前 `can_delete` 只做 `in` 判断，这也是隐患。\n\n### 4. 无失效机制 / 无 TTL\n\n`lru_cache` 没有 TTL，也没有主动失效接口。管理员改权限后无法让缓存失效，只能等逐出或重启。\n\n### 5. 缓存 key 不含版本/时间\n\n即使将来想加失效，`user_id` 作为唯一 key 也无法区分\"同一用户的不同权限版本\"。\n\n---\n\n## 修改建议\n\n### 方案 A：直接去掉缓存（最简单、最正确）\n\n既然 `load_user` 本来就每次读库，且权限需要实时，最直接的做法是不缓存：\n\n```python\ndef get_permissions(user_id):\n    user = load_user(user_id)\n    return frozenset(user.permissions)  # 返回不可变副本，防污染\n\ndef can_delete(user_id):\n    return \"delete\" in get_permissions(user_id)\n```\n\n如果担心性能，应在 `load_user` 层做**带 TTL 的缓存**，而不是在权限层做永久缓存。\n\n### 方案 B：带 TTL 的缓存（需要容忍短暂陈旧）\n\n```python\nfrom cachetools import TTLCache\nimport threading\n\n_perm_cache = TTLCache(maxsize=1000, ttl=30)  # 30 秒\n_lock = threading.Lock()\n\ndef get_permissions(user_id):\n    with _lock:\n        perms = _perm_cache.get(user_id)\n    if perms is None:\n        user = load_user(user_id)\n        perms = frozenset(user.permissions)\n        with _lock:\n            _perm_cache[user_id] = perms\n    return perms\n```\n\n注意：TTL 意味着管理员改权限后最多有 `ttl` 秒的延迟窗口，需与业务/安全要求对齐。若撤销权限必须立即生效，用方案 A。\n\n### 方案 C：主动失效（管理员改权限时调用）\n\n```python\ndef invalidate_user_permissions(user_id):\n    get_permissions.cache_clear()  # lru_cache 只能全清，粒度粗\n```\n\n`lru_cache` 不支持按 key 失效，只能 `cache_clear()` 全清，粒度太粗。若需要按用户失效，应改用 `cachetools` 的 `LRUCache` 并手动 `pop(user_id)`，或在权限变更事件里调用。\n\n### 其他建议\n\n- **返回不可变副本**：`frozenset(user.permissions)`，避免调用方原地修改污染缓存。\n- **明确缓存语义**：如果保留缓存，在函数 docstring 里写清\"权限变更最多延迟 N 秒生效\"，避免维护者误以为实时。\n- **考虑把权限判断下沉**：`can_delete` 这类检查若用于安全边界，最好在数据层/网关层也做一次校验，不要只依赖应用层缓存结果。\n- **`load_user` 返回 None 的处理**：当前代码假设 `load_user` 一定返回用户，若用户被删除会 `AttributeError`。建议显式处理：\n\n```python\ndef get_permissions(user_id):\n    user = load_user(user_id)\n    if user is None:\n        return frozenset()\n    return frozenset(user.permissions)\n```\n\n---\n\n## 小结\n\n| 问题 | 影响 | 优先级 |\n|---|---|---|\n| `lru_cache` 永久缓存权限 | 管理员改权限不生效，安全风险 | 🔴 高 |\n| 缓存可变对象引用 | 调用方可能污染缓存 | 🟡 中 |\n| 无失效/TTL 机制 | 无法响应权限变更 | 🔴 高 |\n| 未处理 `load_user` 返回 None | 用户删除后报错 | 🟡 中 |\n\n**核心结论**：在\"权限可能运行中被修改\"的前提下，`@lru_cache` 是错误的选择。优先去掉缓存（方案 A），或改用带 TTL/主动失效的缓存并明确延迟语义。",
+    "usage": {
+      "prompt_tokens": 104,
+      "completion_tokens": 1165,
+      "total_tokens": 1269,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 104
+    },
+    "seconds": 8.414
+  },
+  "skill_only": {
+    "case_id": "03-review",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:03.665Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "请 review 下面这段服务端代码，优先指出真实影响行为的问题，再给修改建议。`load_user` 每次从数据库读取用户，角色可能在运行中被管理员修改。\n```python\nfrom functools import lru_cache\n\n@lru_cache(maxsize=1000)\ndef get_permissions(user_id):\n    user = load_user(user_id)\n    return user.permissions\n\ndef can_delete(user_id):\n    return \"delete\" in get_permissions(user_id)\n```"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281522,
+    "finish_reason": "stop",
+    "content": "真实影响行为的问题：`get_permissions` 被 `lru_cache` 缓存后，同一 `user_id` 的权限在进程生命周期内不会重新读取。管理员在运行中修改角色后，`can_delete` 仍按旧权限判断，可能继续允许已撤权用户删除，或拒绝刚授权用户。缓存键只有 `user_id`，也没有失效入口。\n\n修改建议：\n\n1. 去掉 `lru_cache`，每次调用 `load_user` 后取当前权限。若数据库压力可接受，这是最直接正确的做法。\n2. 若必须缓存，给缓存加显式失效：角色变更时调用 `get_permissions.cache_clear()`，或按 `user_id` 精确失效。注意多进程部署下每个进程各有缓存，单进程清理不够，需要广播失效或改用共享缓存并带版本号/TTL。\n3. 更稳妥的是缓存短 TTL，并接受最长一个 TTL 的权限延迟；这要求业务明确能容忍该延迟。\n\n另外，`load_user` 返回 `None` 时这里会抛 `AttributeError`，建议明确处理用户不存在的情况。",
+    "usage": {
+      "prompt_tokens": 285,
+      "completion_tokens": 246,
+      "total_tokens": 531,
+      "prompt_tokens_details": {
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 157
+    },
+    "seconds": 2.827
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "03-review",
+    "source_sha256": "215875c7942cc1597190b29029b6d49c8dd6c40ee083043f551adef6e385d055",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "关于对行为影响的真实影响的问题：当`get_permissions`被`lru_cache`缓存后，同一`user_id`的权限在整个系统运行过程中不再被重新读取。如果管理员在系统运行时更改角色，那么`can_delete`的值仍会基于旧权限来确定，这可能会让被撤销权限的用户能够删除文件，或者让刚刚获得权限的用户无法执行操作。缓存键仅为`user_id`，没有机制可以使其失效。\n\n改进建议：\n\n1. 移除`lru_cache`；改为在调用`load_user`时每次获取当前权限。这是最直接且正确的方法，前提是数据库性能允许这样做。\n2. 如果必须使用缓存，应提供明确的失效机制：在角色发生变化时调用`get_permissions.cache_clear()`，或者根据`user_id`专门使缓存失效。需要注意的是，在多进程部署中，每个进程都有自己的缓存；仅清除单个进程的缓存是不够的。需要广播失效信息，或者使用带有版本号/TTL的共享缓存。\n3. 更安全的做法是为缓存设置较短的TTL时间，并允许在权限方面延迟达到整个TTL时间。这要求应用程序能够容忍这种延迟。\n\n此外，当`load_user`返回`None`时，会引发`AttributeError`；建议妥善处理用户不存在的情况。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 21.541993199993158,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 469,
+          "output_chars": 548,
+          "warnings": [],
+          "seconds": 21.541885900005582
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "真实影响行为的问题：`get_permissions` 被 `lru_cache` 缓存后，同一 `user_id` 的权限在进程生命周期内不会重新读取。管理员在运行中修改角色后，`can_delete` 仍按旧权限判断，可能继续允许已撤权用户删除，或拒绝刚授权用户。缓存键只有 `user_id`，也没有失效入口。\n\n修改建议：\n\n1. 去掉 `lru_cache`，每次调用 `load_user` 后取当前权限。若数据库压力可接受，这是最直接正确的做法。\n2. 若必须缓存，给缓存加显式失效：角色变更时调用 `get_permissions.cache_clear()`，或按 `user_id` 精确失效。注意多进程部署下每个进程各有缓存，单进程清理不够，需要广播失效或改用共享缓存并带版本号/TTL。\n3. 更稳妥的是缓存短 TTL，并接受最长一个 TTL 的权限延迟；这要求业务明确能容忍该延迟。\n\n另外，`load_user` 返回 `None` 时这里会抛 `AttributeError`，建议明确处理用户不存在的情况。",
+        "target": "en",
+        "context": "",
+        "output": "Problems with the real impact on behavior: After `get_permissions` is cached by `lru_cache`, the permissions for the same `user_id` are not read again throughout the process lifecycle. If the administrator changes the role while the system is running, `can_delete` will still be determined based on the old permissions, which may allow users who have had their permissions revoked to delete, or reject users who have just been authorized. The cache key is only `user_id`, and there is no mechanism to invalidate it.\n\nSuggestions for improvement:\n\n1. Remove `lru_cache`; instead, retrieve the current permissions each time `load_user` is called. This is the most straightforward and correct approach, provided that the database performance allows it.\n2. If caching is necessary, provide an explicit mechanism to invalidate it: call `get_permissions.cache_clear()` when the role changes, or invalidate it specifically based on `user_id`. Note that in multi-process deployments, each process has its own cache; clearing the cache for a single process is insufficient. It would be necessary to broadcast the invalidation or use a shared cache with version numbers/TTL.\n3. A safer approach is to use a short TTL for the cache, and accept a delay of up to one full TTL in terms of permissions. This requires the application to clearly be able to tolerate such a delay.\n\nAdditionally, when `load_user` returns `None`, an `AttributeError` will be raised here; it is recommended to handle the case where the user does not exist properly.",
+        "seconds": 12.012
+      },
+      {
+        "source": "Problems with the real impact on behavior: After `get_permissions` is cached by `lru_cache`, the permissions for the same `user_id` are not read again throughout the process lifecycle. If the administrator changes the role while the system is running, `can_delete` will still be determined based on the old permissions, which may allow users who have had their permissions revoked to delete, or reject users who have just been authorized. The cache key is only `user_id`, and there is no mechanism to invalidate it.\n\nSuggestions for improvement:\n\n1. Remove `lru_cache`; instead, retrieve the current permissions each time `load_user` is called. This is the most straightforward and correct approach, provided that the database performance allows it.\n2. If caching is necessary, provide an explicit mechanism to invalidate it: call `get_permissions.cache_clear()` when the role changes, or invalidate it specifically based on `user_id`. Note that in multi-process deployments, each process has its own cache; clearing the cache for a single process is insufficient. It would be necessary to broadcast the invalidation or use a shared cache with version numbers/TTL.\n3. A safer approach is to use a short TTL for the cache, and accept a delay of up to one full TTL in terms of permissions. This requires the application to clearly be able to tolerate such a delay.\n\nAdditionally, when `load_user` returns `None`, an `AttributeError` will be raised here; it is recommended to handle the case where the user does not exist properly.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "关于对行为影响的真实影响的问题：当`get_permissions`被`lru_cache`缓存后，同一`user_id`的权限在整个系统运行过程中不再被重新读取。如果管理员在系统运行时更改角色，那么`can_delete`的值仍会基于旧权限来确定，这可能会让被撤销权限的用户能够删除文件，或者让刚刚获得权限的用户无法执行操作。缓存键仅为`user_id`，没有机制可以使其失效。\n\n改进建议：\n\n1. 移除`lru_cache`；改为在调用`load_user`时每次获取当前权限。这是最直接且正确的方法，前提是数据库性能允许这样做。\n2. 如果必须使用缓存，应提供明确的失效机制：在角色发生变化时调用`get_permissions.cache_clear()`，或者根据`user_id`专门使缓存失效。需要注意的是，在多进程部署中，每个进程都有自己的缓存；仅清除单个进程的缓存是不够的。需要广播失效信息，或者使用带有版本号/TTL的共享缓存。\n3. 更安全的做法是为缓存设置较短的TTL时间，并允许在权限方面延迟达到整个TTL时间。这要求应用程序能够容忍这种延迟。\n\n此外，当`load_user`返回`None`时，会引发`AttributeError`；建议妥善处理用户不存在的情况。",
+        "seconds": 9.5298
+      }
+    ],
+    "seconds": 21.543
+  },
+  "character_counts_including_markdown": {
+    "baseline": 2633,
+    "skill_only": 469,
+    "final": 548
+  },
+  "editorial_observation": "skill 把原版反复讨论的缓存失效问题收拢了，但回译后的开头“关于对行为影响的真实影响的问题”更绕。这是可见的表达退化。"
+}

@@ -2,6 +2,8 @@
 
 [GitHub](https://github.com/ArdentL/PlainSpeak) · [Releases](https://github.com/ArdentL/PlainSpeak/releases) · English · [中文](README.md)
 
+**[See 10 real side-by-side examples →](docs/comparisons/README.md)**: untouched DeepSeek responses versus clear-writing rules plus local round trips, with full outputs, intermediate drafts, and observed regressions. The examples are in Chinese.
+
 **Make DeepSeek Harness answers easier to read.**
 
 LLM replies often suffer from stiff phrasing, wordy filler, and repetitive defensive disclaimers. PlainSpeak makes responses easier to read in two ways:

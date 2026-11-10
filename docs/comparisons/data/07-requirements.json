@@ -1,0 +1,118 @@
+{
+  "case": {
+    "id": "07-requirements",
+    "title": "需求澄清：把模糊想法变成可确认需求",
+    "prompt": "我想做一个桌面插件：回答太绕的时候自动显示更好读的版本，支持开关，数据最好留在本地。先只支持一个聊天客户端。你现在需要问我哪些问题？请选真正影响第一版实现的点，别一次丢一大堆问题。"
+  },
+  "baseline": {
+    "case_id": "07-requirements",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:29.296Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "我想做一个桌面插件：回答太绕的时候自动显示更好读的版本，支持开关，数据最好留在本地。先只支持一个聊天客户端。你现在需要问我哪些问题？请选真正影响第一版实现的点，别一次丢一大堆问题。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281548,
+    "finish_reason": "stop",
+    "content": "先问最关键的 5 个，够定第一版骨架：\n\n1. **哪个聊天客户端？**  \n   是网页版（如 WhatsApp Web / Slack Web / Discord Web）还是原生桌面应用？这决定我是做浏览器扩展、桌面壳注入，还是读本地数据库/API。\n\n2. **“回答太绕”怎么判定？**  \n   第一版你希望是：手动触发（选中/快捷键）→ 显示更好读版本，还是自动检测长/复杂回答后提示？自动判定会显著增加复杂度。\n\n3. **“更好读的版本”由谁生成？**  \n   本地小模型、调用云端 API、还是规则化改写（分段/列点/去冗余）？这直接影响“数据留在本地”的可行性和实现量。\n\n4. **显示形态？**  \n   是在原消息旁内联替换/展开，还是侧边栏/浮层显示？是否需要保留原文对照？\n\n5. **开关粒度？**  \n   只要一个总开关，还是按会话/按消息临时开关？第一版建议总开关 + 单条手动触发，你确认下是否接受。\n\n你回答这 5 个后，我再问第二轮（存储、权限、失败降级），不会一次堆太多。",
+    "usage": {
+      "prompt_tokens": 56,
+      "completion_tokens": 264,
+      "total_tokens": 320,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 56
+    },
+    "seconds": 3.134
+  },
+  "skill_only": {
+    "case_id": "07-requirements",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:32.433Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "我想做一个桌面插件：回答太绕的时候自动显示更好读的版本，支持开关，数据最好留在本地。先只支持一个聊天客户端。你现在需要问我哪些问题？请选真正影响第一版实现的点，别一次丢一大堆问题。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281551,
+    "finish_reason": "stop",
+    "content": "先问 5 个会直接改变第一版结构的问题：\n\n1. **目标聊天客户端是哪一个，它有没有可用的插件/扩展接口？**  \n   这决定第一版是做成官方插件、桌面悬浮窗，还是读屏/剪贴板方案。若客户端没有扩展接口，实现难度和合规风险会完全不同。\n\n2. **“回答太绕”由什么触发：用户手动点、快捷键，还是自动判断？**  \n   第一版建议先手动触发，自动判断需要定义“绕”的规则，容易把范围撑大。这个选择直接影响是否需要实时监听聊天内容。\n\n3. **更好读的版本由本地规则生成，还是调用本地模型？**  \n   规则版只能做分段、去重复、列点；本地模型才能改写和压缩。两者对安装包大小、延迟、硬件要求和隐私边界影响很大。\n\n4. **数据“留在本地”具体指什么：不联网、不落盘，还是只存本机？**  \n   如果要求完全不联网，就不能用云端 API；如果允许本机保存，还要决定是否保存原文、改写结果和开关配置。\n\n5. **开关控制到什么粒度：只控制功能总开关，还是也控制自动触发和本地保存？**  \n   第一版至少要明确关闭后是否停止读取聊天内容、是否删除已存数据。这会影响权限设计和用户信任。\n\n先回答这 5 个，我就能把第一版的范围和最小验证方案定下来。",
+    "usage": {
+      "prompt_tokens": 237,
+      "completion_tokens": 310,
+      "total_tokens": 547,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 237
+    },
+    "seconds": 3.774
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "07-requirements",
+    "source_sha256": "1c571e77c22e66842bec6a0a008cc5c78e8b0fd83f09ac3bd5133fef8ee3cb10",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "首先，提出5个会直接影响第一个版本结构的问题：\n\n1. **目标聊天客户端是什么？它是否有可用的插件或扩展接口？**  \n   这决定了第一个版本是以正式插件形式呈现，还是以桌面浮动窗口形式呈现，或者通过屏幕阅读器/剪贴板功能来呈现。如果客户端没有扩展接口，那么实现复杂度和合规风险都会有很大差异。\n\n2. **导致“难以理解”状态的触发方式是什么：用户手动激活、快捷键，还是自动判断？**  \n   对于第一个版本，建议采用手动激活方式。自动判断则需要明确界定“复杂性”的标准，这可能会无谓地扩大功能范围。这一选择直接决定了是否需要对聊天内容进行实时监控。\n\n3. **易于理解的版本应该由本地规则生成，还是使用本地模型？**  \n   基于规则的版本只能进行分割、去重和高亮显示；而本地模型则能修改和压缩内容。这两种方式都会对安装包的大小、延迟、硬件要求以及隐私问题产生重大影响。\n\n4. **“数据本地存储”具体意味着什么：无需互联网连接，无需磁盘存储，还是仅存储在设备本身？**  \n   如果需要完全离线功能，则无法使用云API。如果允许本地存储，还需要决定原始文本、处理后的结果以及设置信息是否应被保存。\n\n5. **控制所需的精度如何：仅控制整体功能开关，还是同时控制自动激活和本地存储？**  \n   第一个版本必须明确说明：关闭开关后是否停止读取聊天内容，以及存储的数据是否会被删除。这会影响权限设计与用户信任度。\n\n通过回答这5个问题，我可以确定第一个版本的范围及最低验证方式。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 24.483691700006602,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 531,
+          "output_chars": 649,
+          "warnings": [],
+          "seconds": 24.483582499990007
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "先问 5 个会直接改变第一版结构的问题：\n\n1. **目标聊天客户端是哪一个，它有没有可用的插件/扩展接口？**  \n   这决定第一版是做成官方插件、桌面悬浮窗，还是读屏/剪贴板方案。若客户端没有扩展接口，实现难度和合规风险会完全不同。\n\n2. **“回答太绕”由什么触发：用户手动点、快捷键，还是自动判断？**  \n   第一版建议先手动触发，自动判断需要定义“绕”的规则，容易把范围撑大。这个选择直接影响是否需要实时监听聊天内容。\n\n3. **更好读的版本由本地规则生成，还是调用本地模型？**  \n   规则版只能做分段、去重复、列点；本地模型才能改写和压缩。两者对安装包大小、延迟、硬件要求和隐私边界影响很大。\n\n4. **数据“留在本地”具体指什么：不联网、不落盘，还是只存本机？**  \n   如果要求完全不联网，就不能用云端 API；如果允许本机保存，还要决定是否保存原文、改写结果和开关配置。\n\n5. **开关控制到什么粒度：只控制功能总开关，还是也控制自动触发和本地保存？**  \n   第一版至少要明确关闭后是否停止读取聊天内容、是否删除已存数据。这会影响权限设计和用户信任。\n\n先回答这 5 个，我就能把第一版的范围和最小验证方案定下来。",
+        "target": "en",
+        "context": "",
+        "output": "First, ask 5 questions that will directly affect the structure of the first version:\n\n1. **Which chat client is the target? Does it have any available plugins or extension interfaces?**  \n   This determines whether the first version will be presented as an official plugin, a desktop floating window, or through a screen reader/clipboard solution. If the client lacks extension interfaces, the implementation complexity and compliance risks will be significantly different.\n\n2. **What triggers the “too complicated to understand” message: user manual activation, shortcut keys, or automatic judgment?**  \n   For the first version, manual activation is recommended. Automatic judgment requires defining clear rules for what constitutes “complexity”, which could expand the scope unnecessarily. This choice directly influences whether real-time monitoring of chat content is needed.\n\n3. **Should the easier-to-read version be generated by local rules, or use a local model?**  \n   A rule-based version can only perform segmentation, removal of duplicates, and highlighting; only a local model can modify and compress content. Both approaches have a major impact on the size of the installation package, latency, hardware requirements, and privacy implications.\n\n4. **What does “data staying locally” mean exactly: no internet connection, no storage on disk, or only on the device itself?**  \n   If a complete offline requirement is needed, cloud API usage is not possible. If local storage is allowed, it is also necessary to decide whether the original text, the modified result, and the settings should be saved.\n\n5. **What level of granularity is required for control: only controlling the overall function switch, or also controlling automatic activation and local storage?**  \n   The first version must clearly define whether reading chat content stops after the switch is turned off, and whether stored data is deleted. This affects permission design and user trust.\n\nBy answering these 5 questions, I can determine the scope and minimum validation approach for the first version.",
+        "seconds": 12.8285
+      },
+      {
+        "source": "First, ask 5 questions that will directly affect the structure of the first version:\n\n1. **Which chat client is the target? Does it have any available plugins or extension interfaces?**  \n   This determines whether the first version will be presented as an official plugin, a desktop floating window, or through a screen reader/clipboard solution. If the client lacks extension interfaces, the implementation complexity and compliance risks will be significantly different.\n\n2. **What triggers the “too complicated to understand” message: user manual activation, shortcut keys, or automatic judgment?**  \n   For the first version, manual activation is recommended. Automatic judgment requires defining clear rules for what constitutes “complexity”, which could expand the scope unnecessarily. This choice directly influences whether real-time monitoring of chat content is needed.\n\n3. **Should the easier-to-read version be generated by local rules, or use a local model?**  \n   A rule-based version can only perform segmentation, removal of duplicates, and highlighting; only a local model can modify and compress content. Both approaches have a major impact on the size of the installation package, latency, hardware requirements, and privacy implications.\n\n4. **What does “data staying locally” mean exactly: no internet connection, no storage on disk, or only on the device itself?**  \n   If a complete offline requirement is needed, cloud API usage is not possible. If local storage is allowed, it is also necessary to decide whether the original text, the modified result, and the settings should be saved.\n\n5. **What level of granularity is required for control: only controlling the overall function switch, or also controlling automatic activation and local storage?**  \n   The first version must clearly define whether reading chat content stops after the switch is turned off, and whether stored data is deleted. This affects permission design and user trust.\n\nBy answering these 5 questions, I can determine the scope and minimum validation approach for the first version.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "首先，提出5个会直接影响第一个版本结构的问题：\n\n1. **目标聊天客户端是什么？它是否有可用的插件或扩展接口？**  \n   这决定了第一个版本是以正式插件形式呈现，还是以桌面浮动窗口形式呈现，或者通过屏幕阅读器/剪贴板功能来呈现。如果客户端没有扩展接口，那么实现复杂度和合规风险都会有很大差异。\n\n2. **导致“难以理解”状态的触发方式是什么：用户手动激活、快捷键，还是自动判断？**  \n   对于第一个版本，建议采用手动激活方式。自动判断则需要明确界定“复杂性”的标准，这可能会无谓地扩大功能范围。这一选择直接决定了是否需要对聊天内容进行实时监控。\n\n3. **易于理解的版本应该由本地规则生成，还是使用本地模型？**  \n   基于规则的版本只能进行分割、去重和高亮显示；而本地模型则能修改和压缩内容。这两种方式都会对安装包的大小、延迟、硬件要求以及隐私问题产生重大影响。\n\n4. **“数据本地存储”具体意味着什么：无需互联网连接，无需磁盘存储，还是仅存储在设备本身？**  \n   如果需要完全离线功能，则无法使用云API。如果允许本地存储，还需要决定原始文本、处理后的结果以及设置信息是否应被保存。\n\n5. **控制所需的精度如何：仅控制整体功能开关，还是同时控制自动激活和本地存储？**  \n   第一个版本必须明确说明：关闭开关后是否停止读取聊天内容，以及存储的数据是否会被删除。这会影响权限设计与用户信任度。\n\n通过回答这5个问题，我可以确定第一个版本的范围及最低验证方式。",
+        "seconds": 11.655
+      }
+    ],
+    "seconds": 24.484
+  },
+  "character_counts_including_markdown": {
+    "baseline": 461,
+    "skill_only": 531,
+    "final": 649
+  },
+  "editorial_observation": "这一组原版已经较短。skill 原稿与回译最终稿都更长，右侧还把“列点”改成“高亮显示”。完整保留这个反例，不将更长或更正式算作更好。"
+}

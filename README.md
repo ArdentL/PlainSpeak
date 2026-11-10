@@ -2,6 +2,8 @@
 
 [GitHub](https://github.com/ArdentL/PlainSpeak) · [下载 / Releases](https://github.com/ArdentL/PlainSpeak/releases) · [English](README.en.md) · 中文
 
+**[查看 10 个真实对比案例 →](docs/comparisons/README.md)**：左边是 DeepSeek 原始输出，右边是 skill + 本地回译。完整展示结果，并标注回译变长、误译和部分保留原文的案例。
+
 **让 DeepSeek Harness 的回答更好读。**
 
 大模型回复常带有冗长铺垫、防御性免责声明和生硬套话。PlainSpeak 从两方面改善阅读体验：

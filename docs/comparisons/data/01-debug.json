@@ -1,0 +1,153 @@
+{
+  "case": {
+    "id": "01-debug",
+    "title": "修 Bug：找出可变默认参数的问题",
+    "prompt": "帮我看这段 Python 为什么第二次调用会带上上一次的数据，并给出修改后的代码和原因：\n```python\ndef add_item(item, items=[]):\n    items.append(item)\n    return items\n\nprint(add_item(\"a\"))\nprint(add_item(\"b\"))\n```"
+  },
+  "baseline": {
+    "case_id": "01-debug",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:31:53.493Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "帮我看这段 Python 为什么第二次调用会带上上一次的数据，并给出修改后的代码和原因：\n```python\ndef add_item(item, items=[]):\n    items.append(item)\n    return items\n\nprint(add_item(\"a\"))\nprint(add_item(\"b\"))\n```"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281512,
+    "finish_reason": "stop",
+    "content": "## 问题原因\n\n这是 Python 中非常经典的**可变默认参数陷阱**。\n\n在 Python 中，函数的默认参数值**只在函数定义时求值一次**，而不是每次调用时重新创建。所以 `items=[]` 这个空列表在函数定义时就被创建了，之后所有调用都共享**同一个列表对象**。\n\n执行过程：\n1. 定义 `add_item` 时，创建了一个空列表 `[]`，绑定到 `items` 的默认值上\n2. 第一次调用 `add_item(\"a\")`：往这个列表里 append `\"a\"` → `[\"a\"]`\n3. 第二次调用 `add_item(\"b\")`：**还是同一个列表**，append `\"b\"` → `[\"a\", \"b\"]`\n\n所以输出是：\n```\n['a']\n['a', 'b']\n```\n\n## 修改后的代码\n\n```python\ndef add_item(item, items=None):\n    if items is None:\n        items = []\n    items.append(item)\n    return items\n\nprint(add_item(\"a\"))  # ['a']\nprint(add_item(\"b\"))  # ['b']\n```\n\n## 修改原因\n\n- 用 `None` 作为默认值（`None` 是不可变对象，不存在共享问题）\n- 在函数体内部判断：如果调用者没传 `items`，才新建一个空列表\n- 这样每次调用都会得到**独立的列表**，不会互相污染\n\n## 补充说明\n\n- 如果确实想利用\"共享\"特性（比如做缓存/累加器），可以保留原写法，但一定要清楚这是有意为之，并加注释说明\n- 同样的坑也适用于 `{}`、`set()` 等可变默认参数\n- 判断时用 `is None` 而不是 `== None`，这是 Python 的惯用写法",
+    "usage": {
+      "prompt_tokens": 59,
+      "completion_tokens": 393,
+      "total_tokens": 452,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 59
+    },
+    "seconds": 3.226
+  },
+  "skill_only": {
+    "case_id": "01-debug",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:31:53.526Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "帮我看这段 Python 为什么第二次调用会带上上一次的数据，并给出修改后的代码和原因：\n```python\ndef add_item(item, items=[]):\n    items.append(item)\n    return items\n\nprint(add_item(\"a\"))\nprint(add_item(\"b\"))\n```"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281512,
+    "finish_reason": "stop",
+    "content": "**结论：** 第二次调用会带上上一次的数据，因为默认参数 `items=[]` 只在函数定义时创建一次，之后每次调用都复用同一个列表对象。\n\n**原因：** Python 在定义函数时就会求值默认参数，并把结果保存在函数对象上。`items=[]` 里的空列表只创建一次，`add_item(\"a\")` 往这个列表里追加了 `\"a\"`，第二次调用时 `items` 仍指向同一个列表，所以再追加 `\"b\"` 就得到 `['a', 'b']`。\n\n**修改后的代码：**\n\n```python\ndef add_item(item, items=None):\n    if items is None:\n        items = []\n    items.append(item)\n    return items\n\nprint(add_item(\"a\"))  # ['a']\nprint(add_item(\"b\"))  # ['b']\n```\n\n**为什么这样改：** 用 `None` 作为默认值，函数每次调用时如果没传 `items`，就在函数体内新建一个空列表，两次调用互不影响。判断用 `is None` 而不是 `== None`，避免和空列表等值比较混淆。\n\n如果确实需要多次调用共享同一个列表，就显式传入：\n\n```python\nshared = []\nprint(add_item(\"a\", shared))  # ['a']\nprint(add_item(\"b\", shared))  # ['a', 'b']\n```",
+    "usage": {
+      "prompt_tokens": 240,
+      "completion_tokens": 296,
+      "total_tokens": 536,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 240
+    },
+    "seconds": 2.699
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "01-debug",
+    "source_sha256": "39e7e35914fc0e5f5a4392ef2b4e1040ebbfd5eaf51cc3d85403599ee65f552a",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "**结论：** 第二次调用会包含上一次调用的数据，因为默认参数 `items=[]` 在函数定义时只创建一次，而在每次后续调用中都会重复使用同一个列表对象。\n\n**原因：** 在定义函数时，Python 会评估默认参数，并将结果存储在函数对象中。`items=[]` 中的空列表只创建一次；`add_item(\"a\")` 会将 `\"a\"` 添加到该列表中。在第二次调用时，`items` 仍然指向同一个列表，因此添加 `\"b\"` 后结果为 `['a', 'b']`。\n\n**修改后的代码：**\n\n```python\ndef add_item(item, items=None):\n    if items is None:\n        items = []\n    items.append(item)\n    return items\n\nprint(add_item(\"a\"))  # ['a']\nprint(add_item(\"b\"))  # ['b']\n```\n\n**为何进行此更改：**将 `None` 作为默认值意味着，在每次调用时如果没有提供 `items`，则会在函数内部创建一个空列表。这两次调用不会相互影响。使用 `is None` 而不是 `== None` 来检查条件，以避免与空列表的相等性比较产生混淆。\n\n如果需要在多次调用中使用同一个列表，则应该显式传递该列表。\n\n```python\nshared = []\nprint(add_item(\"a\", shared))  # ['a']\nprint(add_item(\"b\", shared))  # ['a', 'b']\n```",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 14.484843099999125,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 237,
+          "output_chars": 248,
+          "warnings": [],
+          "seconds": 8.661161700001685
+        },
+        {
+          "status": "protected",
+          "source_chars": 188,
+          "output_chars": 188,
+          "warnings": [],
+          "seconds": 0.0
+        },
+        {
+          "status": "rewritten",
+          "source_chars": 140,
+          "output_chars": 163,
+          "warnings": [],
+          "seconds": 5.8229971999971895
+        },
+        {
+          "status": "protected",
+          "source_chars": 106,
+          "output_chars": 106,
+          "warnings": [],
+          "seconds": 0.0
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "**结论：** 第二次调用会带上上一次的数据，因为默认参数 `items=[]` 只在函数定义时创建一次，之后每次调用都复用同一个列表对象。\n\n**原因：** Python 在定义函数时就会求值默认参数，并把结果保存在函数对象上。`items=[]` 里的空列表只创建一次，`add_item(\"a\")` 往这个列表里追加了 `\"a\"`，第二次调用时 `items` 仍指向同一个列表，所以再追加 `\"b\"` 就得到 `['a', 'b']`。\n\n**修改后的代码：**",
+        "target": "en",
+        "context": "",
+        "output": "**Conclusion:** The second call will include the data from the previous call, because the default parameter `items=[]` is created only once when the function is defined, and the same list object is reused in each subsequent call.\n\n**Reason:** Python evaluates the default parameters when defining a function and stores the results in the function object. The empty list in `items=[]` is created only once; `add_item(\"a\")` appends `\"a\"` to this list. On the second call, `items` still refers to the same list, so appending `\"b\"` results in `['a', 'b']`.\n\n**Modified code:**",
+        "seconds": 4.3921
+      },
+      {
+        "source": "**Conclusion:** The second call will include the data from the previous call, because the default parameter `items=[]` is created only once when the function is defined, and the same list object is reused in each subsequent call.\n\n**Reason:** Python evaluates the default parameters when defining a function and stores the results in the function object. The empty list in `items=[]` is created only once; `add_item(\"a\")` appends `\"a\"` to this list. On the second call, `items` still refers to the same list, so appending `\"b\"` results in `['a', 'b']`.\n\n**Modified code:**",
+        "target": "zh-CN",
+        "context": "",
+        "output": "**结论：** 第二次调用会包含上一次调用的数据，因为默认参数 `items=[]` 在函数定义时只创建一次，而在每次后续调用中都会重复使用同一个列表对象。\n\n**原因：** 在定义函数时，Python 会评估默认参数，并将结果存储在函数对象中。`items=[]` 中的空列表只创建一次；`add_item(\"a\")` 会将 `\"a\"` 添加到该列表中。在第二次调用时，`items` 仍然指向同一个列表，因此添加 `\"b\"` 后结果为 `['a', 'b']`。\n\n**修改后的代码：**",
+        "seconds": 4.2685
+      },
+      {
+        "source": "**为什么这样改：** 用 `None` 作为默认值，函数每次调用时如果没传 `items`，就在函数体内新建一个空列表，两次调用互不影响。判断用 `is None` 而不是 `== None`，避免和空列表等值比较混淆。\n\n如果确实需要多次调用共享同一个列表，就显式传入：",
+        "target": "en",
+        "context": "",
+        "output": "**Why this change:** Using `None` as the default value means that when no `items` are provided during each call, an empty list is created within the function. These two calls do not affect each other. The condition is checked using `is None` instead of `== None` to avoid confusion with equality comparisons with an empty list.\n\nIf it is necessary to use the same list across multiple calls, it should be passed explicitly:",
+        "seconds": 3.007
+      },
+      {
+        "source": "**Why this change:** Using `None` as the default value means that when no `items` are provided during each call, an empty list is created within the function. These two calls do not affect each other. The condition is checked using `is None` instead of `== None` to avoid confusion with equality comparisons with an empty list.\n\nIf it is necessary to use the same list across multiple calls, it should be passed explicitly:",
+        "target": "zh-CN",
+        "context": "",
+        "output": "**为何进行此更改：**将 `None` 作为默认值意味着，在每次调用时如果没有提供 `items`，则会在函数内部创建一个空列表。这两次调用不会相互影响。使用 `is None` 而不是 `== None` 来检查条件，以避免与空列表的相等性比较产生混淆。\n\n如果需要在多次调用中使用同一个列表，则应该显式传递该列表。",
+        "seconds": 2.8159
+      }
+    ],
+    "seconds": 14.486
+  },
+  "character_counts_including_markdown": {
+    "baseline": 810,
+    "skill_only": 671,
+    "final": 705
+  },
+  "editorial_observation": "代码块逐字保留。回译增加了“为何进行此更改”等较正式的说法；从 skill 原稿 671 字符变为 705 字符，不能把整体缩短都归功于回译。"
+}

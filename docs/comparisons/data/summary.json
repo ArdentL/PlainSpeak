@@ -1,0 +1,205 @@
+{
+  "created_at": "2026-11-10T03:43:09.274944+00:00",
+  "cases": [
+    {
+      "id": "01-debug",
+      "title": "修 Bug：找出可变默认参数的问题",
+      "baseline": 810,
+      "skill_only": 671,
+      "final": 705,
+      "retained_chunks": 0,
+      "generation_seconds": {
+        "baseline": 3.226,
+        "skill": 2.699
+      },
+      "roundtrip_seconds": 14.486
+    },
+    {
+      "id": "02-environment",
+      "title": "环境排错：终端能导入，编辑器不能",
+      "baseline": 2093,
+      "skill_only": 1324,
+      "final": 1331,
+      "retained_chunks": 2,
+      "generation_seconds": {
+        "baseline": 6.942,
+        "skill": 4.447
+      },
+      "roundtrip_seconds": 43.119
+    },
+    {
+      "id": "03-review",
+      "title": "代码审查：缓存是否会返回旧权限",
+      "baseline": 2633,
+      "skill_only": 469,
+      "final": 548,
+      "retained_chunks": 0,
+      "generation_seconds": {
+        "baseline": 8.414,
+        "skill": 2.827
+      },
+      "roundtrip_seconds": 21.543
+    },
+    {
+      "id": "04-paper-explanation",
+      "title": "论文讲解：理解 PPO 的裁剪目标",
+      "baseline": 2069,
+      "skill_only": 1103,
+      "final": 1156,
+      "retained_chunks": 0,
+      "generation_seconds": {
+        "baseline": 10.635,
+        "skill": 6.108
+      },
+      "roundtrip_seconds": 51.469
+    },
+    {
+      "id": "05-experiment-design",
+      "title": "实验设计：检索是否帮助 Agent 协作",
+      "baseline": 2202,
+      "skill_only": 1209,
+      "final": 1360,
+      "retained_chunks": 0,
+      "generation_seconds": {
+        "baseline": 12.42,
+        "skill": 7.11
+      },
+      "roundtrip_seconds": 63.864
+    },
+    {
+      "id": "06-result-interpretation",
+      "title": "结果判断：小幅提升是否足够继续",
+      "baseline": 1621,
+      "skill_only": 594,
+      "final": 654,
+      "retained_chunks": 0,
+      "generation_seconds": {
+        "baseline": 10.425,
+        "skill": 4.265
+      },
+      "roundtrip_seconds": 28.322
+    },
+    {
+      "id": "07-requirements",
+      "title": "需求澄清：把模糊想法变成可确认需求",
+      "baseline": 461,
+      "skill_only": 531,
+      "final": 649,
+      "retained_chunks": 0,
+      "generation_seconds": {
+        "baseline": 3.134,
+        "skill": 3.774
+      },
+      "roundtrip_seconds": 24.484
+    },
+    {
+      "id": "08-project-plan",
+      "title": "项目计划：两个人，两周做第一版",
+      "baseline": 4070,
+      "skill_only": 1635,
+      "final": 1860,
+      "retained_chunks": 0,
+      "generation_seconds": {
+        "baseline": 18.907,
+        "skill": 9.751
+      },
+      "roundtrip_seconds": 76.979
+    },
+    {
+      "id": "09-status-report",
+      "title": "进度汇报：如实说明完成项与阻塞",
+      "baseline": 200,
+      "skill_only": 151,
+      "final": 175,
+      "retained_chunks": 0,
+      "generation_seconds": {
+        "baseline": 1.242,
+        "skill": 1.241
+      },
+      "roundtrip_seconds": 6.685
+    },
+    {
+      "id": "10-handoff",
+      "title": "任务交接：保留失败证据，不提前宣布修复",
+      "baseline": 638,
+      "skill_only": 266,
+      "final": 316,
+      "retained_chunks": 0,
+      "generation_seconds": {
+        "baseline": 3.038,
+        "skill": 1.496
+      },
+      "roundtrip_seconds": 11.184
+    }
+  ],
+  "totals": {
+    "baseline": 16797,
+    "skill_only": 7953,
+    "final": 8754
+  },
+  "deepseek_usage": {
+    "prompt_tokens": 3394,
+    "completion_tokens": 13710,
+    "total_tokens": 17104
+  },
+  "skill_shorter_count": 9,
+  "final_shorter_than_baseline_count": 9,
+  "roundtrip_longer_than_skill_count": 10,
+  "source_code_changed": false,
+  "manual_answer_edits": false,
+  "files": {
+    "01-debug.md": "4ff07680b627f33584c50c2908a22d779d8d0dd2a296b77d05c757f6c918cb13",
+    "02-environment.md": "c99b34eff109f4eb962ecdb63dd6d4e649860f062bacc987af1c1ca729ae50d3",
+    "03-review.md": "b53e9bbe5158bd39256b3531eca2df7ce3403bdf69b9f862e9a69b53fff2d33b",
+    "04-paper-explanation.md": "11ea3878b265bdcd512e6652dd188fa6e070ca73d6f463c9c1972b92a14d02ea",
+    "05-experiment-design.md": "e1f9aedb70cd983e6f308bf7f29a8e0c557c13ac91099bd2abdee9f6b68806d1",
+    "06-result-interpretation.md": "4590b8bc3a60838246e0142e3431dee1bb84225fdac6cf03580f793bf5d9fe1e",
+    "07-requirements.md": "85f0bc317c6f02cdef9fd44dc194d95844d0e1c28ac19c1cfba0b05f3c7b9591",
+    "08-project-plan.md": "49c9d9c23b7ab45e82a937676adee72b030297d84c96a94f1105801ebb6f5167",
+    "09-status-report.md": "4228304f4c3775fc0a054fdac9b02285c2335cefb8fb95102f66790eb7117272",
+    "10-handoff.md": "9285210136fb8e8f4686945127d7cd3e140e406512894d06829fb5e6599ff944",
+    "README.md": "b0cdb4c4a94999a38620b0fcac1d0003e9e8251a2b4184b347b461b38724c002",
+    "data/01-debug-baseline.md": "814cdc530c517b13c95b229952c89f9774e2b02ff2202be02f7e176b53d3d56b",
+    "data/01-debug-final.md": "baabddbc652d48b428b024ee70a8757b5b0e42205fe3c834d5abce05d8829692",
+    "data/01-debug-skill.md": "39e7e35914fc0e5f5a4392ef2b4e1040ebbfd5eaf51cc3d85403599ee65f552a",
+    "data/01-debug.json": "68add12e6b8743877551d5b555f7191edc3e56f93f139024f6f08a39623a8676",
+    "data/02-environment-baseline.md": "e645ca5e440f7385edb468cdd534803705f88c74d9ff55feb44994b8a17c2aff",
+    "data/02-environment-final.md": "454792bc5da5e082bcab31164575f6f3b673e3c2891e8c282c675e3bd8a55530",
+    "data/02-environment-skill.md": "25f19b540eedfc2839693b0af5b6306ca8798b3ad9a0ceb55070deaa2834d47c",
+    "data/02-environment.json": "2eaa625a9cf50340d75b5e5fa7b0b01acee9b59aae4ff209893e0e0413d1bb93",
+    "data/03-review-baseline.md": "fe99084ecff1258fa904e14d19f738928d17fd495489475e71159430e64e9341",
+    "data/03-review-final.md": "d51636f22d33427f07da201dec17ca35d8626aef2b6dd692218f9fad91f5af13",
+    "data/03-review-skill.md": "215875c7942cc1597190b29029b6d49c8dd6c40ee083043f551adef6e385d055",
+    "data/03-review.json": "78cf7175a72c7165eef5aed600d17e920c9da5573604a0bf4d0cc5efb6734b89",
+    "data/04-paper-explanation-baseline.md": "288195f13e7cbc2c78d203e28281125583f77621300db48f83fe630a62ad9a4e",
+    "data/04-paper-explanation-final.md": "ed8abc0a5a1745c2b84feaa1d818e1fa0ca916b5393acb1e6f06325f31fb7af9",
+    "data/04-paper-explanation-skill.md": "cadca0f7621ca301cd8abfc4b1ef11ca43736c06f40e65bffb13983cd6f5fb6e",
+    "data/04-paper-explanation.json": "b59fbc9bdd15f25d366765ddc5f8e6a000ac3db3be0732358d2f8c079bd30b98",
+    "data/05-experiment-design-baseline.md": "e1a2b8fd151eebfa3135c46b05707127b2ca3e627a51fadf5cb0f95b1b04db2b",
+    "data/05-experiment-design-final.md": "60b1de410d9252bc5f3acf6e56e6fb53170346d2c5f932f5e86c37d09795bfbd",
+    "data/05-experiment-design-skill.md": "2b6a8686a3b5fefb91fcda7a4093cfeef0cb6e7c2ace93363a80812ce4807169",
+    "data/05-experiment-design.json": "f880a87341f6f5165dcf7cfa88d45c4847705efe56a2a6a1d839d660768b1f38",
+    "data/06-result-interpretation-baseline.md": "7dcf7ab282c96b21c83874f896b47f348a3aa944884e82650d2ad830c2bbb8c7",
+    "data/06-result-interpretation-final.md": "e98fe75415b92f18200ea1ca62e3f429aca736788185c0b887ab2c582380e2f2",
+    "data/06-result-interpretation-skill.md": "e4e2bcbf0009f04a33d40bc186150d7b451eb54cfaff79fbc7b99e314544f158",
+    "data/06-result-interpretation.json": "644da82708e18b4a8f82d7556da06d5cce16d4858f8c9ed8df3d86e189166306",
+    "data/07-requirements-baseline.md": "d9fd6efdd4144eec75ebacbeb673bab0fcb36d7d810d6fc485b367fc4ee6aeb3",
+    "data/07-requirements-final.md": "c9e2bedee3b74d0bac1ddf89477f2a39be3de8e72d763c3390567076087b0bc7",
+    "data/07-requirements-skill.md": "1c571e77c22e66842bec6a0a008cc5c78e8b0fd83f09ac3bd5133fef8ee3cb10",
+    "data/07-requirements.json": "21771b3e82e08a6ba81aea224e946e4f522f6c438e171ecc06c44cd251226110",
+    "data/08-project-plan-baseline.md": "424a721a4a365fa5f60b8e1e84e35bd4843afbd9c6a8fa1de823535577db5930",
+    "data/08-project-plan-final.md": "a6c89ecf69b111d2f168320705d219aed1cbc52515dc6d5639b47e870ad7824f",
+    "data/08-project-plan-skill.md": "5c2731966fdabdb8f14b01ec9ab4b073ea8595cbb025c47845029ea281feebb0",
+    "data/08-project-plan.json": "7644b8061c3decd4fd613bee23d982468e538de2ae0d56778d497fae08c29549",
+    "data/09-status-report-baseline.md": "8ed8ba5de83c0cc8948c4a0bc3976d6fe8b8e4f21f23dea91be46c1a1ce896ed",
+    "data/09-status-report-final.md": "881ebe0b0216c4a8c61a05b8489de264600106304c93223dde9b13dc3655f074",
+    "data/09-status-report-skill.md": "2811a55b97d5631faa4a6e819aeaf57d7de7c08126225cc46b559d3b2caec261",
+    "data/09-status-report.json": "7869b2a22c00d00693e09a66fe4a2c056d50f9404bcfee6aa2f25cb8905cef55",
+    "data/10-handoff-baseline.md": "cdc1fed25a44b2819e07e6b7e5f786b15431b8fa5bc037226805622a306606a2",
+    "data/10-handoff-final.md": "6fcc6d2e218fa288eb6420327cf6f64767eb63723d93abb6466405f81cca3b88",
+    "data/10-handoff-skill.md": "6c00e2c39e6a1eb0400271d75a87ed79ebbebf031e25d9b39ce9277a152acb9b",
+    "data/10-handoff.json": "11f2082991dcbf7141ecaf411e2815aa0ccc98e1caad243f13f76e0ac1f990f9",
+    "data/cases.json": "00c4a006c4570a6f8158ff87ebbc65e18455a9845a37c00314fe2604dda0a30d",
+    "data/protocol.json": "3085d704fefd74f28ed0f830d9a3347153f37b96fea58dfea8e11fd7c3977a61"
+  }
+}

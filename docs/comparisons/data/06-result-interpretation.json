@@ -1,0 +1,118 @@
+{
+  "case": {
+    "id": "06-result-interpretation",
+    "title": "结果判断：小幅提升是否足够继续",
+    "prompt": "虚构实验结果：同一组100道任务，方法A在三个随机种子上的成功率是52%、54%、56%，基线是47%、48%、49%；按题目配对 bootstrap，平均差值的95%置信区间是−1到13个百分点。这轮实验花了两天。你觉得现在该继续还是放弃？请解释这些结果支持什么判断，并给下一步最省钱的检查。"
+  },
+  "baseline": {
+    "case_id": "06-result-interpretation",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:26.841Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "虚构实验结果：同一组100道任务，方法A在三个随机种子上的成功率是52%、54%、56%，基线是47%、48%、49%；按题目配对 bootstrap，平均差值的95%置信区间是−1到13个百分点。这轮实验花了两天。你觉得现在该继续还是放弃？请解释这些结果支持什么判断，并给下一步最省钱的检查。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281545,
+    "finish_reason": "stop",
+    "content": "先给结论：**这轮结果不足以支持“继续投入”也不足以支持“放弃”，它支持的是“先别下大结论，做一个很便宜的配对显著性/区间检查再决定”。** 如果必须二选一，我倾向于**暂不放弃，但也暂不加码**——因为点估计方向有利，但区间跨 0 且很宽，当前证据等级只够“值得再花小钱确认”，不够“值得投入两天一轮的大实验”。\n\n下面拆开解释。\n\n## 这些结果支持什么判断\n\n### 1. 点估计方向一致有利\n- 方法A三个种子：52%、54%、56%，均值约 **54%**\n- 基线三个种子：47%、48%、49%，均值约 **48%**\n- 平均差约 **+6 个百分点**\n\n三个种子下方法A都高于基线，方向一致，这是弱正面信号。\n\n### 2. 但种子间波动和基线波动都不小\n- A 的种子间范围 52–56，跨度 4 个百分点\n- 基线 47–49，跨度 2 个百分点\n- 只有 3 个种子，均值差 +6 的估计本身不稳\n\n### 3. 配对 bootstrap 的 95% CI = −1 到 13 个百分点\n这是关键。它说明：\n- **不能排除真实差值为 0 甚至略负**\n- 但区间上端到 +13，也不能排除有实际意义的正收益\n- 区间很宽，说明**当前样本量/配对结构下，估计精度不够**\n- “跨 0”不等于“没效果”，只等于“这轮数据不能把效果和噪声分开”\n\n### 4. 两天成本 vs 当前信息量\n花两天得到的是一个“方向对但不确定”的结果。此时：\n- **放弃**：可能丢掉一个 +6 点左右的真实收益，代价可能很大\n- **直接继续大投入**：可能在一个尚未确认的效果上烧更多两天\n- **最合理**：先做低成本确认，再决定是否加码\n\n所以这些结果支持的判断是：**效果“可能存在但未确认”，当前应进入“低成本验证”而不是“继续/放弃”的二选一。**\n\n## 下一步最省钱的检查\n\n最省钱且信息量最高的检查，不是再跑完整 100 题 × 多种子，而是：\n\n### 首选：用已有逐题结果做配对检验 + 看配对差异分布\n如果这轮实验保存了**每题、每个种子、A 和基线的逐题成败**，那么几乎零额外算力成本就能做：\n\n1. **按题目配对**，对每个种子算 A−基线 的逐题差值（+1/0/−1）\n2. 对 100 题做**配对符号检验或配对置换检验**，看 p 值\n3. 看**配对差值均值的标准误**，确认 bootstrap CI 是否因配对方式/重采样单位设置而偏宽\n4. 特别检查：**A 赢的题和输的题是否集中在少数题目上**——如果 +6 点主要由少数几道题驱动，泛化性存疑\n\n这一步成本几乎为零，因为数据已经有了。\n\n### 次选：只加种子，不加题目\n如果逐题数据不完整，最省钱的是**固定这 100 题，只增加随机种子**，比如从 3 个加到 8–10 个。因为：\n- 题目配对结构不变，能直接估计种子噪声\n- 不需要扩题、不需要新标注/新任务构造\n- 能显著收窄“平均差值”的区间\n\n### 不建议现在做的\n- 直接扩到几百题的新任务集：贵，且当前连“这 100 题上是否真有效”都没确认\n- 直接上更大模型/更多训练：在效果未确认前加码，风险高\n- 只看三个种子均值就宣布成功：CI 跨 0，证据不足\n\n## 一个可执行的决策规则\n\n可以预先定好：\n- 若配对检验 p < 0.05 且差值均值仍 ≥ +4 点 → **继续**，进入下一轮适度加码\n- 若 p 不显著但点估计仍为正、CI 上端仍可观 → **只加种子/加题做确认**，不加方法复杂度\n- 若配对检验显示差值集中在少数题，或加种子后均值差掉到 +2 点以内 → **放弃或转向诊断**\n\n**一句话总结：这轮结果不支持放弃，也不支持直接加码；它支持“用已有逐题数据做零成本配对检验，必要时只加种子”，确认 +6 点不是噪声后再决定。**",
+    "usage": {
+      "prompt_tokens": 85,
+      "completion_tokens": 1014,
+      "total_tokens": 1099,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 85
+    },
+    "seconds": 10.425
+  },
+  "skill_only": {
+    "case_id": "06-result-interpretation",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T03:32:25.027Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "虚构实验结果：同一组100道任务，方法A在三个随机种子上的成功率是52%、54%、56%，基线是47%、48%、49%；按题目配对 bootstrap，平均差值的95%置信区间是−1到13个百分点。这轮实验花了两天。你觉得现在该继续还是放弃？请解释这些结果支持什么判断，并给下一步最省钱的检查。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794281544,
+    "finish_reason": "stop",
+    "content": "**先给判断：现在既不该宣布方法A有效，也不该放弃。** 这轮结果只支持“可能有提升，但证据不够”，因为配对 bootstrap 的 95% 区间是 −1 到 13 个百分点，跨过 0，不能排除没有提升。\n\n具体看：\n\n- 三个种子的成功率：A 是 52%、54%、56%，基线是 47%、48%、49%。每个种子下 A 都高 5 到 7 个百分点，方向一致，这是正面信号。\n- 但只有 3 个种子、100 道题，种子间波动和题目难度都会影响结果。区间下限 −1 说明“真实平均差为 0 或略负”仍与数据相容。\n- 因此当前证据支持的是：**值得做一次更省钱的确认，而不是直接扩大投入，也不是因为区间跨 0 就放弃。**\n\n下一步最省钱的检查，我建议先做**同一批 100 道题上的配对逐题分析**，不再跑新实验：\n\n1. 统计 A 和基线逐题胜负：A 赢多少题、输多少题、平多少题。\n2. 重点看 A 赢的题和输的题是否集中在某类任务；如果 A 的净胜题数很少，或赢输都集中在少数题上，提升可能不稳。\n3. 用现有逐题结果做配对检验或重采样，确认区间跨 0 是样本量不足，还是存在明显的异质性。\n\n这一步几乎不花额外算力，只重新分析已有记录。若逐题结果显示 A 的净胜题数明显为正、且不是少数题撑起来的，再考虑加种子或加题量；若胜负接近或输赢高度集中，就应优先修实验设计或放弃这条路线。",
+    "usage": {
+      "prompt_tokens": 266,
+      "completion_tokens": 389,
+      "total_tokens": 655,
+      "prompt_tokens_details": {
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 138
+    },
+    "seconds": 4.265
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "06-result-interpretation",
+    "source_sha256": "e4e2bcbf0009f04a33d40bc186150d7b451eb54cfaff79fbc7b99e314544f158",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "首先，让我们做出判断：目前，不应宣布方法A有效，也无需放弃。当前结果表明“可能有所改善，但证据不足”。配对自举法的95%置信区间在-1到13个百分点之间；由于该区间跨越了0，因此无法排除任何改善的可能性。\n\n具体来说：\n\n- 三种种子的成功率：方法A的成功率分别为52%、54%和56%，而基准值为47%、48%和49%。对于每种种子，方法A的成功率分别增加了5到7个百分点，方向一致——这是一个积极的信号。\n- 然而，由于只有3种种子和100个问题，不同种子之间的波动以及问题的难度都可能影响结果。-1的下限表明“真实平均差异为0或略负”，这与数据一致。\n- 因此，当前证据表明，进行更经济有效的验证测试更为合适，而非直接增加投入；不必因为区间跨越了0而放弃。\n\n作为最经济有效的下一步，我建议对100个问题进行**两两分析**，以避免重复实验：\n\n1. 统计每种种子在哪些问题中获得胜利、失败或平局。\n2. 关注方法A获胜或失败的那些问题是否集中在特定类型的任务中。如果方法A的净优势很小，或者获胜和失败都集中在少数几个问题中，那么改善效果可能不稳固。\n3. 利用现有的两两结果进行配对测试或重采样，以确定区间跨越0是由于样本量不足还是实际差异导致的。\n\n这一步骤所需的计算工作量很小，只是对现有数据的重新分析。如果两两分析结果显示方法A有明显的净优势，且并非由少数几个问题驱动，那么可以考虑增加更多种子或增加问题数量。如果获胜和失败的情况相似或集中在少数几个问题中，那么最好改进实验设计或放弃这种方法。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 28.321284000005107,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 594,
+          "output_chars": 654,
+          "warnings": [],
+          "seconds": 28.32116260001203
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "**先给判断：现在既不该宣布方法A有效，也不该放弃。** 这轮结果只支持“可能有提升，但证据不够”，因为配对 bootstrap 的 95% 区间是 −1 到 13 个百分点，跨过 0，不能排除没有提升。\n\n具体看：\n\n- 三个种子的成功率：A 是 52%、54%、56%，基线是 47%、48%、49%。每个种子下 A 都高 5 到 7 个百分点，方向一致，这是正面信号。\n- 但只有 3 个种子、100 道题，种子间波动和题目难度都会影响结果。区间下限 −1 说明“真实平均差为 0 或略负”仍与数据相容。\n- 因此当前证据支持的是：**值得做一次更省钱的确认，而不是直接扩大投入，也不是因为区间跨 0 就放弃。**\n\n下一步最省钱的检查，我建议先做**同一批 100 道题上的配对逐题分析**，不再跑新实验：\n\n1. 统计 A 和基线逐题胜负：A 赢多少题、输多少题、平多少题。\n2. 重点看 A 赢的题和输的题是否集中在某类任务；如果 A 的净胜题数很少，或赢输都集中在少数题上，提升可能不稳。\n3. 用现有逐题结果做配对检验或重采样，确认区间跨 0 是样本量不足，还是存在明显的异质性。\n\n这一步几乎不花额外算力，只重新分析已有记录。若逐题结果显示 A 的净胜题数明显为正、且不是少数题撑起来的，再考虑加种子或加题量；若胜负接近或输赢高度集中，就应优先修实验设计或放弃这条路线。",
+        "target": "en",
+        "context": "",
+        "output": "**First, let’s make a judgment: At this point, neither Method A should be announced as effective nor should we give up.** The current results support the idea that “there may be an improvement, but the evidence is insufficient.” The 95% confidence interval for the paired bootstrap is from −1 to 13 percentage points; since it crosses 0, it is not possible to rule out any improvement.\n\nSpecifically:\n\n- Success rates for the three seeds: A achieved 52%, 54%, and 56% success rates, while the baseline was 47%, 48%, and 49%. For each seed, A’s success rate increased by 5 to 7 percentage points, in the same direction—this is a positive sign.\n- However, with only 3 seeds and 100 questions, fluctuations between seeds and the difficulty of the questions can affect the results. The lower limit of −1 indicates that “the true average difference is 0 or slightly negative,” which is consistent with the data.\n- Therefore, the current evidence suggests that it is worthwhile to conduct a more cost-effective confirmation test, rather than increasing investment directly, and there is no need to give up just because the interval crosses 0.\n\nAs the most cost-effective next step, I recommend performing a **pairwise analysis of each of the 100 questions** to avoid running new experiments:\n\n1. Count the number of questions in which A won, lost, or tied with each seed.\n2. Focus on whether the questions in which A won or lost are concentrated in certain types of tasks. If A’s net advantage is small, or if the wins and losses are concentrated in a few questions, the improvement may not be stable.\n3. Use the existing pairwise results for paired tests or resampling to determine whether the interval crossing 0 is due to insufficient sample size or actual heterogeneity.\n\nThis step requires little additional computational effort; it’s simply a reanalysis of the existing data. If the pairwise results show a clearly positive net advantage for A, and it isn’t driven by a few questions, then consider adding more seeds or increasing the number of questions. If the wins and losses are similar or concentrated in a few questions, then it’s better to improve the experimental design or abandon this approach.",
+        "seconds": 16.0245
+      },
+      {
+        "source": "**First, let’s make a judgment: At this point, neither Method A should be announced as effective nor should we give up.** The current results support the idea that “there may be an improvement, but the evidence is insufficient.” The 95% confidence interval for the paired bootstrap is from −1 to 13 percentage points; since it crosses 0, it is not possible to rule out any improvement.\n\nSpecifically:\n\n- Success rates for the three seeds: A achieved 52%, 54%, and 56% success rates, while the baseline was 47%, 48%, and 49%. For each seed, A’s success rate increased by 5 to 7 percentage points, in the same direction—this is a positive sign.\n- However, with only 3 seeds and 100 questions, fluctuations between seeds and the difficulty of the questions can affect the results. The lower limit of −1 indicates that “the true average difference is 0 or slightly negative,” which is consistent with the data.\n- Therefore, the current evidence suggests that it is worthwhile to conduct a more cost-effective confirmation test, rather than increasing investment directly, and there is no need to give up just because the interval crosses 0.\n\nAs the most cost-effective next step, I recommend performing a **pairwise analysis of each of the 100 questions** to avoid running new experiments:\n\n1. Count the number of questions in which A won, lost, or tied with each seed.\n2. Focus on whether the questions in which A won or lost are concentrated in certain types of tasks. If A’s net advantage is small, or if the wins and losses are concentrated in a few questions, the improvement may not be stable.\n3. Use the existing pairwise results for paired tests or resampling to determine whether the interval crossing 0 is due to insufficient sample size or actual heterogeneity.\n\nThis step requires little additional computational effort; it’s simply a reanalysis of the existing data. If the pairwise results show a clearly positive net advantage for A, and it isn’t driven by a few questions, then consider adding more seeds or increasing the number of questions. If the wins and losses are similar or concentrated in a few questions, then it’s better to improve the experimental design or abandon this approach.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "首先，让我们做出判断：目前，不应宣布方法A有效，也无需放弃。当前结果表明“可能有所改善，但证据不足”。配对自举法的95%置信区间在-1到13个百分点之间；由于该区间跨越了0，因此无法排除任何改善的可能性。\n\n具体来说：\n\n- 三种种子的成功率：方法A的成功率分别为52%、54%和56%，而基准值为47%、48%和49%。对于每种种子，方法A的成功率分别增加了5到7个百分点，方向一致——这是一个积极的信号。\n- 然而，由于只有3种种子和100个问题，不同种子之间的波动以及问题的难度都可能影响结果。-1的下限表明“真实平均差异为0或略负”，这与数据一致。\n- 因此，当前证据表明，进行更经济有效的验证测试更为合适，而非直接增加投入；不必因为区间跨越了0而放弃。\n\n作为最经济有效的下一步，我建议对100个问题进行**两两分析**，以避免重复实验：\n\n1. 统计每种种子在哪些问题中获得胜利、失败或平局。\n2. 关注方法A获胜或失败的那些问题是否集中在特定类型的任务中。如果方法A的净优势很小，或者获胜和失败都集中在少数几个问题中，那么改善效果可能不稳固。\n3. 利用现有的两两结果进行配对测试或重采样，以确定区间跨越0是由于样本量不足还是实际差异导致的。\n\n这一步骤所需的计算工作量很小，只是对现有数据的重新分析。如果两两分析结果显示方法A有明显的净优势，且并非由少数几个问题驱动，那么可以考虑增加更多种子或增加问题数量。如果获胜和失败的情况相似或集中在少数几个问题中，那么最好改进实验设计或放弃这种方法。",
+        "seconds": 12.2965
+      }
+    ],
+    "seconds": 28.322
+  },
+  "character_counts_including_markdown": {
+    "baseline": 1621,
+    "skill_only": 594,
+    "final": 654
+  },
+  "editorial_observation": "skill 原稿的“不能排除没有提升”被回译成“无法排除任何改善的可能性”，论据指向发生变化；原稿中的 A 与基线逐题胜负还变成“每种种子”胜负。数字和区间保留不等于统计含义保留。"
+}
