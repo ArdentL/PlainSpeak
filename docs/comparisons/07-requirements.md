@@ -1,18 +1,14 @@
-# 需求澄清：把模糊想法变成可确认需求
+# 确认桌面插件第一版需要做什么
 
-[返回十场景总览](README.md) · [完整调用与回译证据](data/07-requirements.json)
+[返回场景列表](README.md) · [调用记录](data/07-requirements.json)
 
-## 同一个问题
+## 用户问题
 
 我想做一个桌面插件：回答太绕的时候自动显示更好读的版本，支持开关，数据最好留在本地。先只支持一个聊天客户端。你现在需要问我哪些问题？请选真正影响第一版实现的点，别一次丢一大堆问题。
 
-## 左右对照：完整输出
+## 回答对比
 
-左：DeepSeek 原始输出，不加 PlainSpeak 系统规则，不做回译。右：另一次相同问题的 DeepSeek 调用，加入项目实际注入的清晰表达规则，再运行当前 core/CLI 回译。两边均为第一次成功响应，未人工改写。
-
-| 原版字符数 | skill 原稿字符数 | skill + 回译字符数 | 回译保留原文块数 |
-| ---: | ---: | ---: | ---: |
-| 461 | 531 | 649 | 0 |
+左侧是未加写作规则的 DeepSeek 回答；右侧是在相同问题下加入清晰表达规则后生成、再经过本地回译的回答。两份回答均未人工修改。
 
 <table>
 <thead><tr><th align="left" width="50%">DeepSeek：无 skill、无回译</th><th align="left" width="50%">DeepSeek：skill + 本地回译</th></tr></thead>
@@ -71,17 +67,17 @@
 </td></tr></tbody>
 </table>
 
-## 观察
+## 阅读时留意
 
-这一组原版已经较短。skill 原稿与回译最终稿都更长，右侧还把“列点”改成“高亮显示”。完整保留这个反例，不将更长或更正式算作更好。
+原版回答已经较短，加入 skill 和回译后都更长。回译还把“列点”改成了“高亮显示”。
 
-字符数含空白、Markdown 和代码，按 Unicode 字符统计，只反映篇幅；不代表可读性或正确性评分。
+## 原始记录
 
-## 核对中间阶段
+- [DeepSeek 原始回答](data/07-requirements-baseline.md)
+- [只加 skill 的中间稿](data/07-requirements-skill.md)
+- [skill + 回译的最终稿](data/07-requirements-final.md)
+- [翻译过程和保护检查](data/07-requirements.json)
 
-- [DeepSeek 原始输出，未编辑](data/07-requirements-baseline.md)
-- [只加 skill，尚未回译](data/07-requirements-skill.md)
-- [skill + 回译，完整最终输出](data/07-requirements-final.md)
-- [实际两阶段翻译输入、英文中转、返回中文、保护报告和调用用量](data/07-requirements.json)
+各页保留了只加 skill 的中间稿、英文中转和返回中文的记录。案例中的操作和计划均为生成文本，未实际执行。
 
-共同设置、完整写作指令与执行边界见[总览的测试条件](README.md#测试条件)。源回答内容是生成的演示文本，不是已经执行的操作或审定的技术指导。
+[测试条件与复现方法](README.md#测试条件)

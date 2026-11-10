@@ -1,18 +1,14 @@
-# 项目计划：两个人，两周做第一版
+# 安排两个人在两周内完成第一版
 
-[返回十场景总览](README.md) · [完整调用与回译证据](data/08-project-plan.json)
+[返回场景列表](README.md) · [调用记录](data/08-project-plan.json)
 
-## 同一个问题
+## 用户问题
 
 我们两个人准备在两周内做一个本地文本改写插件。已经有能运行的小翻译模型，聊天客户端有公开插件接口。第一版要有自动处理、原文对照、开关和本地记录，暂时不做云同步。请给一个具体分工与交付计划，说明先做什么、怎么验收，以及时间不够时砍什么。
 
-## 左右对照：完整输出
+## 回答对比
 
-左：DeepSeek 原始输出，不加 PlainSpeak 系统规则，不做回译。右：另一次相同问题的 DeepSeek 调用，加入项目实际注入的清晰表达规则，再运行当前 core/CLI 回译。两边均为第一次成功响应，未人工改写。
-
-| 原版字符数 | skill 原稿字符数 | skill + 回译字符数 | 回译保留原文块数 |
-| ---: | ---: | ---: | ---: |
-| 4070 | 1635 | 1860 | 0 |
+左侧是未加写作规则的 DeepSeek 回答；右侧是在相同问题下加入清晰表达规则后生成、再经过本地回译的回答。两份回答均未人工修改。
 
 <table>
 <thead><tr><th align="left" width="50%">DeepSeek：无 skill、无回译</th><th align="left" width="50%">DeepSeek：skill + 本地回译</th></tr></thead>
@@ -377,17 +373,17 @@
 </td></tr></tbody>
 </table>
 
-## 观察
+## 阅读时留意
 
-右侧仍有“验收”变成“接受度测试”等术语变化。两份回答都是生成的计划，没有执行项目。可用 skill 原稿对照观察：整体篇幅下降主要发生在写作规则阶段，而非回译阶段。
+回译把“验收”改成了“接受度测试”。回答的大部分缩短发生在加入写作规则之后。两份计划均未执行。
 
-字符数含空白、Markdown 和代码，按 Unicode 字符统计，只反映篇幅；不代表可读性或正确性评分。
+## 原始记录
 
-## 核对中间阶段
+- [DeepSeek 原始回答](data/08-project-plan-baseline.md)
+- [只加 skill 的中间稿](data/08-project-plan-skill.md)
+- [skill + 回译的最终稿](data/08-project-plan-final.md)
+- [翻译过程和保护检查](data/08-project-plan.json)
 
-- [DeepSeek 原始输出，未编辑](data/08-project-plan-baseline.md)
-- [只加 skill，尚未回译](data/08-project-plan-skill.md)
-- [skill + 回译，完整最终输出](data/08-project-plan-final.md)
-- [实际两阶段翻译输入、英文中转、返回中文、保护报告和调用用量](data/08-project-plan.json)
+各页保留了只加 skill 的中间稿、英文中转和返回中文的记录。案例中的操作和计划均为生成文本，未实际执行。
 
-共同设置、完整写作指令与执行边界见[总览的测试条件](README.md#测试条件)。源回答内容是生成的演示文本，不是已经执行的操作或审定的技术指导。
+[测试条件与复现方法](README.md#测试条件)

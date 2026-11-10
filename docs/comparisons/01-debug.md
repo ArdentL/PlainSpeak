@@ -1,8 +1,8 @@
-# 修 Bug：找出可变默认参数的问题
+# 修复 Python 函数第二次调用时混入旧数据的问题
 
-[返回十场景总览](README.md) · [完整调用与回译证据](data/01-debug.json)
+[返回场景列表](README.md) · [调用记录](data/01-debug.json)
 
-## 同一个问题
+## 用户问题
 
 帮我看这段 Python 为什么第二次调用会带上上一次的数据，并给出修改后的代码和原因：
 ```python
@@ -14,13 +14,9 @@ print(add_item("a"))
 print(add_item("b"))
 ```
 
-## 左右对照：完整输出
+## 回答对比
 
-左：DeepSeek 原始输出，不加 PlainSpeak 系统规则，不做回译。右：另一次相同问题的 DeepSeek 调用，加入项目实际注入的清晰表达规则，再运行当前 core/CLI 回译。两边均为第一次成功响应，未人工改写。
-
-| 原版字符数 | skill 原稿字符数 | skill + 回译字符数 | 回译保留原文块数 |
-| ---: | ---: | ---: | ---: |
-| 810 | 671 | 705 | 0 |
+左侧是未加写作规则的 DeepSeek 回答；右侧是在相同问题下加入清晰表达规则后生成、再经过本地回译的回答。两份回答均未人工修改。
 
 <table>
 <thead><tr><th align="left" width="50%">DeepSeek：无 skill、无回译</th><th align="left" width="50%">DeepSeek：skill + 本地回译</th></tr></thead>
@@ -84,17 +80,17 @@ print(add_item(&quot;b&quot;, shared))  # ['a', 'b']
 </td></tr></tbody>
 </table>
 
-## 观察
+## 阅读时留意
 
-代码块逐字保留。回译增加了“为何进行此更改”等较正式的说法；从 skill 原稿 671 字符变为 705 字符，不能把整体缩短都归功于回译。
+代码块保持原样。回译增加了“为何进行此更改”等较正式的说法，篇幅比只加 skill 时更长。
 
-字符数含空白、Markdown 和代码，按 Unicode 字符统计，只反映篇幅；不代表可读性或正确性评分。
+## 原始记录
 
-## 核对中间阶段
+- [DeepSeek 原始回答](data/01-debug-baseline.md)
+- [只加 skill 的中间稿](data/01-debug-skill.md)
+- [skill + 回译的最终稿](data/01-debug-final.md)
+- [翻译过程和保护检查](data/01-debug.json)
 
-- [DeepSeek 原始输出，未编辑](data/01-debug-baseline.md)
-- [只加 skill，尚未回译](data/01-debug-skill.md)
-- [skill + 回译，完整最终输出](data/01-debug-final.md)
-- [实际两阶段翻译输入、英文中转、返回中文、保护报告和调用用量](data/01-debug.json)
+各页保留了只加 skill 的中间稿、英文中转和返回中文的记录。案例中的操作和计划均为生成文本，未实际执行。
 
-共同设置、完整写作指令与执行边界见[总览的测试条件](README.md#测试条件)。源回答内容是生成的演示文本，不是已经执行的操作或审定的技术指导。
+[测试条件与复现方法](README.md#测试条件)

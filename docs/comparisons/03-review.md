@@ -1,8 +1,8 @@
-# 代码审查：缓存是否会返回旧权限
+# 审查权限缓存是否会返回过期数据
 
-[返回十场景总览](README.md) · [完整调用与回译证据](data/03-review.json)
+[返回场景列表](README.md) · [调用记录](data/03-review.json)
 
-## 同一个问题
+## 用户问题
 
 请 review 下面这段服务端代码，优先指出真实影响行为的问题，再给修改建议。`load_user` 每次从数据库读取用户，角色可能在运行中被管理员修改。
 ```python
@@ -17,13 +17,9 @@ def can_delete(user_id):
     return "delete" in get_permissions(user_id)
 ```
 
-## 左右对照：完整输出
+## 回答对比
 
-左：DeepSeek 原始输出，不加 PlainSpeak 系统规则，不做回译。右：另一次相同问题的 DeepSeek 调用，加入项目实际注入的清晰表达规则，再运行当前 core/CLI 回译。两边均为第一次成功响应，未人工改写。
-
-| 原版字符数 | skill 原稿字符数 | skill + 回译字符数 | 回译保留原文块数 |
-| ---: | ---: | ---: | ---: |
-| 2633 | 469 | 548 | 0 |
+左侧是未加写作规则的 DeepSeek 回答；右侧是在相同问题下加入清晰表达规则后生成、再经过本地回译的回答。两份回答均未人工修改。
 
 <table>
 <thead><tr><th align="left" width="50%">DeepSeek：无 skill、无回译</th><th align="left" width="50%">DeepSeek：skill + 本地回译</th></tr></thead>
@@ -142,17 +138,17 @@ def get_permissions(user_id):
 </td></tr></tbody>
 </table>
 
-## 观察
+## 阅读时留意
 
-skill 把原版反复讨论的缓存失效问题收拢了，但回译后的开头“关于对行为影响的真实影响的问题”更绕。这是可见的表达退化。
+skill 删去了原版反复讨论缓存失效的文字。回译后的开头“关于对行为影响的真实影响的问题”更绕了。
 
-字符数含空白、Markdown 和代码，按 Unicode 字符统计，只反映篇幅；不代表可读性或正确性评分。
+## 原始记录
 
-## 核对中间阶段
+- [DeepSeek 原始回答](data/03-review-baseline.md)
+- [只加 skill 的中间稿](data/03-review-skill.md)
+- [skill + 回译的最终稿](data/03-review-final.md)
+- [翻译过程和保护检查](data/03-review.json)
 
-- [DeepSeek 原始输出，未编辑](data/03-review-baseline.md)
-- [只加 skill，尚未回译](data/03-review-skill.md)
-- [skill + 回译，完整最终输出](data/03-review-final.md)
-- [实际两阶段翻译输入、英文中转、返回中文、保护报告和调用用量](data/03-review.json)
+各页保留了只加 skill 的中间稿、英文中转和返回中文的记录。案例中的操作和计划均为生成文本，未实际执行。
 
-共同设置、完整写作指令与执行边界见[总览的测试条件](README.md#测试条件)。源回答内容是生成的演示文本，不是已经执行的操作或审定的技术指导。
+[测试条件与复现方法](README.md#测试条件)

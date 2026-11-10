@@ -1,18 +1,14 @@
-# 论文讲解：理解 PPO 的裁剪目标
+# 用一个例子讲清 PPO 为什么要裁剪概率比
 
-[返回十场景总览](README.md) · [完整调用与回译证据](data/04-paper-explanation.json)
+[返回场景列表](README.md) · [调用记录](data/04-paper-explanation.json)
 
-## 同一个问题
+## 用户问题
 
 我在读 PPO，不理解为什么要对新旧策略的概率比做 clip。请结合“某个动作更新前概率为0.2，更新后为0.3，优势为正，epsilon为0.2”这个例子讲清楚：原目标和裁剪目标分别鼓励什么，clip 是否真的把新概率锁死在某个区间。
 
-## 左右对照：完整输出
+## 回答对比
 
-左：DeepSeek 原始输出，不加 PlainSpeak 系统规则，不做回译。右：另一次相同问题的 DeepSeek 调用，加入项目实际注入的清晰表达规则，再运行当前 core/CLI 回译。两边均为第一次成功响应，未人工改写。
-
-| 原版字符数 | skill 原稿字符数 | skill + 回译字符数 | 回译保留原文块数 |
-| ---: | ---: | ---: | ---: |
-| 2069 | 1103 | 1156 | 0 |
+左侧是未加写作规则的 DeepSeek 回答；右侧是在相同问题下加入清晰表达规则后生成、再经过本地回译的回答。两份回答均未人工修改。
 
 <table>
 <thead><tr><th align="left" width="50%">DeepSeek：无 skill、无回译</th><th align="left" width="50%">DeepSeek：skill + 本地回译</th></tr></thead>
@@ -85,17 +81,17 @@ $$</p>
 </td></tr></tbody>
 </table>
 
-## 观察
+## 阅读时留意
 
-模型内容存在原始数学错误：skill 原稿已写成 A<0 时 0.5A 比 1.0A“更负”；取 A=-1 即可看出相反。回译保留了该错误，并把最后一段“目标按 0.8A 算”中的 A 丢掉。保留原输出以区分源回答错误与回译新增错误，不能把本案例作为 PPO 教材。
+skill 原稿已有数学错误：它说 A<0 时 0.5A 比 1.0A 更负，代入 A=-1 就能看出错误。回译保留了这个错误，还丢掉了末段“目标按 0.8A 算”中的 A。阅读这个案例时需要留意这两处错误。
 
-字符数含空白、Markdown 和代码，按 Unicode 字符统计，只反映篇幅；不代表可读性或正确性评分。
+## 原始记录
 
-## 核对中间阶段
+- [DeepSeek 原始回答](data/04-paper-explanation-baseline.md)
+- [只加 skill 的中间稿](data/04-paper-explanation-skill.md)
+- [skill + 回译的最终稿](data/04-paper-explanation-final.md)
+- [翻译过程和保护检查](data/04-paper-explanation.json)
 
-- [DeepSeek 原始输出，未编辑](data/04-paper-explanation-baseline.md)
-- [只加 skill，尚未回译](data/04-paper-explanation-skill.md)
-- [skill + 回译，完整最终输出](data/04-paper-explanation-final.md)
-- [实际两阶段翻译输入、英文中转、返回中文、保护报告和调用用量](data/04-paper-explanation.json)
+各页保留了只加 skill 的中间稿、英文中转和返回中文的记录。案例中的操作和计划均为生成文本，未实际执行。
 
-共同设置、完整写作指令与执行边界见[总览的测试条件](README.md#测试条件)。源回答内容是生成的演示文本，不是已经执行的操作或审定的技术指导。
+[测试条件与复现方法](README.md#测试条件)
