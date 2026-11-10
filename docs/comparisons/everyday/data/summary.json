@@ -1,0 +1,170 @@
+{
+  "created_at": "2026-11-10T06:08:00.418121+00:00",
+  "cases": [
+    {
+      "id": "01-everyday",
+      "role": "日常聊天",
+      "character_counts": {
+        "baseline": 619,
+        "skill_only": 260,
+        "final": 291
+      },
+      "retained_chunks": 0
+    },
+    {
+      "id": "02-school",
+      "role": "高中生",
+      "character_counts": {
+        "baseline": 1329,
+        "skill_only": 677,
+        "final": 676
+      },
+      "retained_chunks": 1
+    },
+    {
+      "id": "03-undergraduate",
+      "role": "本科生",
+      "character_counts": {
+        "baseline": 558,
+        "skill_only": 397,
+        "final": 450
+      },
+      "retained_chunks": 0
+    },
+    {
+      "id": "04-graduate-paper",
+      "role": "研究生读论文",
+      "character_counts": {
+        "baseline": 1175,
+        "skill_only": 612,
+        "final": 762
+      },
+      "retained_chunks": 0
+    },
+    {
+      "id": "05-research-idea",
+      "role": "研究人员",
+      "character_counts": {
+        "baseline": 1456,
+        "skill_only": 705,
+        "final": 864
+      },
+      "retained_chunks": 0
+    },
+    {
+      "id": "06-coding",
+      "role": "程序员",
+      "character_counts": {
+        "baseline": 1415,
+        "skill_only": 972,
+        "final": 1025
+      },
+      "retained_chunks": 0
+    },
+    {
+      "id": "07-teacher",
+      "role": "教师",
+      "character_counts": {
+        "baseline": 156,
+        "skill_only": 98,
+        "final": 139
+      },
+      "retained_chunks": 0
+    },
+    {
+      "id": "08-customer-support",
+      "role": "客服",
+      "character_counts": {
+        "baseline": 140,
+        "skill_only": 89,
+        "final": 106
+      },
+      "retained_chunks": 0
+    },
+    {
+      "id": "09-product-writing",
+      "role": "产品运营",
+      "character_counts": {
+        "baseline": 93,
+        "skill_only": 185,
+        "final": 213
+      },
+      "retained_chunks": 0
+    },
+    {
+      "id": "10-office",
+      "role": "行政与团队协作",
+      "character_counts": {
+        "baseline": 392,
+        "skill_only": 225,
+        "final": 265
+      },
+      "retained_chunks": 0
+    }
+  ],
+  "deepseek_usage": {
+    "prompt_tokens": 3426,
+    "completion_tokens": 6299,
+    "total_tokens": 9725
+  },
+  "first_success_only": true,
+  "manual_answer_edits": false,
+  "product_code_changed": false,
+  "math_presentation": "GitHub dollar delimiters; original answer bytes are preserved in the data files.",
+  "files": {
+    "developer-cases.md": "5762440e827ebbf5d75379b382602cba7ad2f92f7c8d37dcad31fdce9d709bb4",
+    "README.md": "a56c154646eb45e5a9fcef45710ebbeb995f4d601c334bbe394e10e6a3fdd000",
+    "everyday/01-everyday.md": "49403b9a9de4d852816ac8a8cf925c5204e6fdbdad5390ec7eadac8bc60cdcc0",
+    "everyday/02-school.md": "142be05c4784006e621610903d1e38155bbcde197576ffca6f16353b2c8505aa",
+    "everyday/03-undergraduate.md": "7e81f8dfca20f06f93e472dc4fa1b5da1c9b5b679c798a8f2a6c863e43289590",
+    "everyday/04-graduate-paper.md": "21c0000e3d338f10c66bc3679c513df5d8b7c1abb81f28fe655c2acb90a7fc77",
+    "everyday/05-research-idea.md": "9d4e6d20d4554961aff205f5179d3b05f3b8a26f10447153fa7fa51de673f8cc",
+    "everyday/06-coding.md": "af13a0bf0fed36fc36ee5fe74ec55eabc6e0083dc30c9542004cb518c152d8b4",
+    "everyday/07-teacher.md": "206e1af578d53282f3ec90f895e14465ed6daa8330417061f8e015007d76d781",
+    "everyday/08-customer-support.md": "2bfd9252ff40697248d8bc414984d9bb69a2c23c705c76098a01c7e906537ca1",
+    "everyday/09-product-writing.md": "393bfb6d49b95b0f5b3abdb8b0df7b53463b219fc314e2f715661feef28beab6",
+    "everyday/10-office.md": "c0848a2f4d3222fdb6051e292bd668a2fc8a4da97615221e6531f3fab54de28e",
+    "everyday/data/01-everyday-baseline.md": "a2573d2ed789238b6dbcec4e4a6425859ac3c53e139ffa38db22fd834c2514fc",
+    "everyday/data/01-everyday-final.md": "fc7db44d8d4e0d0d07d7aece41488cd30737bc1a4605038b01114b643636f6c0",
+    "everyday/data/01-everyday-skill.md": "0dff3027ee2175db2c43b707cd66d1a3ffb3a97ea465c717986e10b43ec44400",
+    "everyday/data/01-everyday.json": "de75a1a3c90ec21a543ee443465036e17d2177f00ecec569a69553e30ea96e9b",
+    "everyday/data/02-school-baseline.md": "9ad35bf5db81f478b0b257e2049e04128ab06d708adbb8819706d820379e4caa",
+    "everyday/data/02-school-final.md": "141edd0aca078e6fbe3d24b9e3da8af7d186fe7b6bf1a1d2e418d0dd9efbb159",
+    "everyday/data/02-school-skill.md": "c086d8646381162c25985ad27464411693e88bdfa4b3030c3813f924b19e96f2",
+    "everyday/data/02-school.json": "9b17b4823320782095ab2776cbbf105ca25521493d4635d4b430d06e521ef97e",
+    "everyday/data/03-undergraduate-baseline.md": "f88f6b0905f23f9115b947d2d401e9686588c3a314c1d105b9e3298bfe306866",
+    "everyday/data/03-undergraduate-final.md": "fc0d01f6691f4bc17fa926b750c1c7b064cfff72957d32c5bdd6212f25cb6577",
+    "everyday/data/03-undergraduate-skill.md": "8b0fa86ab29f7d1f4e150a0acb732f527c90a8b86558964b205b8565c8190fcc",
+    "everyday/data/03-undergraduate.json": "245c7d05eed62eec9314f2e72b8d3fd438d9035d1ce6c961fc883a94298299f1",
+    "everyday/data/04-graduate-paper-baseline.md": "06e478d39e1859678c94964340bd12cb39d1a0b25df07c5c3de957b1074287ba",
+    "everyday/data/04-graduate-paper-final.md": "5e1b014b0d9a9b868c2ca0cc80bd3a4c6a7fca0ab8ebfe34ff357f7de0b6f028",
+    "everyday/data/04-graduate-paper-skill.md": "c1bf84d36633a907eb8c212a94fecfaf8e5725b61fc7d7b3259b8ff6450c4080",
+    "everyday/data/04-graduate-paper.json": "464153d2740037dc60671e816aea543ff88104b9759d96567dacfa208ee44404",
+    "everyday/data/05-research-idea-baseline.md": "f4f066a6266dc66b8459222861f30c62b836c183201759b59b282e3031f3d999",
+    "everyday/data/05-research-idea-final.md": "fd9cc285f228fef2fe38ff720f6a8c9c19fadcd577a4a315c151ad7add0231bd",
+    "everyday/data/05-research-idea-skill.md": "d51b4a77a5f26b6ca43ed2597c8c41e633ecd1b5dc7788e8a9fe670eb6c4234a",
+    "everyday/data/05-research-idea.json": "006514e81bf31f154b83171ee3939ee8be36f8a748312795648abebc620d0f3a",
+    "everyday/data/06-coding-baseline.md": "9543d6016e557dd8ace689692c504fbda8798fdb28187530ddc39ced0fe151c7",
+    "everyday/data/06-coding-final.md": "91d0635d24aa8d6ee1e2c33e5351dda233348c28e34c5c1e078e907bdb141118",
+    "everyday/data/06-coding-skill.md": "2a718f6ebee214caa2eb21901c64c3f29809f2c2c1e5d06c36728246eeb72e6b",
+    "everyday/data/06-coding.json": "32fdac4a199de72ba2762056d9cde375f366afc43cbf221ce5488f8ab0845072",
+    "everyday/data/07-teacher-baseline.md": "48adddcca33005a44aebd8047292a68a18e6641da36a4030b4bd67e186df8966",
+    "everyday/data/07-teacher-final.md": "8dfcc807da1923ed20a83294b54ead73f1bcb41525ef34619b7b743e9b929357",
+    "everyday/data/07-teacher-skill.md": "10016492bbd3ec3f128aeca547b48587bbd350fa669a7d0ff894647f2763c39b",
+    "everyday/data/07-teacher.json": "bd22ac9ff01e48c45fb36267be6a96db811d6f335297c15596ed775eff590ca1",
+    "everyday/data/08-customer-support-baseline.md": "00b912104cc09d782ca0faac88c41658f8fdbddf449892e22b5d66c627d1a6a6",
+    "everyday/data/08-customer-support-final.md": "4889434c5836aa9cbca476c811583d21601be09e670b66209dd211fcd6186985",
+    "everyday/data/08-customer-support-skill.md": "8f549416ba154a0e9b64dcf9c964ff1c440a6d2616853904c0bfbdbd9a66999f",
+    "everyday/data/08-customer-support.json": "8ea6636619d3aae966fb7b51162695970059438ad9d1e57ca9c9d1aef0eeab9a",
+    "everyday/data/09-product-writing-baseline.md": "582ead24372c07214679dfa641adfbfba73407c3a0d0ef265ec7d15ea277c95c",
+    "everyday/data/09-product-writing-final.md": "37e2eec0169402cb38ebddb29311603d4528932d5c759238c8bc483adebcd814",
+    "everyday/data/09-product-writing-skill.md": "371741773bb5a47a1a6027a1627897df67d44d55ae8c29907ec72fb7fcbec18b",
+    "everyday/data/09-product-writing.json": "2ba2776eb40f51096d33d85f485d0f065cf16626dca169bb2e4dbd25bd9f6063",
+    "everyday/data/10-office-baseline.md": "7029bc73dc35abe10e0abeba56b476998e05659ab21057337a88ddd6eaaf5b3e",
+    "everyday/data/10-office-final.md": "71b31787680e110d609946f334456bd866c4dd8f0ab70845d9144c55da2560db",
+    "everyday/data/10-office-skill.md": "10e43d048c2b9a15d5eec06232ff4a8e5ee8739584bb8894e7d3fa23dbd9b79f",
+    "everyday/data/10-office.json": "6d44dc3db87430825a115ab7852192c2560b062995e30137b65c5628bb7222e0",
+    "everyday/data/cases.json": "9c544ef822afe56789cb1e568cc9525a945e47f85c0270e06c1567cc6dabb934",
+    "everyday/data/protocol.json": "657c6b14fdcf8617096dcee328639d4b4d1630344cca6d2d318b36bae6020d7b"
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "case": {
+    "id": "04-graduate-paper",
+    "role": "研究生读论文",
+    "title": "把论文里的消融实验讲明白",
+    "prompt": "我研一，读方法论文时经常被术语绕晕。下面是一段虚构论文的方法与结果：模型先检索4条相关证据，再由两个Agent各自回答，最后汇总；测试集固定为200道题。完整方法正确率68%，去掉检索后为61%，保留检索但改成单Agent为66%。各设置只运行了一次，文中没有置信区间。请解释这里的“消融实验”在干什么，两个对照分别说明什么，以及我在组会上该怎么介绍这组结果。"
+  },
+  "baseline": {
+    "case_id": "04-graduate-paper",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:41.691Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "我研一，读方法论文时经常被术语绕晕。下面是一段虚构论文的方法与结果：模型先检索4条相关证据，再由两个Agent各自回答，最后汇总；测试集固定为200道题。完整方法正确率68%，去掉检索后为61%，保留检索但改成单Agent为66%。各设置只运行了一次，文中没有置信区间。请解释这里的“消融实验”在干什么，两个对照分别说明什么，以及我在组会上该怎么介绍这组结果。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290320,
+    "finish_reason": "stop",
+    "content": "这段论文里的“消融实验”（ablation study）本质上是在做**归因拆解**：把完整系统里的某个组件拿掉或换掉，看性能掉多少，从而估计这个组件贡献了多少。你这里有两个对照，分别对应两个组件。\n\n## 一、消融实验在干什么\n\n完整系统 = 检索 + 双Agent + 汇总。消融就是构造“缺一块”的版本，和完整版比：\n\n| 设置 | 检索 | Agent数 | 正确率 |\n|---|---|---|---|\n| 完整方法 | 有 | 2 | 68% |\n| 对照1：去掉检索 | 无 | 2 | 61% |\n| 对照2：单Agent | 有 | 1 | 66% |\n\n注意消融不是证明“因果”，而是在固定其他条件时观察性能变化，属于**组件贡献的粗略估计**。而且这里每个设置只跑了一次、200题、无置信区间，所以这些差值只能当趋势看，不能当精确效应量。\n\n## 二、两个对照分别说明什么\n\n**对照1（去掉检索，68%→61%，掉7个点）**：说明检索模块在这个系统里带来了约7个百分点的提升。也就是“外部证据”对回答有帮助。但要注意：去掉检索后双Agent还在，所以这7个点是“检索相对于无检索”的边际贡献，不是检索单独的绝对价值。\n\n**对照2（保留检索，双Agent→单Agent，68%→66%，掉2个点）**：说明在已有检索的条件下，第二个Agent（以及汇总机制）只带来约2个点的边际提升。这个提升明显小于检索的贡献，而且2个点在200题上大约只对应4道题的差异，单次运行下很可能落在噪声范围内。\n\n合起来看，这组消融的叙事是：**检索是主要贡献来源，多Agent协作的增益较小且不稳定**。这也解释了为什么论文要同时做这两个对照——它想说明“我们的提升主要来自检索，而不是靠堆Agent”。\n\n## 三、组会上怎么介绍\n\n建议按“目的—设置—数字—解读—局限”五步说，并且主动点出统计上的弱点，这样显得你读得细：\n\n> “这篇的消融是想拆解两个组件的贡献。完整系统68%，去掉检索降到61%，说明检索大约贡献7个点，是主要来源；保留检索但改成单Agent是66%，说明第二个Agent加汇总只多2个点。不过每个设置只跑了一次，200题上2个点大概就4道题，没有置信区间，所以多Agent那部分增益不能太当真，只能说趋势上检索更关键。如果要严谨，应该多次运行或做配对检验。”\n\n这样介绍的好处是：既讲清了消融的逻辑和两个对照的含义，又指出了“单次运行、无CI、小差值”的问题，组会上老师通常会认可这种批判性阅读。\n\n一个可以顺带提的延伸问题：对照2里“单Agent”是否也保留了汇总步骤？如果单Agent没有汇总，那2个点的差异其实是“第二Agent+汇总”的合并效应，不能单独归给多Agent。读原文时要确认消融变量是否干净。",
+    "usage": {
+      "prompt_tokens": 111,
+      "completion_tokens": 683,
+      "total_tokens": 794,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 111
+    },
+    "seconds": 6.844
+  },
+  "skill_only": {
+    "case_id": "04-graduate-paper",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:41.420Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "我研一，读方法论文时经常被术语绕晕。下面是一段虚构论文的方法与结果：模型先检索4条相关证据，再由两个Agent各自回答，最后汇总；测试集固定为200道题。完整方法正确率68%，去掉检索后为61%，保留检索但改成单Agent为66%。各设置只运行了一次，文中没有置信区间。请解释这里的“消融实验”在干什么，两个对照分别说明什么，以及我在组会上该怎么介绍这组结果。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290320,
+    "finish_reason": "stop",
+    "content": "消融实验就是每次拿掉或替换方法中的一个部件，看性能掉多少，以此判断这个部件贡献了什么。这里完整方法68%，两个对照分别改一个地方。\n\n**两个对照的含义**\n\n- **去掉检索：68%→61%，掉7个百分点。** 说明检索模块在这套设置下对正确率有贡献。但注意，去掉检索同时也改变了输入给Agent的信息，所以它衡量的是“检索+它带来的信息”整体作用，不只是检索算法本身。\n- **保留检索、改成单Agent：68%→66%，掉2个百分点。** 说明在两个Agent都拿到检索证据的前提下，双Agent汇总比单Agent多2个百分点。这个对照隔离了“多Agent协作”这一项，检索条件没变。\n\n两个对照合起来看：检索的边际贡献（7点）大于多Agent协作（2点），但这是单次运行的点估计，不能当成稳定差距。\n\n**组会上怎么介绍**\n\n可以按这个顺序说：\n\n1. 先交代设置：测试集200题，完整方法68%，做了两个单变量对照。\n2. 报两个数：去检索61%，单Agent66%。\n3. 给解读，同时标明局限：检索看起来贡献更大，多Agent约2点；但每个设置只跑了一次、没有置信区间，200题上几个点的差异可能来自题目抽样或运行波动，不能下“显著”的结论。\n4. 提下一步：重复运行取均值/方差，或做配对比较（同一批题逐题对比），再判断2点和7点是否稳。\n\n这样介绍既说清了消融在验证什么，也没有把单次点估计说成确定结论。",
+    "usage": {
+      "prompt_tokens": 292,
+      "completion_tokens": 352,
+      "total_tokens": 644,
+      "prompt_tokens_details": {
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 164
+    },
+    "seconds": 3.734
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "04-graduate-paper",
+    "source_sha256": "c1bf84d36633a907eb8c212a94fecfaf8e5725b61fc7d7b3259b8ff6450c4080",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "消融实验涉及逐步移除或替换该方法中的某个组件，以观察性能下降的程度，从而确定该组件所起的贡献作用。在本实验中，完整方法达到了68%的准确率，而两个对照组则分别进行了一次修改。\n\n**两种对照组的含义**\n\n- **移除检索功能：68% → 61%，下降了7个百分点**。这表明在这些设置下，检索模块对准确率有贡献。然而，移除检索功能后，输入到智能体中的信息也会发生变化，因此这里衡量的是“检索功能及其所提供信息”的整体效果，而非仅指检索算法本身。\n- **保留检索功能，但使用单个智能体：68% → 66%，下降了2个百分点**。这表明当两个智能体都接收检索信息时，两个智能体的综合性能比单个智能体高出2个百分点。这个对照组排除了“多智能体协作”的影响；检索条件保持不变。\n\n综合两种对照组的结果来看：检索功能的边际贡献（7个百分点）大于多智能体协作的贡献（2个百分点）。不过，这些都是单次实验的估计值，不能视为稳定的差异。\n\n**如何在会议中呈现此结果**\n\n你可以按以下顺序进行解释：\n\n1. 首先说明设置情况：测试集中有200道题目；完整方法达到了68%的准确率，同时进行了两次单变量对照实验。\n2. 报告两个数值：移除检索功能后为61%，使用单个智能体后为66%。\n3. 给出解释，同时指出局限性：似乎检索功能更具贡献，由于多智能体协作，差异约为2个百分点；不过，每个设置仅测试了一次，没有置信区间。200道题目中的微小差异可能是由题目抽样或操作波动造成的，因此无法认为这种差异是“显著”的。\n4. 建议下一步措施：多次运行实验以得到平均值或方差，或进行配对比较（比较同一组中的每道题目），从而判断2个百分点和7个百分点的差异是否稳定。\n\n这种呈现方式能够说明消融实验在验证什么，而不将单次实验的估计值视为最终结论。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 32.67488419999427,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 612,
+          "output_chars": 762,
+          "warnings": [],
+          "seconds": 32.67468739999458
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "消融实验就是每次拿掉或替换方法中的一个部件，看性能掉多少，以此判断这个部件贡献了什么。这里完整方法68%，两个对照分别改一个地方。\n\n**两个对照的含义**\n\n- **去掉检索：68%→61%，掉7个百分点。** 说明检索模块在这套设置下对正确率有贡献。但注意，去掉检索同时也改变了输入给Agent的信息，所以它衡量的是“检索+它带来的信息”整体作用，不只是检索算法本身。\n- **保留检索、改成单Agent：68%→66%，掉2个百分点。** 说明在两个Agent都拿到检索证据的前提下，双Agent汇总比单Agent多2个百分点。这个对照隔离了“多Agent协作”这一项，检索条件没变。\n\n两个对照合起来看：检索的边际贡献（7点）大于多Agent协作（2点），但这是单次运行的点估计，不能当成稳定差距。\n\n**组会上怎么介绍**\n\n可以按这个顺序说：\n\n1. 先交代设置：测试集200题，完整方法68%，做了两个单变量对照。\n2. 报两个数：去检索61%，单Agent66%。\n3. 给解读，同时标明局限：检索看起来贡献更大，多Agent约2点；但每个设置只跑了一次、没有置信区间，200题上几个点的差异可能来自题目抽样或运行波动，不能下“显著”的结论。\n4. 提下一步：重复运行取均值/方差，或做配对比较（同一批题逐题对比），再判断2点和7点是否稳。\n\n这样介绍既说清了消融在验证什么，也没有把单次点估计说成确定结论。",
+        "target": "en",
+        "context": "",
+        "output": "The ablation experiment involves removing or replacing one component of the method at a time, to see how much performance decreases, thereby determining what contribution that component provides. In this case, the complete method achieved 68%, with two control groups each having one change made.\n\n**Meaning of the two controls**\n\n- **Removing the retrieval function: 68% → 61%, a decrease of 7 percentage points.** This indicates that the retrieval module contributes to the accuracy rate under these settings. However, by removing the retrieval function, the information fed into the Agent also changes, so it measures the overall effect of “retrieval plus the information it provides”, not just the retrieval algorithm itself.\n- **Keeping the retrieval function, but using a single Agent: 68% → 66%, a decrease of 2 percentage points.** This shows that when both Agents receive retrieval evidence, the combined performance of the two Agents is 2 percentage points higher than that of a single Agent. This control group excludes the effect of “multi-Agent collaboration”; the retrieval conditions remain unchanged.\n\nWhen considering both controls together: the marginal contribution of retrieval (7 points) is greater than that of multi-Agent collaboration (2 points). However, these are point estimates for a single run, and cannot be considered as a stable difference.\n\n**How to present this in a meeting**\n\nYou can explain it in this order:\n\n1. First, explain the settings: 200 questions in the test set; the complete method achieved 68%, with two single-variable controls being performed.\n2. Report two numbers: 61% for removing retrieval, 66% for using a single Agent.\n3. Provide an interpretation, while also indicating the limitations: It seems that retrieval contributes more, with a difference of about 2 points due to multi-Agent collaboration; however, each setting was tested only once, and there is no confidence interval. The slight differences in the 200 questions may be due to question sampling or operational fluctuations, so it cannot be concluded that the difference is “significant”.\n4. Suggest the next steps: Run the experiment multiple times to get a mean or variance, or perform paired comparisons (compare each question in the same set), and then determine whether the 2-point and 7-point differences are stable.\n\nThis way of presenting explains what the ablation experiment is verifying, without presenting the single-run estimates as definitive conclusions.",
+        "seconds": 16.9176
+      },
+      {
+        "source": "The ablation experiment involves removing or replacing one component of the method at a time, to see how much performance decreases, thereby determining what contribution that component provides. In this case, the complete method achieved 68%, with two control groups each having one change made.\n\n**Meaning of the two controls**\n\n- **Removing the retrieval function: 68% → 61%, a decrease of 7 percentage points.** This indicates that the retrieval module contributes to the accuracy rate under these settings. However, by removing the retrieval function, the information fed into the Agent also changes, so it measures the overall effect of “retrieval plus the information it provides”, not just the retrieval algorithm itself.\n- **Keeping the retrieval function, but using a single Agent: 68% → 66%, a decrease of 2 percentage points.** This shows that when both Agents receive retrieval evidence, the combined performance of the two Agents is 2 percentage points higher than that of a single Agent. This control group excludes the effect of “multi-Agent collaboration”; the retrieval conditions remain unchanged.\n\nWhen considering both controls together: the marginal contribution of retrieval (7 points) is greater than that of multi-Agent collaboration (2 points). However, these are point estimates for a single run, and cannot be considered as a stable difference.\n\n**How to present this in a meeting**\n\nYou can explain it in this order:\n\n1. First, explain the settings: 200 questions in the test set; the complete method achieved 68%, with two single-variable controls being performed.\n2. Report two numbers: 61% for removing retrieval, 66% for using a single Agent.\n3. Provide an interpretation, while also indicating the limitations: It seems that retrieval contributes more, with a difference of about 2 points due to multi-Agent collaboration; however, each setting was tested only once, and there is no confidence interval. The slight differences in the 200 questions may be due to question sampling or operational fluctuations, so it cannot be concluded that the difference is “significant”.\n4. Suggest the next steps: Run the experiment multiple times to get a mean or variance, or perform paired comparisons (compare each question in the same set), and then determine whether the 2-point and 7-point differences are stable.\n\nThis way of presenting explains what the ablation experiment is verifying, without presenting the single-run estimates as definitive conclusions.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "消融实验涉及逐步移除或替换该方法中的某个组件，以观察性能下降的程度，从而确定该组件所起的贡献作用。在本实验中，完整方法达到了68%的准确率，而两个对照组则分别进行了一次修改。\n\n**两种对照组的含义**\n\n- **移除检索功能：68% → 61%，下降了7个百分点**。这表明在这些设置下，检索模块对准确率有贡献。然而，移除检索功能后，输入到智能体中的信息也会发生变化，因此这里衡量的是“检索功能及其所提供信息”的整体效果，而非仅指检索算法本身。\n- **保留检索功能，但使用单个智能体：68% → 66%，下降了2个百分点**。这表明当两个智能体都接收检索信息时，两个智能体的综合性能比单个智能体高出2个百分点。这个对照组排除了“多智能体协作”的影响；检索条件保持不变。\n\n综合两种对照组的结果来看：检索功能的边际贡献（7个百分点）大于多智能体协作的贡献（2个百分点）。不过，这些都是单次实验的估计值，不能视为稳定的差异。\n\n**如何在会议中呈现此结果**\n\n你可以按以下顺序进行解释：\n\n1. 首先说明设置情况：测试集中有200道题目；完整方法达到了68%的准确率，同时进行了两次单变量对照实验。\n2. 报告两个数值：移除检索功能后为61%，使用单个智能体后为66%。\n3. 给出解释，同时指出局限性：似乎检索功能更具贡献，由于多智能体协作，差异约为2个百分点；不过，每个设置仅测试了一次，没有置信区间。200道题目中的微小差异可能是由题目抽样或操作波动造成的，因此无法认为这种差异是“显著”的。\n4. 建议下一步措施：多次运行实验以得到平均值或方差，或进行配对比较（比较同一组中的每道题目），从而判断2个百分点和7个百分点的差异是否稳定。\n\n这种呈现方式能够说明消融实验在验证什么，而不将单次实验的估计值视为最终结论。",
+        "seconds": 15.757
+      }
+    ],
+    "seconds": 32.675
+  },
+  "editorial_observation": "右侧从“拿掉一个部件，看表现怎么变”开始解释，再介绍两个对照，保留了只运行一次和没有置信区间的条件。但回译把“隔离了多Agent协作这一项”改成了“排除了多智能体协作的影响”，意思变了。原稿对单变量隔离的判断本身也需要检查汇总步骤是否同时变化。"
+}

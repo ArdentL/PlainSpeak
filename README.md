@@ -2,14 +2,13 @@
 
 [GitHub](https://github.com/ArdentL/PlainSpeak) · [下载 / Releases](https://github.com/ArdentL/PlainSpeak/releases) · [English](README.en.md) · 中文
 
-**[查看 10 个真实对比案例 →](docs/comparisons/README.md)**：左边是 DeepSeek 原始输出，右边是 skill + 本地回译。完整展示结果，并标注回译变长、误译和部分保留原文的案例。
+**让大模型好好说话。**
 
-**让 DeepSeek Harness 的回答更好读。**
+读论文时，想弄明白方法；问一道题，想知道自己错在哪；写工作消息，想拿到一段能直接发出去的话。PlainSpeak 用写作规则减少套话和重复解释，让回答更快进入正题。
 
-大模型回复常带有冗长铺垫、防御性免责声明和生硬套话。PlainSpeak 从两方面改善阅读体验：
+安装后，写作规则默认参与回答生成。本地小模型还可以逐段回译，在聊天界面中显示另一版文字。原文随时可看，两项功能分别开关，改写记录保存在本机。
 
-1. **默认注入清晰表达规则**：减少初稿中的套话与重复免责，从下一次助手回复起生效。
-2. **本地模型逐段回译**：利用本地小模型并结合同一条回复的相邻段落上下文，先译成另一种语言，再译回目标语言，例如「中文 → 英文 → 中文」。
+[看看实际回答怎么变](docs/comparisons/README.md)：十个日常、学习和工作场景，左边是 DeepSeek 原版，右边是 PlainSpeak。
 
 当前公开预览版 **v0.7.0** 首发支持 **Windows + DeepSeek Harness**，提供桌面（desktop）与网页（web）两种 profile 安装入口。目前已在实际环境中验收桌面 Host 的网页前端（Electron 原生窗口尚未完成实际验收）。Codex 与 Claude Code 仅作为实验性 skill / MCP 入口保留（见[客户端说明](docs/clients.md)），不包含自动显示译文的界面。
 

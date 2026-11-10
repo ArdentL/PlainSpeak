@@ -1,40 +1,40 @@
-# DeepSeek 回答对比：10 个常用场景
+# 日常、学习和工作：十组 PlainSpeak 对比
 
-左边是 DeepSeek 的原始回答，右边是加入清晰表达规则后生成、再经过本地回译的回答。点击下面的场景查看全文。
+同一个问题，看看 PlainSpeak 改变了什么。
 
-这批案例中，回答缩短主要发生在加入写作规则之后；回译反而让每篇回答都变长了，也出现了误译。例如，实验设计中的“置信区间跨零”变成了“置信区间为零”，交接说明变成了“切换说明”。环境排错有两段因行内代码检查失败而保留了回译前的原稿。各页附有具体问题和中间稿。
+这里有十种常见用法：和朋友聊天、高中生学概率、本科生写读书报告、研究生读论文、讨论科研想法，以及写代码、发家长通知、回复顾客、介绍产品和协调会议。左侧是 DeepSeek 原版，右侧是启用写作规则、再经过本地回译的完整回答。
 
-## 场景
+可以先看三个案例：给朋友的回复不再一次列出三套话术；条件概率的讲解保留抽球过程和公式，删去几段重复总结；客服回复直接说明现在做什么、几点给反馈，也保留尚不知道送达时间的事实。
 
-1. [修复 Python 函数第二次调用时混入旧数据的问题](01-debug.md)
-2. [排查终端能导入 NumPy、编辑器却报错的原因](02-environment.md)
-3. [审查权限缓存是否会返回过期数据](03-review.md)
-4. [用一个例子讲清 PPO 为什么要裁剪概率比](04-paper-explanation.md)
-5. [设计实验，检查第二轮提供检索证据是否有用](05-experiment-design.md)
-6. [判断实验中的小幅提升是否支持继续投入](06-result-interpretation.md)
-7. [确认桌面插件第一版需要做什么](07-requirements.md)
-8. [安排两个人在两周内完成第一版](08-project-plan.md)
-9. [汇报今天的进度，说明能否交给别人试用](09-status-report.md)
-10. [整理卡顿排查记录，交给下一个 Agent](10-handoff.md)
+## 找一个你会用的场景
+
+1. 日常聊天：[周末只想休息，怎么拒绝朋友的邀请](everyday/01-everyday.md)
+2. 高中生：[用抽球的例子理解条件概率](everyday/02-school.md)
+3. 本科生：[看懂摘要里的相关性，写好读书报告](everyday/03-undergraduate.md)
+4. 研究生读论文：[把论文里的消融实验讲明白](everyday/04-graduate-paper.md)
+5. 研究人员：[讨论一个刚冒出来的想法，找到第一步实验](everyday/05-research-idea.md)
+6. 程序员：[定位异步循环里漏掉 await 的问题](everyday/06-coding.md)
+7. 教师：[把家长通知写得清楚、自然](everyday/07-teacher.md)
+8. 客服：[回应包裹延误，说明今天会做什么](everyday/08-customer-support.md)
+9. 产品运营：[把产品介绍里的黑话改成用户能看懂的话](everyday/09-product-writing.md)
+10. 行政与团队协作：[协调撞期的会议，写清楚安排](everyday/10-office.md)
+
+写作规则与回译功能可以分别开启或关闭。每页都保留了只加写作规则的中间稿，这样就能轻松看到每一步所发生的变化。不过，在回译过程中，姓名、时间方向和学术术语方面仍可能出现错误。这些错误会被记录在页面上，并在对应位置提供说明。
 
 ## 测试条件
 
 <details>
 <summary>模型、参数和复现方法</summary>
 
-测试于2026年11月10日进行，使用了10个虚构的中文问题。每个问题都启动了两次对话；DeepSeek API被调用了20次，第一次成功的回应被作为答案使用。
+执行日期：2026-11-10。
 
-左侧只发送用户问题。右侧则添加了PlainSpeak 0.7.0中的`CLEAR_WRITING`系统指令。该指令与 Harness 插件注入的写作规则相同，随后进行本地翻译。完整的指令被存储在协议文件中。
+这十个问题是为模拟不同使用者而编写的，论文摘要与实验数字也是虚构材料。回答来自实际的 DeepSeek API 调用，采用首次成功返回的结果，没有人工改写或挑选重抽。每个问题分别开两个新对话，左侧只发送问题，右侧增加插件实际注入的清晰表达系统规则，再用当前版本的本地模型回译。
 
-双方均使用模型`deepseek-v4-flash`；服务返回的标识符均为`deepseek-flash`。参数设置为`temperature=0`、`thinking.type=disabled`和`max_tokens=8192`。所有回复都以`stop`结尾。测试中未使用任何工具，答案中的命令也没有被执行。
+两侧请求的模型均为 `deepseek-v4-flash`，服务返回的标识均为 `deepseek-flash`。生成参数为 `temperature=0`、`thinking.type=disabled`、`max_tokens=8192`，所有回答均以 `stop` 结束。测试未提供工具，回答中的命令和计划没有执行。
 
-翻译过程使用了腾讯的`Hy-MT2-1.8B-Q4_K_M`模型，并使用了项目中的`plainspeak.core.rewrite`函数。每段文字最多包含750个字符。中文文本先被翻译成英文，再翻译回中文，而代码和现有保护机制则被保留下来。普通数字则未经过一致性检查。
+回译使用腾讯 `Hy-MT2-1.8B-Q4_K_M`，调用当前的 `plainspeak.core.rewrite`，中文译成英文后再译回中文，每段最多750字符，上下文参数为空。本次测试的是整篇 Markdown 的 core/CLI 路径；Harness 界面收集相邻段落上下文的路径未在本轮测试。
 
-在这种情况下，整个Markdown文档均使用core/CLI处理，没有提供上下文参数。Harness界面根据DOM段落收集相关上下文；本次没有测试 Harness 的这条路径，也没有执行完整的 Agent 工具流程。
-
-双方的两种回应都是独立生成的。要查看翻译实际发生了什么变化，可以对比每页上提供的skill 原稿和最终版本。
-
-完整写作指令见 [protocol.json](data/protocol.json)。本地模型文件 SHA-256：
+完整写作规则见[测试协议](everyday/data/protocol.json)。本地模型 SHA-256：
 
 ```text
 dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699
@@ -42,11 +42,7 @@ dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699
 
 ### 重新运行
 
-每个场景的数据文件都保留了发送给模型的消息、参数、结果以及使用量。使用你自己的DeepSeek凭证，分别发送这两组消息。每次开始新的对话时，你都可以再次进行对比。
-
-将只加 skill 的回答保存为 UTF-8 Markdown。安装好默认模型后，运行以下命令。本轮中，使用相同的核心库来处理文本；原始代码块则不会交给翻译模型处理。每页上的观察结果既反映了原始回复中的问题，也反映了翻译带来的新问题。
-
-20次DeepSeek调用的总使用量如下：输入部分使用3394个标记，输出部分使用13710个标记，总计17104个标记。本地翻译模型所花费的时间则被记录在每个场景中。
+数据文件保留了用户问题、完整系统消息、生成参数、模型回复、英文中转、中文回译和保护检查。用自己的 DeepSeek 凭据分别发送相同消息，每次开启新对话；将启用写作规则后的回答保存为 UTF-8 Markdown，安装默认模型后运行下方命令即可重新比较。
 
 ```powershell
 plainspeak rewrite skill-answer.md --language zh-CN --pivot en --output rewritten.md
@@ -54,4 +50,4 @@ plainspeak rewrite skill-answer.md --language zh-CN --pivot en --output rewritte
 
 </details>
 
-[问题清单](data/cases.json) · [测试协议](data/protocol.json) · [用量与文件哈希](data/summary.json) · [项目首页](../../README.md)
+[问题清单](everyday/data/cases.json) · [本轮调用与文件哈希](everyday/data/summary.json) · [第一批开发与研究案例](developer-cases.md) · [项目首页](../../README.md)

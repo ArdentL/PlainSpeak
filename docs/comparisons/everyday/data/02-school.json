@@ -1,0 +1,214 @@
+{
+  "case": {
+    "id": "02-school",
+    "role": "高中生",
+    "title": "用抽球的例子理解条件概率",
+    "prompt": "我高二，条件概率一直搞不明白。袋子里有3个红球和2个蓝球，不放回地抽两次，已经知道第一次抽到红球，第二次抽到红球的概率为什么不是3/5？能从我容易想错的地方讲讲吗？"
+  },
+  "baseline": {
+    "case_id": "02-school",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:35.263Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "我高二，条件概率一直搞不明白。袋子里有3个红球和2个蓝球，不放回地抽两次，已经知道第一次抽到红球，第二次抽到红球的概率为什么不是3/5？能从我容易想错的地方讲讲吗？"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290314,
+    "finish_reason": "stop",
+    "content": "你卡住的这个点特别典型，几乎每个刚学条件概率的人都会在这里绕一下。我们直接把你容易想错的地方拆开讲。\n\n## 先说你为什么会想到 3/5\n\n你的直觉大概是这样的：\n\n> 袋子里一共 5 个球，3 红 2 蓝，抽到红球的概率是 3/5。第一次已经抽到红球了，那第二次抽到红球……不还是 3/5 吗？\n\n这个想法的问题在于：**你把“第一次抽到红球”这个信息当成了没发生一样。**\n\n但第一次抽球是**不放回**的。第一次抽走了一个红球之后，袋子里的情况已经变了：\n\n- 原来：3 红 2 蓝，共 5 个\n- 第一次抽走一个红球后：**2 红 2 蓝，共 4 个**\n\n所以在这个“已知第一次是红球”的新世界里，第二次抽到红球的概率是 **2/4 = 1/2**，不是 3/5。\n\n---\n\n## 关键误区：把“条件”当成了“背景板”\n\n条件概率的核心是：**已知某件事发生了，样本空间就缩小了。**\n\n- 无条件时，样本空间是全部 5 个球。\n- 已知第一次抽到红球后，样本空间不再是“5 个球里随便抽”，而是“**已经发生第一次红球**”之后剩下的 4 个球。\n\n你原来的 3/5 是在“什么都没发生”的情况下算的，但题目已经告诉你“第一次是红球”了，这个信息必须用上。\n\n---\n\n## 用两种方法算给你看，结果一致\n\n**方法一：缩小样本空间（最直观）**\n\n已知第一次红球，剩下 4 个球：2 红 2 蓝。\n\n$$P(\\text{第二次红}\\mid\\text{第一次红})=\\frac{2}{4}=\\frac12$$\n\n**方法二：用条件概率公式验证**\n\n$$P(B\\mid A)=\\frac{P(AB)}{P(A)}$$\n\n- $P(A)=P(\\text{第一次红})=3/5$\n- $P(AB)=P(\\text{两次都红})=\\frac{3}{5}\\times\\frac{2}{4}=\\frac{3}{10}$\n\n所以：\n\n$$P(B\\mid A)=\\frac{3/10}{3/5}=\\frac{3}{10}\\times\\frac{5}{3}=\\frac12$$\n\n两种方法都是 1/2。\n\n---\n\n## 再帮你对比一个容易混的题\n\n**题目变一下：有放回地抽。**\n\n如果第一次抽完放回去，那第一次红球不影响袋子，第二次还是 3/5。这时候 $P(\\text{第二次红}\\mid\\text{第一次红})=3/5$。\n\n所以你的 3/5 不是完全没道理——它是**有放回**时的答案。但本题是**不放回**，第一次抽走了一个红球，红球变少了，概率就变了。\n\n---\n\n## 一句话总结你错在哪\n\n> 你把“第一次抽到红球”只当成了一个已经过去的事件，没意识到它**改变了袋子里球的组成**。条件概率要求你站在“已知这件事发生”的新世界里重新数球。\n\n不放回时，第一次抽到红球后，红球从 3 个变成 2 个，总数从 5 个变成 4 个，所以是 2/4 = 1/2。\n\n你可以再自己练一个：如果已知第一次抽到的是**蓝球**，第二次抽到红球的概率是多少？答案是 3/4（因为剩下 3 红 1 蓝）。算一遍这个，你对“条件改变样本空间”的感觉会更深。",
+    "usage": {
+      "prompt_tokens": 61,
+      "completion_tokens": 800,
+      "total_tokens": 861,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 61
+    },
+    "seconds": 6.148
+  },
+  "skill_only": {
+    "case_id": "02-school",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:32.995Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "我高二，条件概率一直搞不明白。袋子里有3个红球和2个蓝球，不放回地抽两次，已经知道第一次抽到红球，第二次抽到红球的概率为什么不是3/5？能从我容易想错的地方讲讲吗？"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290311,
+    "finish_reason": "stop",
+    "content": "你容易想错的地方，是把“第一次抽到红球”当成了没有发生的事，仍然用一开始的 3/5 去算第二次。条件概率的意思是：已知第一次已经是红球，袋子里的情况已经变了。\n\n具体看：\n\n- 一开始：3 红 2 蓝，共 5 个。\n- 已知第一次抽到红球，并且不放回，那么这个红球已经拿走了。\n- 此时剩下：2 红 2 蓝，共 4 个。\n- 所以第二次抽到红球的概率是 \\(2/4=1/2\\)，不是 \\(3/5\\)。\n\n你可能会想：“第一次抽到红球不是本来就可能吗，为什么会影响第二次？”  \n影响就在于“不放回”：第一次抽走的那个球不再放回去，红球总数从 3 个变成了 2 个，总数从 5 个变成了 4 个。\n\n用条件概率公式写就是：\n\n\\[\nP(\\text{第二次红}\\mid\\text{第一次红})\n=\\frac{P(\\text{第一次红且第二次红})}{P(\\text{第一次红})}\n\\]\n\n其中：\n\n\\[\nP(\\text{第一次红})=\\frac35\n\\]\n\n\\[\nP(\\text{第一次红且第二次红})\n=\\frac35\\times\\frac24=\\frac{3}{10}\n\\]\n\n所以：\n\n\\[\nP(\\text{第二次红}\\mid\\text{第一次红})\n=\\frac{3/10}{3/5}\n=\\frac12\n\\]\n\n关键区别是：\n\n- \\(3/5\\) 是“第一次抽之前，第一次抽到红球”的概率。\n- \\(1/2\\) 是“已经知道第一次是红球后，第二次抽到红球”的概率。\n\n条件概率不是重新从最初的袋子算，而是站在“已知条件已经发生”之后，看剩下的情况。",
+    "usage": {
+      "prompt_tokens": 242,
+      "completion_tokens": 387,
+      "total_tokens": 629,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 242
+    },
+    "seconds": 3.301
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "02-school",
+    "source_sha256": "c086d8646381162c25985ad27464411693e88bdfa4b3030c3813f924b19e96f2",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "你容易想错的地方，是把“第一次抽到红球”当成了没有发生的事，仍然用一开始的 3/5 去算第二次。条件概率的意思是：已知第一次已经是红球，袋子里的情况已经变了。\n\n具体看：\n\n- 一开始：3 红 2 蓝，共 5 个。\n- 已知第一次抽到红球，并且不放回，那么这个红球已经拿走了。\n- 此时剩下：2 红 2 蓝，共 4 个。\n- 所以第二次抽到红球的概率是 \\(2/4=1/2\\)，不是 \\(3/5\\)。\n\n你可能会想：“第一次抽到红球不是本来就可能吗，为什么会影响第二次？”  \n影响就在于“不放回”：第一次抽走的那个球不再放回去，红球总数从 3 个变成了 2 个，总数从 5 个变成了 4 个。\n\n用条件概率公式写就是：\n\n\\[\nP(\\text{第二次红}\\mid\\text{第一次红})\n=\\frac{P(\\text{第一次红且第二次红})}{P(\\text{第一次红})}\n\\]\n\n其中：\n\n\\[\nP(\\text{第一次红})=\\frac35\n\\]\n\n\\[\nP(\\text{第一次红且第二次红})\n=\\frac35\\times\\frac24=\\frac{3}{10}\n\\]\n\n所以：\n\n\\[\nP(\\text{第二次红}\\mid\\text{第一次红})\n=\\frac{3/10}{3/5}\n=\\frac12\n\\]\n\n关键区别在于：\n\n- \\(3/5\\) 表示在进行第一次抽取之前，抽到红球的概率。\n- \\(1/2\\) 表示在已知第一次抽取到红球后，第二次抽到红球的概率。\n\n条件概率不再基于初始袋子的情况来计算；而是考虑在给定条件成立后剩余的可能性。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 22.200209400005406,
+      "chunks": [
+        {
+          "status": "retained",
+          "source_chars": 312,
+          "output_chars": 312,
+          "warnings": [
+            "math_changed"
+          ],
+          "seconds": 16.064949499996146
+        },
+        {
+          "status": "protected",
+          "source_chars": 80,
+          "output_chars": 80,
+          "warnings": [],
+          "seconds": 0.0
+        },
+        {
+          "status": "rewritten",
+          "source_chars": 6,
+          "output_chars": 6,
+          "warnings": [],
+          "seconds": 0.3029722000064794
+        },
+        {
+          "status": "protected",
+          "source_chars": 29,
+          "output_chars": 29,
+          "warnings": [],
+          "seconds": 0.0
+        },
+        {
+          "status": "protected",
+          "source_chars": 1,
+          "output_chars": 1,
+          "warnings": [],
+          "seconds": 0.0
+        },
+        {
+          "status": "protected",
+          "source_chars": 61,
+          "output_chars": 61,
+          "warnings": [],
+          "seconds": 0.0
+        },
+        {
+          "status": "rewritten",
+          "source_chars": 6,
+          "output_chars": 6,
+          "warnings": [],
+          "seconds": 0.20341679999546614
+        },
+        {
+          "status": "protected",
+          "source_chars": 63,
+          "output_chars": 63,
+          "warnings": [],
+          "seconds": 0.0
+        },
+        {
+          "status": "rewritten",
+          "source_chars": 119,
+          "output_chars": 118,
+          "warnings": [],
+          "seconds": 5.62859630001185
+        }
+      ],
+      "retained_chunks": 1,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "你容易想错的地方，是把“第一次抽到红球”当成了没有发生的事，仍然用一开始的 3/5 去算第二次。条件概率的意思是：已知第一次已经是红球，袋子里的情况已经变了。\n\n具体看：\n\n- 一开始：3 红 2 蓝，共 5 个。\n- 已知第一次抽到红球，并且不放回，那么这个红球已经拿走了。\n- 此时剩下：2 红 2 蓝，共 4 个。\n- 所以第二次抽到红球的概率是 \\(2/4=1/2\\)，不是 \\(3/5\\)。\n\n你可能会想：“第一次抽到红球不是本来就可能吗，为什么会影响第二次？”  \n影响就在于“不放回”：第一次抽走的那个球不再放回去，红球总数从 3 个变成了 2 个，总数从 5 个变成了 4 个。\n\n用条件概率公式写就是：",
+        "target": "en",
+        "context": "",
+        "output": "The part where you make a mistake is thinking that “drawing a red ball for the first time” didn’t happen, and still using the initial 3/5 ratio to calculate the second draw. Conditional probability means: given that a red ball was drawn on the first try, the situation in the bag has changed.\n\nSpecifically:\n\n- Initially: 3 red, 2 blue, a total of 5 balls.\n- Given that a red ball was drawn on the first try, and without replacement, that red ball has been taken out.\n- Now there are: 2 red, 2 blue, a total of 4 balls.\n- Therefore, the probability of drawing a red ball on the second try is \\(2/4 = 1/2\\), not \\(3/5\\).\n\nYou might think, “Didn’t drawing a red ball on the first try already happen? Why does it affect the second try?”  \nThe issue lies in “without replacement”: the ball drawn on the first try is not put back, so the total number of red balls drops from 3 to 2, and the total number of balls drops from 5 to 4.\n\nWritten using the conditional probability formula:",
+        "seconds": 8.8066
+      },
+      {
+        "source": "The part where you make a mistake is thinking that “drawing a red ball for the first time” didn’t happen, and still using the initial 3/5 ratio to calculate the second draw. Conditional probability means: given that a red ball was drawn on the first try, the situation in the bag has changed.\n\nSpecifically:\n\n- Initially: 3 red, 2 blue, a total of 5 balls.\n- Given that a red ball was drawn on the first try, and without replacement, that red ball has been taken out.\n- Now there are: 2 red, 2 blue, a total of 4 balls.\n- Therefore, the probability of drawing a red ball on the second try is \\(2/4 = 1/2\\), not \\(3/5\\).\n\nYou might think, “Didn’t drawing a red ball on the first try already happen? Why does it affect the second try?”  \nThe issue lies in “without replacement”: the ball drawn on the first try is not put back, so the total number of red balls drops from 3 to 2, and the total number of balls drops from 5 to 4.\n\nWritten using the conditional probability formula:",
+        "target": "zh-CN",
+        "context": "",
+        "output": "你出错的地方在于，认为“第一次抽到红色球”这件事没有发生， yet仍然使用最初的3/5比例来计算第二次的抽取概率。条件概率的意思是：假设第一次抽到了红色球，那么袋中的情况就发生了变化。\n\n具体来说：\n\n- 最初：3个红色球，2个蓝色球，共5个球。\n- 假设第一次抽到了红色球，且没有放回，因此那个红色球被抽走了。\n- 现在剩下：2个红色球，2个蓝色球，共4个球。\n- 因此，第二次抽到红色球的概率为\\(2/4 = 1/2\\)，而不是\\(3/5\\)。\n\n你可能会想：“第一次抽到红色球这件事已经发生了，为什么它会影响第二次的抽取呢？”问题的关键在于“没有放回”原则：第一次抽到的球不会被放回袋中，因此红色球的数量从3个减少到了2个，球的总数也从5个减少到了4个。\n\n用条件概率公式来表达就是：",
+        "seconds": 7.2582
+      },
+      {
+        "source": "其中：",
+        "target": "en",
+        "context": "",
+        "output": "Among them:",
+        "seconds": 0.1668
+      },
+      {
+        "source": "Among them:",
+        "target": "zh-CN",
+        "context": "",
+        "output": "其中：",
+        "seconds": 0.1361
+      },
+      {
+        "source": "所以：",
+        "target": "en",
+        "context": "",
+        "output": "So:",
+        "seconds": 0.1016
+      },
+      {
+        "source": "So:",
+        "target": "zh-CN",
+        "context": "",
+        "output": "所以：",
+        "seconds": 0.1018
+      },
+      {
+        "source": "关键区别是：\n\n- \\(3/5\\) 是“第一次抽之前，第一次抽到红球”的概率。\n- \\(1/2\\) 是“已经知道第一次是红球后，第二次抽到红球”的概率。\n\n条件概率不是重新从最初的袋子算，而是站在“已知条件已经发生”之后，看剩下的情况。",
+        "target": "en",
+        "context": "",
+        "output": "The key difference is:\n\n- \\(3/5\\) represents the probability of drawing a red ball on the first draw, before any other draws are made.\n- \\(1/2\\) represents the probability of drawing a red ball on the second draw, after it is known that the first draw was a red ball.\n\nConditional probability is not calculated from the initial bag again; instead, it considers the remaining possibilities after the given condition has occurred.",
+        "seconds": 3.1077
+      },
+      {
+        "source": "The key difference is:\n\n- \\(3/5\\) represents the probability of drawing a red ball on the first draw, before any other draws are made.\n- \\(1/2\\) represents the probability of drawing a red ball on the second draw, after it is known that the first draw was a red ball.\n\nConditional probability is not calculated from the initial bag again; instead, it considers the remaining possibilities after the given condition has occurred.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "关键区别在于：\n\n- \\(3/5\\) 表示在进行第一次抽取之前，抽到红球的概率。\n- \\(1/2\\) 表示在已知第一次抽取到红球后，第二次抽到红球的概率。\n\n条件概率不再基于初始袋子的情况来计算；而是考虑在给定条件成立后剩余的可能性。",
+        "seconds": 2.5208
+      }
+    ],
+    "seconds": 22.201
+  },
+  "editorial_observation": "两侧都算出第二次抽红球的概率为1/2。右侧保留了红球和总数怎样变化、条件概率公式及计算过程，少了原版多次总结和额外练习。一段含公式的文字因检查发现公式变化而保留了回译前原稿。"
+}

@@ -1,0 +1,114 @@
+{
+  "case": {
+    "id": "01-everyday",
+    "role": "日常聊天",
+    "title": "周末只想休息，怎么拒绝朋友的邀请",
+    "prompt": "这周上班很累，朋友约我周末出去，我其实只想在家待着。但他前两次约我，我也没去，怕他觉得我不想跟他玩。我该怎么回他？"
+  },
+  "baseline": {
+    "case_id": "01-everyday",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:30.386Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "这周上班很累，朋友约我周末出去，我其实只想在家待着。但他前两次约我，我也没去，怕他觉得我不想跟他玩。我该怎么回他？"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290309,
+    "finish_reason": "stop",
+    "content": "这种“想拒绝又怕伤感情”的纠结很常见，你能意识到前两次没去、担心朋友多想，说明你很在意这段关系。关键是：**拒绝的是“这次出门”，不是“他这个人”**。可以真诚表达累，同时给出替代方案或下次承诺。\n\n你可以这样回（选一个适合你语气的）：\n\n**版本1（直接+安抚）**\n> “这周上班真的累炸了，周末只想在家瘫着回血😭 前两次也没能去，真不是不想跟你玩，是我最近状态太差了。等我缓过来这阵，下周/下下周我请你吃饭/喝咖啡，我来定时间！”\n\n**版本2（轻松一点）**\n> “兄弟/姐妹，我这周被工作榨干了，周末估计只能在家当废物……前两次放你鸽子我已经很心虚了，真不是不想见你！等我满血复活第一时间约你，到时候我请客赔罪。”\n\n**版本3（如果对方比较敏感）**\n> “说实话这周累到周末只想关机躺平，但又怕你觉得我不想跟你玩——真没有！前两次没去我也挺过意不去的。这周末让我先充个电，下周我主动找你，行不？”\n\n**几个小要点：**\n- **先肯定关系**：明确说“不是不想跟你玩”，消除他的猜测。\n- **给具体替代**：说“下周我主动约你/我请客”，比空泛的“下次一定”更有诚意。\n- **不用过度道歉**：解释一次就够，反复道歉反而显得疏远。\n- **如果他追问**：可以坦白“这周真的累到社交电量归零，不是针对你”，真诚比找借口管用。\n\n你愿意的话，也可以告诉我你们平时的相处风格（比如互损型还是客气型），我帮你调得更像你说话。",
+    "usage": {
+      "prompt_tokens": 44,
+      "completion_tokens": 389,
+      "total_tokens": 433,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 44
+    },
+    "seconds": 4.875
+  },
+  "skill_only": {
+    "case_id": "01-everyday",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:30.416Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "这周上班很累，朋友约我周末出去，我其实只想在家待着。但他前两次约我，我也没去，怕他觉得我不想跟他玩。我该怎么回他？"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290309,
+    "finish_reason": "stop",
+    "content": "直接回，把“累”和“想见他”分开说清楚，比如：\n\n> 这周上班真的累垮了，周末我只想在家躺着回血。不是不想跟你玩，前两次也没去成，我心里也过意不去。要不这次先让我歇一下，下周我缓过来请你吃饭/找你玩？\n\n这样回的好处是：先给出真实原因（累），再主动说明你不是在躲他（前两次没去你记得），最后给一个具体替代方案（下周）。朋友一般不会因为一次拒绝不高兴，真正容易让人误会的是“只说去不了、不说为什么、也不提下次”。\n\n如果你这周末其实愿意出门但不想跑远，也可以改成“要不来我家附近随便坐坐，别安排太满”，比硬撑着出去更舒服。",
+    "usage": {
+      "prompt_tokens": 225,
+      "completion_tokens": 165,
+      "total_tokens": 390,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 225
+    },
+    "seconds": 2.577
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "01-everyday",
+    "source_sha256": "0dff3027ee2175db2c43b707cd66d1a3ffb3a97ea465c717986e10b43ec44400",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "直接回复即可，清楚地说明你感到疲惫的原因以及希望见他的意愿。例如：\n\n> 这周工作实在太累了。周末只想在家休息。并不是不想和你在一起，只是因为前两次没能见面，我有些愧疚。这次就休息一下吧？下周我会准备好好好陪你或花时间陪你。\n\n这种方式的优点在于，先说明真正疲惫的原因，然后明确表明你并没有回避他（记得前两次没能见面）。最后提出具体的替代方案（下周）。朋友通常不会因为一次不能出去而生气；容易引发误解的是“说不能出去，却不解释原因，也不提及未来的时间”。\n\n如果你真的想这周末出去，但不想走远，可以说：“就在我家附近坐坐怎么样？不需要任何复杂的安排。”这比尽管疲惫却还要出去更轻松。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 15.119261700005154,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 260,
+          "output_chars": 291,
+          "warnings": [],
+          "seconds": 15.118605099996785
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "直接回，把“累”和“想见他”分开说清楚，比如：\n\n> 这周上班真的累垮了，周末我只想在家躺着回血。不是不想跟你玩，前两次也没去成，我心里也过意不去。要不这次先让我歇一下，下周我缓过来请你吃饭/找你玩？\n\n这样回的好处是：先给出真实原因（累），再主动说明你不是在躲他（前两次没去你记得），最后给一个具体替代方案（下周）。朋友一般不会因为一次拒绝不高兴，真正容易让人误会的是“只说去不了、不说为什么、也不提下次”。\n\n如果你这周末其实愿意出门但不想跑远，也可以改成“要不来我家附近随便坐坐，别安排太满”，比硬撑着出去更舒服。",
+        "target": "en",
+        "context": "",
+        "output": "Just reply directly, and clearly explain the reasons for being tired and the desire to see him. For example:\n\n> This week at work was really exhausting. Over the weekend, I just want to stay at home and rest. It’s not that I don’t want to spend time with you; I also feel bad because I couldn’t meet up the first two times. How about I take a break this time? Next week, I’ll be ready to treat you or spend time with you.\n\nThe advantage of this approach is that you first explain the real reason for being tired, then clearly state that you’re not avoiding him (you remember the first two times we couldn’t meet up). Finally, you offer a specific alternative plan (next week). Friends usually aren’t upset just because they can’t go out once; what can easily cause misunderstandings is “saying we can’t go, without explaining why, and without mentioning a future time.”\n\nIf you actually want to go out this weekend but don’t want to go too far, you could say, “How about just sitting around near my house? No need for anything too complicated.” This is more comfortable than trying to go out despite being tired.",
+        "seconds": 8.8837
+      },
+      {
+        "source": "Just reply directly, and clearly explain the reasons for being tired and the desire to see him. For example:\n\n> This week at work was really exhausting. Over the weekend, I just want to stay at home and rest. It’s not that I don’t want to spend time with you; I also feel bad because I couldn’t meet up the first two times. How about I take a break this time? Next week, I’ll be ready to treat you or spend time with you.\n\nThe advantage of this approach is that you first explain the real reason for being tired, then clearly state that you’re not avoiding him (you remember the first two times we couldn’t meet up). Finally, you offer a specific alternative plan (next week). Friends usually aren’t upset just because they can’t go out once; what can easily cause misunderstandings is “saying we can’t go, without explaining why, and without mentioning a future time.”\n\nIf you actually want to go out this weekend but don’t want to go too far, you could say, “How about just sitting around near my house? No need for anything too complicated.” This is more comfortable than trying to go out despite being tired.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "直接回复即可，清楚地说明你感到疲惫的原因以及希望见他的意愿。例如：\n\n> 这周工作实在太累了。周末只想在家休息。并不是不想和你在一起，只是因为前两次没能见面，我有些愧疚。这次就休息一下吧？下周我会准备好好好陪你或花时间陪你。\n\n这种方式的优点在于，先说明真正疲惫的原因，然后明确表明你并没有回避他（记得前两次没能见面）。最后提出具体的替代方案（下周）。朋友通常不会因为一次不能出去而生气；容易引发误解的是“说不能出去，却不解释原因，也不提及未来的时间”。\n\n如果你真的想这周末出去，但不想走远，可以说：“就在我家附近坐坐怎么样？不需要任何复杂的安排。”这比尽管疲惫却还要出去更轻松。",
+        "seconds": 6.2345
+      }
+    ],
+    "seconds": 15.12
+  },
+  "editorial_observation": "原版给出三套回复和一组补充建议，右侧集中到一段可以发送的话和一个替代方案。回译把“请你吃饭/找你玩”改成了“陪你”，语气也比中间稿生硬，具体措辞可以对照中间稿选择。"
+}

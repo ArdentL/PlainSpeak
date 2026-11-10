@@ -1,0 +1,114 @@
+{
+  "case": {
+    "id": "05-research-idea",
+    "role": "研究人员",
+    "title": "讨论一个刚冒出来的想法，找到第一步实验",
+    "prompt": "我有个早期想法：两个Agent先各自回答，只有答案不一致时才让它们互相看对方的理由，这样可能比每题都讨论更省调用。现有代码已经支持独立回答和两轮讨论，还没做过比较。先别按能不能发论文来评判，帮我判断这个想法具体可能解决什么问题，最容易失败在哪里，以及我明天能跑的一个小实验。"
+  },
+  "baseline": {
+    "case_id": "05-research-idea",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:45.157Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "我有个早期想法：两个Agent先各自回答，只有答案不一致时才让它们互相看对方的理由，这样可能比每题都讨论更省调用。现有代码已经支持独立回答和两轮讨论，还没做过比较。先别按能不能发论文来评判，帮我判断这个想法具体可能解决什么问题，最容易失败在哪里，以及我明天能跑的一个小实验。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290324,
+    "finish_reason": "stop",
+    "content": "这个想法值得先做小实验验证，核心价值不在“省调用”本身，而在于它把讨论预算集中到真正有分歧的题目上。下面按你的三个问题拆开说。\n\n## 1. 具体可能解决什么问题\n\n**主要问题：讨论成本与讨论收益不匹配。** 现在每题都跑两轮讨论，但很多题两个 Agent 初始答案一致，讨论大概率只是互相确认，收益低。你的方案把讨论触发条件设为“答案不一致”，相当于一个免费的置信度代理：一致 ≈ 高置信，不一致 ≈ 需要协商。\n\n**次要问题：讨论引入的噪声。** 两轮讨论有时会让原本正确的 Agent 被说服改错（尤其当两个 Agent 能力相近、理由风格不同时）。只在分歧时讨论，能减少“一致但被讨论带偏”的情况。\n\n**还有一个隐性收益：** 分歧率本身是个可观测指标。你可以顺带统计不同题型/难度下的分歧率，判断哪些场景值得上讨论、哪些直接单 Agent 就够。\n\n## 2. 最容易失败在哪里\n\n按风险从高到低：\n\n1. **“答案一致”不等于“都对”。** 两个 Agent 可能共享同一个错误（同模型不同 prompt、同训练数据偏差），一致地错。这时省掉讨论就省掉了纠错机会。这是最大的风险，也是实验必须量化的。\n2. **答案格式不一致导致假分歧。** 数值题 `0.5` vs `1/2`、选择题 `A` vs `A.`、开放题措辞不同但语义相同——这些会被误判为分歧，触发不必要的讨论，省调用效果打折。需要先做答案归一化。\n3. **分歧题上两轮讨论本身不够。** 如果分歧题恰好是难题，两轮讨论可能也收敛不了，你的方案在“该讨论的题”上并没有比基线更强，只是没更差。\n4. **触发阈值太粗。** 二值“一致/不一致”丢掉了信息。可以后续考虑用答案相似度或 Agent 自报置信度做更细的触发，但第一版先别加。\n\n## 3. 明天能跑的小实验\n\n目标：验证“只在分歧时讨论”相对“每题都讨论”和“完全不讨论”的取舍。用你现有代码，加一个路由分支即可。\n\n**数据：** 100–200 题，选你已有评测集里答案可自动判定的部分（选择题或数值题最省事）。如果有多难度分层，每层都采一些。\n\n**三个条件，同一批题：**\n\n- A：独立回答，不讨论（下界，省调用但无纠错）\n- B：每题两轮讨论（你现在的基线）\n- C：你的方案——先独立回答，一致则直接采用，不一致才跑两轮讨论\n\n**记录指标：**\n\n- 准确率（A/B/C 各自）\n- 总 LLM 调用次数（C 相对 B 省了多少）\n- 分歧率（C 里触发讨论的比例）\n- **关键诊断：一致但错误的题数**（C 相对 A 没纠回来的部分）——这直接量化风险 1\n- 分歧题上 C 的准确率 vs B 在同样这些题上的准确率（讨论有没有用）\n\n**判读标准（提前定好，避免事后找理由）：**\n\n- 若 C 准确率 ≥ B − 1~2 个点，且调用数明显下降 → 想法成立，值得继续\n- 若 C 明显低于 B，看差距是否集中在“一致但错”的题上 → 说明需要更细的触发信号（置信度/相似度），而不是放弃想法\n- 若分歧率极低（比如 <10%）→ 说明两个 Agent 太同质，讨论本身价值就有限，先换 Agent 多样性再谈路由\n\n**实现上注意两点：** 先做答案归一化再判一致；把“一致但错”的题单独存下来人工看几条，判断是共享偏差还是归一化漏判。\n\n这个实验一天能跑完，而且不管结果正负都能告诉你下一步该调触发信号还是调 Agent 多样性。",
+    "usage": {
+      "prompt_tokens": 82,
+      "completion_tokens": 898,
+      "total_tokens": 980,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 82
+    },
+    "seconds": 8.6
+  },
+  "skill_only": {
+    "case_id": "05-research-idea",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:48.539Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "我有个早期想法：两个Agent先各自回答，只有答案不一致时才让它们互相看对方的理由，这样可能比每题都讨论更省调用。现有代码已经支持独立回答和两轮讨论，还没做过比较。先别按能不能发论文来评判，帮我判断这个想法具体可能解决什么问题，最容易失败在哪里，以及我明天能跑的一个小实验。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290327,
+    "finish_reason": "stop",
+    "content": "这个想法具体解决的是“讨论成本花在分歧上”的问题：每题都讨论会把调用花在本来就会一致的题上，而先独立回答、只在答案不一致时触发讨论，能把讨论预算集中到真正有分歧的样本。它可能带来的收益有两块：一是总调用次数下降，二是分歧样本上的准确率接近或超过全量讨论。最容易失败的地方是：答案不一致不等于讨论能纠正，很多分歧是两边都错或一方错但理由不足以说服对方，讨论后可能维持原判甚至把对的带错；另外“答案不一致”的判定口径（精确匹配还是归一化后匹配）会直接改变触发率和成本，口径太严会退化成全量讨论，太松会漏掉该讨论的样本。\n\n明天能跑的最小实验：\n\n1. 选一个已有标注答案的小数据集，比如 100–300 题，固定同一模型和提示词。\n2. 跑三个条件：A 只独立回答（取第一个 Agent 或任一固定 Agent）；B 全量两轮讨论；C 你的方案：先独立回答，答案不一致才讨论，一致则直接采用。\n3. 记录每题：两 Agent 初始答案是否一致、C 是否触发讨论、A/B/C 的最终答案是否正确、总调用次数。\n4. 主看三个数：C 相对 B 的调用节省比例；C 与 B 的准确率差；在“初始不一致”子集上，讨论前后准确率变化（讨论救回多少、带错多少）。\n5. 答案匹配先做一层归一化（去空格、统一大小写、数字格式），并同时报告精确匹配和归一化匹配下的触发率，避免口径把结论带偏。\n\n判断标准可以提前定：如果 C 的调用明显低于 B，且准确率下降在可接受范围内（比如不超过 1–2 个百分点），这个方向就值得继续；如果分歧子集上讨论的净收益接近零或为负，失败点就在“讨论能否纠正分歧”，需要换讨论策略而不是继续省调用。",
+    "usage": {
+      "prompt_tokens": 263,
+      "completion_tokens": 439,
+      "total_tokens": 702,
+      "prompt_tokens_details": {
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 135
+    },
+    "seconds": 4.985
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "05-research-idea",
+    "source_sha256": "d51b4a77a5f26b6ca43ed2597c8c41e633ecd1b5dc7788e8a9fe670eb6c4234a",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "这种方法专门解决了“讨论资源被用于分歧问题”的问题：如果逐一讨论每个问题，那么讨论资源就会被用于那些本来就会被讨论的问题；而先独立回答，只有在出现分歧时才进行讨论，这样就能让讨论资源集中在那些存在实际差异的问题上。其潜在好处有两点：首先，通话总数减少；其次，存在分歧的样本的准确率接近或超过所有讨论的准确率。不过，这种方法可能失败的地方有：答案上的分歧并不一定能通过讨论来纠正；许多分歧情况下，双方都错了，或者一方错了但没有足够的理由来说服另一方。讨论之后，原始答案可能保持不变，甚至正确答案也可能被错误表述。此外，用于判断“答案分歧”的标准（精确匹配或标准化匹配）直接影响了触发讨论的频率及相关成本。如果标准过于严格，讨论就变得没有必要；如果过于宽松，一些本应被讨论的样本就会被忽略。\n\n明天就可以进行一个简单的实验：\n\n1. 选择一个已经标注了答案的小数据集，比如100–300个问题，保持相同的模型和提示。\n2. 进行三种场景测试：A——只有独立回答（使用第一个智能体或任何固定智能体）；B——完整的两轮讨论；C——采用你的方法：先独立回答，只有在出现分歧时才进行讨论，没有分歧则采用正确答案。\n3. 记录每个问题的结果：两个智能体的初始答案是否相同，在场景C中是否触发了讨论，A/B/C的最终答案是否正确，以及总通话数。\n4. 关注三个指标：与场景B相比，节省的通话比例；场景C与B之间的准确率差异；在“最初有分歧”的子集中，讨论前后的准确率变化（准确率的恢复程度，以及正确答案被错误表述的次数）。\n5. 对于答案匹配，先进行一层标准化处理（去除空格、标准化大小写、标准化数字格式），并报告精确匹配和标准化匹配的率，以避免因使用标准而导致的结论偏差。\n\n判断标准可以提前确定：如果场景C的通话数明显低于场景B，且准确率下降在可接受范围内（例如不超过1–2个百分点），那么这种方法值得继续实施。如果讨论对存在分歧的子集的净收益接近零或为负，那么问题在于是否通过讨论能够纠正分歧；此时需要改变讨论策略，而不是继续节省通话数。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 37.36309230000188,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 705,
+          "output_chars": 864,
+          "warnings": [],
+          "seconds": 37.36292379999941
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "这个想法具体解决的是“讨论成本花在分歧上”的问题：每题都讨论会把调用花在本来就会一致的题上，而先独立回答、只在答案不一致时触发讨论，能把讨论预算集中到真正有分歧的样本。它可能带来的收益有两块：一是总调用次数下降，二是分歧样本上的准确率接近或超过全量讨论。最容易失败的地方是：答案不一致不等于讨论能纠正，很多分歧是两边都错或一方错但理由不足以说服对方，讨论后可能维持原判甚至把对的带错；另外“答案不一致”的判定口径（精确匹配还是归一化后匹配）会直接改变触发率和成本，口径太严会退化成全量讨论，太松会漏掉该讨论的样本。\n\n明天能跑的最小实验：\n\n1. 选一个已有标注答案的小数据集，比如 100–300 题，固定同一模型和提示词。\n2. 跑三个条件：A 只独立回答（取第一个 Agent 或任一固定 Agent）；B 全量两轮讨论；C 你的方案：先独立回答，答案不一致才讨论，一致则直接采用。\n3. 记录每题：两 Agent 初始答案是否一致、C 是否触发讨论、A/B/C 的最终答案是否正确、总调用次数。\n4. 主看三个数：C 相对 B 的调用节省比例；C 与 B 的准确率差；在“初始不一致”子集上，讨论前后准确率变化（讨论救回多少、带错多少）。\n5. 答案匹配先做一层归一化（去空格、统一大小写、数字格式），并同时报告精确匹配和归一化匹配下的触发率，避免口径把结论带偏。\n\n判断标准可以提前定：如果 C 的调用明显低于 B，且准确率下降在可接受范围内（比如不超过 1–2 个百分点），这个方向就值得继续；如果分歧子集上讨论的净收益接近零或为负，失败点就在“讨论能否纠正分歧”，需要换讨论策略而不是继续省调用。",
+        "target": "en",
+        "context": "",
+        "output": "This approach specifically addresses the issue of “the cost of discussions being spent on disagreements”: discussing each question would allocate the discussion resources to questions that would have been discussed anyway, while answering independently first and only initiating discussions when there are disagreements can focus the discussion resources on those samples where there are real differences. The potential benefits are twofold: first, the total number of calls decreases; second, the accuracy on samples with disagreements is close to or exceeds that of all discussions. The areas where it may fail are as follows: disagreements in answers do not necessarily lead to corrections through discussions; many disagreements involve both parties being wrong, or one party being wrong but with insufficient reasons to convince the other. After discussions, the original answers may remain unchanged, or even the correct answers are misstated. Additionally, the criteria used to determine “disagreements in answers” (exact matching or normalized matching) directly affect the rate of triggering discussions and the associated costs. If the criteria are too strict, discussions become unnecessary; if too loose, some samples that should be discussed are missed.\n\nA minimal experiment that can be run tomorrow is as follows:\n\n1. Choose a small dataset with already labeled answers, such as 100–300 questions, and keep the same model and prompt.\n2. Run three scenarios: A – only independent answers (using the first agent or any fixed agent); B – full two-round discussions; C – your approach: independent answers first, discussions only when there are disagreements, and adoption of the correct answer when there is no disagreement.\n3. Record for each question: whether the initial answers of the two agents are the same, whether discussion is triggered in scenario C, whether the final answers of A/B/C are correct, and the total number of calls.\n4. Focus on three metrics: the proportion of calls saved compared to scenario B; the accuracy difference between scenario C and B; the change in accuracy before and after discussions on the “initially disagreeing” subset (how much accuracy is restored, and how many times the correct answers are misstated).\n5. For answer matching, perform a layer of normalization first (remove spaces, standardize case, standardize number formatting), and report both the exact matching and normalized matching rates, to avoid bias in the conclusions due to the criteria used.\n\nThe judgment criteria can be determined in advance: if the number of calls in scenario C is significantly lower than that in scenario B, and the accuracy decrease is within an acceptable range (e.g., no more than 1–2 percentage points), then this approach is worth continuing. If the net benefit of discussions on the disagreement subset is close to zero or negative, then the failure lies in whether discussions can correct the disagreements; it is necessary to change the discussion strategy rather than continuing to save calls.",
+        "seconds": 20.341
+      },
+      {
+        "source": "This approach specifically addresses the issue of “the cost of discussions being spent on disagreements”: discussing each question would allocate the discussion resources to questions that would have been discussed anyway, while answering independently first and only initiating discussions when there are disagreements can focus the discussion resources on those samples where there are real differences. The potential benefits are twofold: first, the total number of calls decreases; second, the accuracy on samples with disagreements is close to or exceeds that of all discussions. The areas where it may fail are as follows: disagreements in answers do not necessarily lead to corrections through discussions; many disagreements involve both parties being wrong, or one party being wrong but with insufficient reasons to convince the other. After discussions, the original answers may remain unchanged, or even the correct answers are misstated. Additionally, the criteria used to determine “disagreements in answers” (exact matching or normalized matching) directly affect the rate of triggering discussions and the associated costs. If the criteria are too strict, discussions become unnecessary; if too loose, some samples that should be discussed are missed.\n\nA minimal experiment that can be run tomorrow is as follows:\n\n1. Choose a small dataset with already labeled answers, such as 100–300 questions, and keep the same model and prompt.\n2. Run three scenarios: A – only independent answers (using the first agent or any fixed agent); B – full two-round discussions; C – your approach: independent answers first, discussions only when there are disagreements, and adoption of the correct answer when there is no disagreement.\n3. Record for each question: whether the initial answers of the two agents are the same, whether discussion is triggered in scenario C, whether the final answers of A/B/C are correct, and the total number of calls.\n4. Focus on three metrics: the proportion of calls saved compared to scenario B; the accuracy difference between scenario C and B; the change in accuracy before and after discussions on the “initially disagreeing” subset (how much accuracy is restored, and how many times the correct answers are misstated).\n5. For answer matching, perform a layer of normalization first (remove spaces, standardize case, standardize number formatting), and report both the exact matching and normalized matching rates, to avoid bias in the conclusions due to the criteria used.\n\nThe judgment criteria can be determined in advance: if the number of calls in scenario C is significantly lower than that in scenario B, and the accuracy decrease is within an acceptable range (e.g., no more than 1–2 percentage points), then this approach is worth continuing. If the net benefit of discussions on the disagreement subset is close to zero or negative, then the failure lies in whether discussions can correct the disagreements; it is necessary to change the discussion strategy rather than continuing to save calls.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "这种方法专门解决了“讨论资源被用于分歧问题”的问题：如果逐一讨论每个问题，那么讨论资源就会被用于那些本来就会被讨论的问题；而先独立回答，只有在出现分歧时才进行讨论，这样就能让讨论资源集中在那些存在实际差异的问题上。其潜在好处有两点：首先，通话总数减少；其次，存在分歧的样本的准确率接近或超过所有讨论的准确率。不过，这种方法可能失败的地方有：答案上的分歧并不一定能通过讨论来纠正；许多分歧情况下，双方都错了，或者一方错了但没有足够的理由来说服另一方。讨论之后，原始答案可能保持不变，甚至正确答案也可能被错误表述。此外，用于判断“答案分歧”的标准（精确匹配或标准化匹配）直接影响了触发讨论的频率及相关成本。如果标准过于严格，讨论就变得没有必要；如果过于宽松，一些本应被讨论的样本就会被忽略。\n\n明天就可以进行一个简单的实验：\n\n1. 选择一个已经标注了答案的小数据集，比如100–300个问题，保持相同的模型和提示。\n2. 进行三种场景测试：A——只有独立回答（使用第一个智能体或任何固定智能体）；B——完整的两轮讨论；C——采用你的方法：先独立回答，只有在出现分歧时才进行讨论，没有分歧则采用正确答案。\n3. 记录每个问题的结果：两个智能体的初始答案是否相同，在场景C中是否触发了讨论，A/B/C的最终答案是否正确，以及总通话数。\n4. 关注三个指标：与场景B相比，节省的通话比例；场景C与B之间的准确率差异；在“最初有分歧”的子集中，讨论前后的准确率变化（准确率的恢复程度，以及正确答案被错误表述的次数）。\n5. 对于答案匹配，先进行一层标准化处理（去除空格、标准化大小写、标准化数字格式），并报告精确匹配和标准化匹配的率，以避免因使用标准而导致的结论偏差。\n\n判断标准可以提前确定：如果场景C的通话数明显低于场景B，且准确率下降在可接受范围内（例如不超过1–2个百分点），那么这种方法值得继续实施。如果讨论对存在分歧的子集的净收益接近零或为负，那么问题在于是否通过讨论能够纠正分歧；此时需要改变讨论策略，而不是继续节省通话数。",
+        "seconds": 17.0218
+      }
+    ],
+    "seconds": 37.364
+  },
+  "editorial_observation": "中间稿把可能节省的调用、讨论把对答案带错的风险和明天能跑的对照放在一起，没有先用能否发论文否定想法。回译却把“一致则直接采用”写成“没有分歧则采用正确答案”，擅自假定答案正确；阅读实验方案时应对照中间稿。"
+}

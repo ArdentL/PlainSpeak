@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "created_at": "2026-11-10T05:58:30.381Z",
+  "model": "deepseek-v4-flash",
+  "shared_parameters": {
+    "model": "deepseek-v4-flash",
+    "temperature": 0,
+    "thinking": {
+      "type": "disabled"
+    },
+    "max_tokens": 8192,
+    "stream": false
+  },
+  "baseline_system": null,
+  "treatment_system": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。",
+  "treatment_system_sha256": "ba98bfdb30d700e584fba30d70fdb10c3676340c6cd248151142708779aece62",
+  "prompt_file_sha256": "9c544ef822afe56789cb1e568cc9525a945e47f85c0270e06c1567cc6dabb934",
+  "tools": [],
+  "fresh_conversations": true,
+  "quality_retries": 0,
+  "scope": "Direct text-only DeepSeek requests, not complete Harness tool trajectories. No tools or hidden reasoning are published. Both conditions disable thinking and use identical decoding parameters."
+}

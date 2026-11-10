@@ -1,0 +1,114 @@
+{
+  "case": {
+    "id": "10-office",
+    "role": "行政与团队协作",
+    "title": "协调撞期的会议，写清楚安排",
+    "prompt": "我是团队行政，明天上午有两个会撞在一起：项目评审原定10:00到11:00，需要小王、小李和我；客户沟通原定10:30到11:00，只需要小李和销售。客户时间不能改，小王11:00后没空；三个人明天9:00到10:00都有空。项目评审需要完整的一小时。你帮我安排一下，并写一条发在内部群里的通知。"
+  },
+  "baseline": {
+    "case_id": "10-office",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:59:01.499Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "我是团队行政，明天上午有两个会撞在一起：项目评审原定10:00到11:00，需要小王、小李和我；客户沟通原定10:30到11:00，只需要小李和销售。客户时间不能改，小王11:00后没空；三个人明天9:00到10:00都有空。项目评审需要完整的一小时。你帮我安排一下，并写一条发在内部群里的通知。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290340,
+    "finish_reason": "stop",
+    "content": "可以这样安排：\n\n**调整方案：**\n- **项目评审：9:00–10:00**（小王、小李、你）\n- **客户沟通：10:30–11:00**（小李、销售）\n\n这样安排满足：\n- 客户沟通时间不变；\n- 项目评审仍是完整1小时；\n- 小王11:00后没空也不受影响；\n- 三个人9:00–10:00都有空，项目评审可提前到9:00开始；\n- 小李10:00后到10:30之间有空档，可衔接10:30客户沟通。\n\n**内部群通知可以发：**\n\n> 各位好，明天上午会议安排调整如下：  \n> 1. **项目评审：9:00–10:00**，参会人：小王、小李、我。  \n> 2. **客户沟通：10:30–11:00**，参会人：小李、销售。  \n> 因原10:00项目评审与10:30客户沟通时间衔接紧张，且客户时间不可调整，项目评审提前至9:00开始，请相关同事准时参加。谢谢配合。",
+    "usage": {
+      "prompt_tokens": 97,
+      "completion_tokens": 241,
+      "total_tokens": 338,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 97
+    },
+    "seconds": 2.413
+  },
+  "skill_only": {
+    "case_id": "10-office",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:59.935Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "我是团队行政，明天上午有两个会撞在一起：项目评审原定10:00到11:00，需要小王、小李和我；客户沟通原定10:30到11:00，只需要小李和销售。客户时间不能改，小王11:00后没空；三个人明天9:00到10:00都有空。项目评审需要完整的一小时。你帮我安排一下，并写一条发在内部群里的通知。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290338,
+    "finish_reason": "stop",
+    "content": "安排：项目评审改到明天 9:00–10:00，小王、小李和你参加；客户沟通保持 10:30–11:00，小李和销售参加。这样项目评审仍完整一小时，客户时间不动，小王 11:00 后没空也不受影响。\n\n内部群通知可以发：\n\n【会议调整通知】\n各位好，明天上午会议安排调整如下：\n1. 项目评审：9:00–10:00，参加人：小王、小李、我。\n2. 客户沟通：10:30–11:00，参加人：小李、销售（时间不变）。\n请相关同事按调整后的时间参加，谢谢。",
+    "usage": {
+      "prompt_tokens": 278,
+      "completion_tokens": 141,
+      "total_tokens": 419,
+      "prompt_tokens_details": {
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 150
+    },
+    "seconds": 1.557
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "10-office",
+    "source_sha256": "10e43d048c2b9a15d5eec06232ff4a8e5ee8739584bb8894e7d3fa23dbd9b79f",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "安排如下：项目评审会议将推迟到明天9:00–10:00举行，王强、李强和您将参加。客户沟通会议则仍安排在10:30–11:00进行，李强和销售团队也会参加。这样，项目评审会议仍然会持续1小时，不会影响客户的时间。王强在11:00之后无法出席，但这一点并不重要。\n\n通知可以通过内部群发送：\n\n【会议调整通知】\n各位，明天会议的安排已调整如下：\n1. 项目评审：9:00–10:00。参会人员：王强、李强和我。\n2. 客户沟通：10:30–11:00。参会人员：李强、销售团队（时间保持不变）。\n请相关同事按照新安排参加会议。谢谢。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 14.23557809999329,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 225,
+          "output_chars": 265,
+          "warnings": [],
+          "seconds": 14.235408699998516
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "安排：项目评审改到明天 9:00–10:00，小王、小李和你参加；客户沟通保持 10:30–11:00，小李和销售参加。这样项目评审仍完整一小时，客户时间不动，小王 11:00 后没空也不受影响。\n\n内部群通知可以发：\n\n【会议调整通知】\n各位好，明天上午会议安排调整如下：\n1. 项目评审：9:00–10:00，参加人：小王、小李、我。\n2. 客户沟通：10:30–11:00，参加人：小李、销售（时间不变）。\n请相关同事按调整后的时间参加，谢谢。",
+        "target": "en",
+        "context": "",
+        "output": "Arrangement: The project review will be moved to tomorrow from 9:00–10:00. Xiao Wang, Xiao Li, and you will attend. The client communication session will remain from 10:30–11:00, with Xiao Li and the sales team attending. In this way, the project review will still last for one hour, and the client’s time will not be affected. Xiao Wang won’t be available after 11:00, but that doesn’t matter.\n\nThe notification can be sent via the internal group:\n\n【Meeting Adjustment Notice】\nHello everyone, the schedule for tomorrow’s meeting has been adjusted as follows:\n1. Project review: 9:00–10:00. Attendees: Xiao Wang, Xiao Li, and me.\n2. Client communication: 10:30–11:00. Attendees: Xiao Li, sales team (time remains unchanged).\nPlease ensure that relevant colleagues attend according to the new schedule. Thank you.",
+        "seconds": 7.5343
+      },
+      {
+        "source": "Arrangement: The project review will be moved to tomorrow from 9:00–10:00. Xiao Wang, Xiao Li, and you will attend. The client communication session will remain from 10:30–11:00, with Xiao Li and the sales team attending. In this way, the project review will still last for one hour, and the client’s time will not be affected. Xiao Wang won’t be available after 11:00, but that doesn’t matter.\n\nThe notification can be sent via the internal group:\n\n【Meeting Adjustment Notice】\nHello everyone, the schedule for tomorrow’s meeting has been adjusted as follows:\n1. Project review: 9:00–10:00. Attendees: Xiao Wang, Xiao Li, and me.\n2. Client communication: 10:30–11:00. Attendees: Xiao Li, sales team (time remains unchanged).\nPlease ensure that relevant colleagues attend according to the new schedule. Thank you.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "安排如下：项目评审会议将推迟到明天9:00–10:00举行，王强、李强和您将参加。客户沟通会议则仍安排在10:30–11:00进行，李强和销售团队也会参加。这样，项目评审会议仍然会持续1小时，不会影响客户的时间。王强在11:00之后无法出席，但这一点并不重要。\n\n通知可以通过内部群发送：\n\n【会议调整通知】\n各位，明天会议的安排已调整如下：\n1. 项目评审：9:00–10:00。参会人员：王强、李强和我。\n2. 客户沟通：10:30–11:00。参会人员：李强、销售团队（时间保持不变）。\n请相关同事按照新安排参加会议。谢谢。",
+        "seconds": 6.701
+      }
+    ],
+    "seconds": 14.237
+  },
+  "editorial_observation": "中间稿直接给出9:00到10:00评审、10:30到11:00客户沟通的安排和群通知。回译把提前说成推迟，又把小王、小李改成了王强、李强；时间数字虽然没变，方向和人名都不能直接照用。"
+}

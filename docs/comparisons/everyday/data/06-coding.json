@@ -1,0 +1,198 @@
+{
+  "case": {
+    "id": "06-coding",
+    "role": "程序员",
+    "title": "定位异步循环里漏掉 await 的问题",
+    "prompt": "这段 JavaScript 为什么有时在保存结束前就打印 done？我想等所有数据保存完再往下走，该怎么改？\n```javascript\nasync function saveAll(items) {\n  items.forEach(async (item) => {\n    await save(item);\n  });\n  console.log('done');\n}\n```\n`save` 返回 Promise，items 之间没有顺序依赖。"
+  },
+  "baseline": {
+    "case_id": "06-coding",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:53.761Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "这段 JavaScript 为什么有时在保存结束前就打印 done？我想等所有数据保存完再往下走，该怎么改？\n```javascript\nasync function saveAll(items) {\n  items.forEach(async (item) => {\n    await save(item);\n  });\n  console.log('done');\n}\n```\n`save` 返回 Promise，items 之间没有顺序依赖。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290332,
+    "finish_reason": "stop",
+    "content": "# 问题原因\n\n`forEach` **不会等待**回调里的 `async` 函数。它只是同步地把每个回调调用一遍，然后立刻返回。每个回调返回的 Promise 被丢弃了，所以 `console.log('done')` 会在所有 `save` 完成之前就执行。\n\n# 修改方案\n\n因为 items 之间没有顺序依赖，推荐用 `Promise.all` + `map`，让所有保存**并发**执行：\n\n```javascript\nasync function saveAll(items) {\n  await Promise.all(items.map(item => save(item)));\n  console.log('done');\n}\n```\n\n# 其他可选写法\n\n**1. 需要限制并发数**（比如避免同时打太多请求）：\n\n```javascript\nasync function saveAll(items, limit = 5) {\n  const queue = [...items];\n  const workers = Array.from({ length: limit }, async () => {\n    while (queue.length) {\n      const item = queue.shift();\n      await save(item);\n    }\n  });\n  await Promise.all(workers);\n  console.log('done');\n}\n```\n\n**2. 需要顺序执行**（虽然你说不需要，但作为对比）：\n\n```javascript\nasync function saveAll(items) {\n  for (const item of items) {\n    await save(item);\n  }\n  console.log('done');\n}\n```\n\n注意：`for...of` 里 `await` 是有效的，因为 `for` 循环本身在 async 函数里，会正确等待；而 `forEach` 的回调是独立函数，`await` 只作用于回调内部，外层不会等。\n\n# 补充：错误处理\n\n`Promise.all` 是\"快速失败\"——任一 `save` reject 就整体 reject。如果希望**全部跑完再汇总错误**，用 `Promise.allSettled`：\n\n```javascript\nasync function saveAll(items) {\n  const results = await Promise.allSettled(items.map(item => save(item)));\n  const failed = results.filter(r => r.status === 'rejected');\n  if (failed.length) {\n    console.error(`${failed.length} 项保存失败`, failed);\n  }\n  console.log('done');\n}\n```\n\n# 一句话总结\n\n`forEach` 不感知 async；要等全部完成，用 `await Promise.all(items.map(...))`。",
+    "usage": {
+      "prompt_tokens": 78,
+      "completion_tokens": 481,
+      "total_tokens": 559,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 78
+    },
+    "seconds": 3.476
+  },
+  "skill_only": {
+    "case_id": "06-coding",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:53.527Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "这段 JavaScript 为什么有时在保存结束前就打印 done？我想等所有数据保存完再往下走，该怎么改？\n```javascript\nasync function saveAll(items) {\n  items.forEach(async (item) => {\n    await save(item);\n  });\n  console.log('done');\n}\n```\n`save` 返回 Promise，items 之间没有顺序依赖。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290332,
+    "finish_reason": "stop",
+    "content": "`forEach` 不会等待回调里的 `await`。它只是同步地把每个回调调用一遍，回调返回的 Promise 被丢掉，所以 `forEach` 立刻结束，`console.log('done')` 在保存完成前就执行了。\n\nitems 之间没有顺序依赖，用 `Promise.all` 并发保存即可：\n\n```javascript\nasync function saveAll(items) {\n  await Promise.all(items.map((item) => save(item)));\n  console.log('done');\n}\n```\n\n`map` 同步生成一组 Promise，`Promise.all` 等它们全部成功后才继续；任意一个失败会立即 reject，`done` 不会打印。\n\n如果希望某个失败不影响其他保存，并且最后统一处理错误，可以用 `Promise.allSettled`：\n\n```javascript\nasync function saveAll(items) {\n  const results = await Promise.allSettled(items.map((item) => save(item)));\n  const failed = results.filter((r) => r.status === 'rejected');\n  if (failed.length) {\n    throw new AggregateError(failed.map((r) => r.reason), `${failed.length} 项保存失败`);\n  }\n  console.log('done');\n}\n```\n\n如果确实需要逐个顺序保存，用 `for...of`：\n\n```javascript\nasync function saveAll(items) {\n  for (const item of items) {\n    await save(item);\n  }\n  console.log('done');\n}\n```\n\n注意不要用 `forEach` 配 `await`，也不要用 `map` 配 `await` 来试图串行——后者同样不会按预期等待。",
+    "usage": {
+      "prompt_tokens": 259,
+      "completion_tokens": 330,
+      "total_tokens": 589,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 259
+    },
+    "seconds": 2.555
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "06-coding",
+    "source_sha256": "2a718f6ebee214caa2eb21901c64c3f29809f2c2c1e5d06c36728246eeb72e6b",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "`forEach`不会等待回调中的`await`操作完成。它只是同步执行每个回调；回调返回的Promise会被丢弃，因此`forEach`会立即结束，在数据保存完成之前就会执行`console.log('done')`。\n\n各个元素之间没有顺序依赖关系；可以使用`Promise.all`来实现并发保存。\n\n```javascript\nasync function saveAll(items) {\n  await Promise.all(items.map((item) => save(item)));\n  console.log('done');\n}\n```\n\n`map`会同步生成一组 Promise；`Promise.all`会等待所有 Promise 都成功后才会继续操作；如果有一个 Promise 失败，它就会立即被拒绝，而 `done` 事件则不会被打印出来。\n\n如果你不希望某个失败影响其他操作，并且希望在最后统一处理错误，可以使用 `Promise.allSettled`：\n\n```javascript\nasync function saveAll(items) {\n  const results = await Promise.allSettled(items.map((item) => save(item)));\n  const failed = results.filter((r) => r.status === 'rejected');\n  if (failed.length) {\n    throw new AggregateError(failed.map((r) => r.reason), `${failed.length} 项保存失败`);\n  }\n  console.log('done');\n}\n```\n\n如果需要逐个保存它们，请使用 `for...of` 循环：\n\n```javascript\nasync function saveAll(items) {\n  for (const item of items) {\n    await save(item);\n  }\n  console.log('done');\n}\n```\n\n注意不要使用 `forEach` 与 `await` 结合使用，也不要使用 `map` 与 `await` 结合使用来按顺序执行操作——这两种方式都不会按预期等待。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 16.01082779999706,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 154,
+          "output_chars": 154,
+          "warnings": [],
+          "seconds": 5.2223765999951866
+        },
+        {
+          "status": "protected",
+          "source_chars": 129,
+          "output_chars": 129,
+          "warnings": [],
+          "seconds": 0.0
+        },
+        {
+          "status": "rewritten",
+          "source_chars": 133,
+          "output_chars": 167,
+          "warnings": [],
+          "seconds": 6.543477800005348
+        },
+        {
+          "status": "protected",
+          "source_chars": 329,
+          "output_chars": 329,
+          "warnings": [],
+          "seconds": 0.0
+        },
+        {
+          "status": "rewritten",
+          "source_chars": 29,
+          "output_chars": 32,
+          "warnings": [],
+          "seconds": 1.4878096999891568
+        },
+        {
+          "status": "protected",
+          "source_chars": 131,
+          "output_chars": 131,
+          "warnings": [],
+          "seconds": 0.0
+        },
+        {
+          "status": "rewritten",
+          "source_chars": 67,
+          "output_chars": 83,
+          "warnings": [],
+          "seconds": 2.756814899999881
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "`forEach` 不会等待回调里的 `await`。它只是同步地把每个回调调用一遍，回调返回的 Promise 被丢掉，所以 `forEach` 立刻结束，`console.log('done')` 在保存完成前就执行了。\n\nitems 之间没有顺序依赖，用 `Promise.all` 并发保存即可：",
+        "target": "en",
+        "context": "",
+        "output": "`forEach` does not wait for the `await` in the callback. It simply executes each callback synchronously; the Promise returned by the callback is discarded, so `forEach` ends immediately, and `console.log('done')` is executed before the saving is complete.\n\nThere is no order dependency among the items; `Promise.all` can be used for concurrent saving.",
+        "seconds": 2.6466
+      },
+      {
+        "source": "`forEach` does not wait for the `await` in the callback. It simply executes each callback synchronously; the Promise returned by the callback is discarded, so `forEach` ends immediately, and `console.log('done')` is executed before the saving is complete.\n\nThere is no order dependency among the items; `Promise.all` can be used for concurrent saving.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "`forEach`不会等待回调中的`await`操作完成。它只是同步执行每个回调；回调返回的Promise会被丢弃，因此`forEach`会立即结束，在数据保存完成之前就会执行`console.log('done')`。\n\n各个元素之间没有顺序依赖关系；可以使用`Promise.all`来实现并发保存。",
+        "seconds": 2.5757
+      },
+      {
+        "source": "`map` 同步生成一组 Promise，`Promise.all` 等它们全部成功后才继续；任意一个失败会立即 reject，`done` 不会打印。\n\n如果希望某个失败不影响其他保存，并且最后统一处理错误，可以用 `Promise.allSettled`：",
+        "target": "en",
+        "context": "",
+        "output": "`map` synchronously generates a set of Promises; `Promise.all` waits until all of them are successful before proceeding; if any one fails, it will immediately reject, and the `done` event will not be printed.\n\nIf you want a failure to not affect other operations, and to handle errors collectively at the end, you can use `Promise.allSettled`:",
+        "seconds": 3.4548
+      },
+      {
+        "source": "`map` synchronously generates a set of Promises; `Promise.all` waits until all of them are successful before proceeding; if any one fails, it will immediately reject, and the `done` event will not be printed.\n\nIf you want a failure to not affect other operations, and to handle errors collectively at the end, you can use `Promise.allSettled`:",
+        "target": "zh-CN",
+        "context": "",
+        "output": "`map`会同步生成一组 Promise；`Promise.all`会等待所有 Promise 都成功后才会继续操作；如果有一个 Promise 失败，它就会立即被拒绝，而 `done` 事件则不会被打印出来。\n\n如果你不希望某个失败影响其他操作，并且希望在最后统一处理错误，可以使用 `Promise.allSettled`：",
+        "seconds": 3.0886
+      },
+      {
+        "source": "如果确实需要逐个顺序保存，用 `for...of`：",
+        "target": "en",
+        "context": "",
+        "output": "If it is necessary to save them in order one by one, use `for...of`:",
+        "seconds": 0.7948
+      },
+      {
+        "source": "If it is necessary to save them in order one by one, use `for...of`:",
+        "target": "zh-CN",
+        "context": "",
+        "output": "如果需要逐个保存它们，请使用 `for...of` 循环：",
+        "seconds": 0.6929
+      },
+      {
+        "source": "注意不要用 `forEach` 配 `await`，也不要用 `map` 配 `await` 来试图串行——后者同样不会按预期等待。",
+        "target": "en",
+        "context": "",
+        "output": "Be careful not to use `forEach` with `await`, nor use `map` with `await` in an attempt to perform operations sequentially – both methods will not wait as expected.",
+        "seconds": 1.323
+      },
+      {
+        "source": "Be careful not to use `forEach` with `await`, nor use `map` with `await` in an attempt to perform operations sequentially – both methods will not wait as expected.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "注意不要使用 `forEach` 与 `await` 结合使用，也不要使用 `map` 与 `await` 结合使用来按顺序执行操作——这两种方式都不会按预期等待。",
+        "seconds": 1.4337
+      }
+    ],
+    "seconds": 16.012
+  },
+  "editorial_observation": "右侧先解释forEach为什么不等回调，再给出Promise.all写法，代码块保持原样。它仍补充了错误汇总和顺序保存，写作规则没有把回答压成只有一段代码。"
+}

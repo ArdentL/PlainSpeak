@@ -1,0 +1,114 @@
+{
+  "case": {
+    "id": "09-product-writing",
+    "role": "产品运营",
+    "title": "把产品介绍里的黑话改成用户能看懂的话",
+    "prompt": "我是一个小团队的产品运营，准备写官网介绍。产品实际功能是：把聊天助手的长回答逐段改成更好读的版本，能切换原文，支持关闭，记录保存在本机。现在的草稿是：“以智能语义重构赋能高效知识获取，通过端侧闭环与多维交互能力，打造下一代认知增益底座。”帮我改成一段普通用户看得懂、看完知道有什么用的介绍，不要添加还没做的功能。"
+  },
+  "baseline": {
+    "case_id": "09-product-writing",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:58.729Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "我是一个小团队的产品运营，准备写官网介绍。产品实际功能是：把聊天助手的长回答逐段改成更好读的版本，能切换原文，支持关闭，记录保存在本机。现在的草稿是：“以智能语义重构赋能高效知识获取，通过端侧闭环与多维交互能力，打造下一代认知增益底座。”帮我改成一段普通用户看得懂、看完知道有什么用的介绍，不要添加还没做的功能。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290337,
+    "finish_reason": "stop",
+    "content": "聊天助手给出的长回答往往一大段堆在一起，读起来费劲。这个工具会把长回答逐段改写成更好读的版本，你可以随时切回原文对照，不需要时也能直接关掉。所有改写记录只保存在你自己的设备上，不会上传。",
+    "usage": {
+      "prompt_tokens": 94,
+      "completion_tokens": 56,
+      "total_tokens": 150,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 94
+    },
+    "seconds": 1.203
+  },
+  "skill_only": {
+    "case_id": "09-product-writing",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:59.783Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "我是一个小团队的产品运营，准备写官网介绍。产品实际功能是：把聊天助手的长回答逐段改成更好读的版本，能切换原文，支持关闭，记录保存在本机。现在的草稿是：“以智能语义重构赋能高效知识获取，通过端侧闭环与多维交互能力，打造下一代认知增益底座。”帮我改成一段普通用户看得懂、看完知道有什么用的介绍，不要添加还没做的功能。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290338,
+    "finish_reason": "stop",
+    "content": "你的产品可以这样介绍：\n\n“聊天助手给出的长回答，常常一段就是一大块，读起来费劲。这个工具会把长回答逐段改写成更好读的版本，你可以随时切回原文对照，也可以关掉不用。改写记录只保存在你自己的电脑上，不会上传。”\n\n这段介绍只写了你提到的四件事：逐段改写、切换原文、可关闭、记录保存在本机。没有加“智能语义重构”“端侧闭环”“认知增益底座”这类用户看不懂、也无法验证的说法。",
+    "usage": {
+      "prompt_tokens": 275,
+      "completion_tokens": 108,
+      "total_tokens": 383,
+      "prompt_tokens_details": {
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 147
+    },
+    "seconds": 2.02
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "09-product-writing",
+    "source_sha256": "371741773bb5a47a1a6027a1627897df67d44d55ae8c29907ec72fb7fcbec18b",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "您的产品可以这样介绍：\n\n“聊天助手提供的长回复通常非常长，难以阅读。这个工具可以将这些长回复转换为更短、更易读的版本。您可以随时切换回原始文本，或者在不需要时关闭该功能。转换记录仅存储在您的电脑上，不会上传到外部。”\n\n此描述仅涉及您提到的四点：基于片段的转换、可在原始文本和修订文本之间切换、可关闭功能，以及记录仅本地存储。它没有包含诸如“智能语义重构”、“本地设备闭环系统”或“认知增强模块”等用户无法理解或验证的术语。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 12.776433500010171,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 185,
+          "output_chars": 213,
+          "warnings": [],
+          "seconds": 12.776361899988842
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "你的产品可以这样介绍：\n\n“聊天助手给出的长回答，常常一段就是一大块，读起来费劲。这个工具会把长回答逐段改写成更好读的版本，你可以随时切回原文对照，也可以关掉不用。改写记录只保存在你自己的电脑上，不会上传。”\n\n这段介绍只写了你提到的四件事：逐段改写、切换原文、可关闭、记录保存在本机。没有加“智能语义重构”“端侧闭环”“认知增益底座”这类用户看不懂、也无法验证的说法。",
+        "target": "en",
+        "context": "",
+        "output": "Your product can be introduced like this:\n\n“The long responses provided by the chat assistant are often very long, making them difficult to read. This tool will convert those long responses into shorter, easier-to-read versions. You can switch back to the original text at any time, or turn it off if you don’t need it. The conversion records are stored only on your own computer; they are not uploaded.”\n\nThis description mentions only the four points you mentioned: segment-based conversion, ability to switch between original and revised text, option to turn it off, and that the records are stored locally. It does not include terms like “intelligent semantic reconstruction,” “on-device closed-loop system,” or “cognitive enhancement module” – terms that users cannot understand or verify.",
+        "seconds": 5.8381
+      },
+      {
+        "source": "Your product can be introduced like this:\n\n“The long responses provided by the chat assistant are often very long, making them difficult to read. This tool will convert those long responses into shorter, easier-to-read versions. You can switch back to the original text at any time, or turn it off if you don’t need it. The conversion records are stored only on your own computer; they are not uploaded.”\n\nThis description mentions only the four points you mentioned: segment-based conversion, ability to switch between original and revised text, option to turn it off, and that the records are stored locally. It does not include terms like “intelligent semantic reconstruction,” “on-device closed-loop system,” or “cognitive enhancement module” – terms that users cannot understand or verify.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "您的产品可以这样介绍：\n\n“聊天助手提供的长回复通常非常长，难以阅读。这个工具可以将这些长回复转换为更短、更易读的版本。您可以随时切换回原始文本，或者在不需要时关闭该功能。转换记录仅存储在您的电脑上，不会上传到外部。”\n\n此描述仅涉及您提到的四点：基于片段的转换、可在原始文本和修订文本之间切换、可关闭功能，以及记录仅本地存储。它没有包含诸如“智能语义重构”、“本地设备闭环系统”或“认知增强模块”等用户无法理解或验证的术语。",
+        "seconds": 6.9381
+      }
+    ],
+    "seconds": 12.779
+  },
+  "editorial_observation": "两种版本都将抽象的产品术语转化为具体的功能描述；原版已经很清晰了。右侧还有一段文字解释了为何采用这种写法，而反向翻译也承诺会“更简短”。不过，这种方式在简洁性方面并没有带来任何额外的优势。"
+}

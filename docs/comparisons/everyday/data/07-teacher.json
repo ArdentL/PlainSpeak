@@ -1,0 +1,114 @@
+{
+  "case": {
+    "id": "07-teacher",
+    "role": "教师",
+    "title": "把家长通知写得清楚、自然",
+    "prompt": "我是小学老师，帮我给家长群写一条通知：原定本周五的春游因天气预报有雨延期，新日期下周一再通知；周五照常到校上课，穿校服，不用带野餐垫和零食；已经交的活动费用先保留，确定新日期后再安排。不要让家长看完还得追问周五到底来不来学校。"
+  },
+  "baseline": {
+    "case_id": "07-teacher",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:56.104Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "我是小学老师，帮我给家长群写一条通知：原定本周五的春游因天气预报有雨延期，新日期下周一再通知；周五照常到校上课，穿校服，不用带野餐垫和零食；已经交的活动费用先保留，确定新日期后再安排。不要让家长看完还得追问周五到底来不来学校。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290334,
+    "finish_reason": "stop",
+    "content": "各位家长，关于本周五春游安排的通知如下：\n\n1. 原定本周五的春游因天气预报有雨，将延期举行，新的活动日期下周一另行通知。\n2. 本周五**照常到校上课**，请孩子穿校服，**不用带**野餐垫和零食。\n3. 已交的活动费用先保留，待新日期确定后再作安排。\n\n请各位家长知悉，周五正常送孩子到校上课即可。感谢配合！",
+    "usage": {
+      "prompt_tokens": 79,
+      "completion_tokens": 104,
+      "total_tokens": 183,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 79
+    },
+    "seconds": 1.31
+  },
+  "skill_only": {
+    "case_id": "07-teacher",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:57.241Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "我是小学老师，帮我给家长群写一条通知：原定本周五的春游因天气预报有雨延期，新日期下周一再通知；周五照常到校上课，穿校服，不用带野餐垫和零食；已经交的活动费用先保留，确定新日期后再安排。不要让家长看完还得追问周五到底来不来学校。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290336,
+    "finish_reason": "stop",
+    "content": "【春游延期通知】\n各位家长：原定本周五的春游因天气预报有雨延期，新日期下周一再通知。**周五照常到校上课**，请孩子穿校服，不用带野餐垫和零食。已交的活动费用先保留，确定新日期后再安排。谢谢配合！",
+    "usage": {
+      "prompt_tokens": 260,
+      "completion_tokens": 68,
+      "total_tokens": 328,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 260
+    },
+    "seconds": 0.871
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "07-teacher",
+    "source_sha256": "10016492bbd3ec3f128aeca547b48587bbd350fa669a7d0ff894647f2763c39b",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "【春季户外活动延期通知】  \n致所有家长：由于天气预报显示有降雨，原定于本周五进行的春季户外活动被推迟。新日期将在下周一公布。**课程将在周五照常开始**；请让孩子们穿着校服参加活动，无需携带野餐垫或食物。活动的费用目前仍保留下来，待确定新日期后将会安排相关事宜。感谢您的配合！",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 6.197653399998671,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 98,
+          "output_chars": 139,
+          "warnings": [],
+          "seconds": 6.197583600005601
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "【春游延期通知】\n各位家长：原定本周五的春游因天气预报有雨延期，新日期下周一再通知。**周五照常到校上课**，请孩子穿校服，不用带野餐垫和零食。已交的活动费用先保留，确定新日期后再安排。谢谢配合！",
+        "target": "en",
+        "context": "",
+        "output": "【Notice of Delayed Spring Outing】\nTo all parents: The spring outing originally scheduled for this Friday has been postponed due to rain predicted by the weather forecast. The new date will be announced next Monday. **Classes will start as usual on Friday**; please have your children wear school uniforms, and they do not need to bring picnic mats or snacks. The payment for the activity has been retained for now; arrangements will be made after the new date is determined. Thank you for your cooperation!",
+        "seconds": 3.3922
+      },
+      {
+        "source": "【Notice of Delayed Spring Outing】\nTo all parents: The spring outing originally scheduled for this Friday has been postponed due to rain predicted by the weather forecast. The new date will be announced next Monday. **Classes will start as usual on Friday**; please have your children wear school uniforms, and they do not need to bring picnic mats or snacks. The payment for the activity has been retained for now; arrangements will be made after the new date is determined. Thank you for your cooperation!",
+        "target": "zh-CN",
+        "context": "",
+        "output": "【春季户外活动延期通知】  \n致所有家长：由于天气预报显示有降雨，原定于本周五进行的春季户外活动被推迟。新日期将在下周一公布。**课程将在周五照常开始**；请让孩子们穿着校服参加活动，无需携带野餐垫或食物。活动的费用目前仍保留下来，待确定新日期后将会安排相关事宜。感谢您的配合！",
+        "seconds": 2.8053
+      }
+    ],
+    "seconds": 6.2
+  },
+  "editorial_observation": "只加写作规则的通知已将延期、周五照常上课、穿校服、无需带物品和费用安排放在一段里。回译却写成“穿着校服参加活动”，与周五照常上课的意思冲突；这条通知更适合使用中间稿。"
+}

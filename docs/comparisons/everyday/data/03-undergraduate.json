@@ -1,0 +1,114 @@
+{
+  "case": {
+    "id": "03-undergraduate",
+    "role": "本科生",
+    "title": "看懂摘要里的相关性，写好读书报告",
+    "prompt": "我大二，要写读书报告。这是课堂练习用的虚构论文摘要：研究者问卷调查了300名大学生，发现每天运动时间越长，受访者报告的睡眠质量通常越好；控制年龄和性别后，这种关联仍存在。研究没有随机分组，也没有跟踪同一个人的变化。我能不能在报告里写“运动改善睡眠”？帮我讲清这项研究到底发现了什么，再给我一段能放进报告的表述。"
+  },
+  "baseline": {
+    "case_id": "03-undergraduate",
+    "condition": "baseline",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:36.300Z",
+    "messages": [
+      {
+        "role": "user",
+        "content": "我大二，要写读书报告。这是课堂练习用的虚构论文摘要：研究者问卷调查了300名大学生，发现每天运动时间越长，受访者报告的睡眠质量通常越好；控制年龄和性别后，这种关联仍存在。研究没有随机分组，也没有跟踪同一个人的变化。我能不能在报告里写“运动改善睡眠”？帮我讲清这项研究到底发现了什么，再给我一段能放进报告的表述。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290315,
+    "finish_reason": "stop",
+    "content": "可以，但**不能把“运动改善睡眠”当作这项研究证明的结论**。更准确的说法是：这项研究发现了**运动时间与睡眠质量之间的正相关**，而且这种关联在控制年龄和性别后仍然存在；但由于没有随机分组、也没有追踪同一个人的变化，它**不能证明运动导致睡眠改善**。\n\n具体来说，这项研究能支持的是：\n\n1. **相关性**：每天运动时间越长的人，通常报告睡眠质量越好。\n2. **关联不是由年龄和性别解释的**：控制这两个变量后，关联仍存在。\n3. **不能支持因果**：没有随机分配，所以不能排除“睡眠好的人更有精力运动”“其他生活方式因素同时影响运动和睡眠”等反向因果或混杂因素。\n4. **不能支持个体内变化**：没有跟踪同一个人，所以不能说明“一个人增加运动后，睡眠会变好”。\n\n放进报告里可以这样写：\n\n> 该研究对300名大学生进行问卷调查，发现每天运动时间越长，受访者报告的睡眠质量通常越好；在控制年龄和性别后，这一正相关仍然存在。但研究未采用随机分组，也未追踪同一批受访者的变化，因此结果只能说明运动时间与睡眠质量之间存在关联，不能据此推断运动改善睡眠的因果效应。\n\n如果你需要更批判性的表述，可以再加一句：\n\n> 由于横断面设计难以排除反向因果和混杂因素，报告“运动改善睡眠”会超出该研究证据所能支持的范围。",
+    "usage": {
+      "prompt_tokens": 92,
+      "completion_tokens": 309,
+      "total_tokens": 401,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 92
+    },
+    "seconds": 3.322
+  },
+  "skill_only": {
+    "case_id": "03-undergraduate",
+    "condition": "skill",
+    "requested_model": "deepseek-v4-flash",
+    "started_at": "2026-11-10T05:58:39.626Z",
+    "messages": [
+      {
+        "role": "system",
+        "content": "中文表达规则：直接回答问题，先给出证据允许的判断，再解释原因。简单问题短答；复杂问题保留讲懂机制所需的解释、例子与衔接。用常用词、具体对象和动作，首次出现的必要术语就近解释。优先自然段，比较和步骤按需列表。只在相关处说明一次会影响结论或行动的限定；证据不足时收窄结论。删除重复免责、假想反驳、自我辩护、说教、黑话和无信息的总结，不用刻意的“不是A而是B”。保留事实、数字、范围、因果、负结果和必要的不确定性，不把计划写成成果。科研结果按实验条件、观测结果、证据支持的结论组织，范围已清楚就自然结束。科研探索先说明具体问题、近邻差异和最小验证；建议放弃时给出具体重合、反证或不可行理由。"
+      },
+      {
+        "role": "user",
+        "content": "我大二，要写读书报告。这是课堂练习用的虚构论文摘要：研究者问卷调查了300名大学生，发现每天运动时间越长，受访者报告的睡眠质量通常越好；控制年龄和性别后，这种关联仍存在。研究没有随机分组，也没有跟踪同一个人的变化。我能不能在报告里写“运动改善睡眠”？帮我讲清这项研究到底发现了什么，再给我一段能放进报告的表述。"
+      }
+    ],
+    "status": "ok",
+    "response_model": "deepseek-flash",
+    "provider_created": 1794290318,
+    "finish_reason": "stop",
+    "content": "不能写“运动改善睡眠”。这项研究只发现：在300名大学生中，每天运动时间越长的人，报告的睡眠质量通常越好；控制年龄和性别后，这个关联仍在。它没有随机分组，也没有跟踪同一个人随时间的变化，所以不能支持“运动导致睡眠改善”的因果结论。\n\n原因是：横断面问卷只能说明运动时间和睡眠质量同时相关。可能存在反向关系——睡眠好的人更有精力运动；也可能有第三因素，比如作息规律、压力低、健康状况好，同时影响运动和睡眠。控制年龄和性别只排除了这两个因素的干扰，没有排除其他解释。\n\n可以放进报告的表述：\n\n> 该研究对300名大学生进行问卷调查，发现每天运动时间越长，受访者报告的睡眠质量通常越好；控制年龄和性别后，这种关联仍然存在。但由于研究未随机分组，也未跟踪同一批人随时间的变化，结果只能说明运动时间与睡眠质量之间存在正相关，不能据此推断运动改善睡眠。若要检验因果关系，还需要随机对照试验或纵向追踪研究。",
+    "usage": {
+      "prompt_tokens": 273,
+      "completion_tokens": 213,
+      "total_tokens": 486,
+      "prompt_tokens_details": {
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 145
+    },
+    "seconds": 2.06
+  },
+  "roundtrip": {
+    "status": "ok",
+    "case_id": "03-undergraduate",
+    "source_sha256": "8b0fa86ab29f7d1f4e150a0acb732f527c90a8b86558964b205b8565c8190fcc",
+    "model": {
+      "id": "hy-mt2-1.8b-q4",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "sha256": "dc5f44fcf1fa496ee7ad725982c0c8c553a4de00259b53af84c4b89fb0c06699"
+    },
+    "pipeline": "Unmodified plainspeak.core.rewrite, complete Markdown, chunk_size=750, context=\"\", zh-CN -> en -> zh-CN.",
+    "text": "无法断言“锻炼能改善睡眠”。本研究仅发现，在300名大学生中，每天锻炼时间较长的学生，其睡眠质量通常更好。即使控制了年龄和性别因素后，这种关系依然成立。由于没有进行随机分配，也没有对同一人随时间的变化进行跟踪，因此无法支持“锻炼能改善睡眠”的因果关系主张。\n\n原因在于，这项横断面调查仅显示了锻炼时间与睡眠质量之间的相关性。可能存在相反的关系——睡眠质量好的人更有精力去锻炼；或者还有第三个因素，比如规律的生活习惯、低压力水平以及良好的健康状况，这些因素同样会影响锻炼和睡眠。通过控制年龄和性别因素后，只有这两个因素的影响被排除，但其他可能的解释则未被考虑。\n\n报告中可以使用的恰当表述如下：\n\n> 本研究对300名大学生进行了问卷调查，发现每天锻炼时间越长，参与者的睡眠质量就越好。在控制年龄和性别因素后，这种关系仍然成立。但由于研究没有进行随机分配或随时间的变化跟踪，因此只能表明锻炼时间与睡眠质量之间存在正相关关系。无法得出锻炼能改善睡眠的结论。要确定因果关系，需要进行随机对照试验或纵向研究。",
+    "report": {
+      "language": "zh-CN",
+      "pivot": "en",
+      "seconds": 18.77984039999137,
+      "chunks": [
+        {
+          "status": "rewritten",
+          "source_chars": 397,
+          "output_chars": 450,
+          "warnings": [],
+          "seconds": 18.77972089999821
+        }
+      ],
+      "retained_chunks": 0,
+      "notice": "Literal guards do not verify semantic equivalence."
+    },
+    "calls": [
+      {
+        "source": "不能写“运动改善睡眠”。这项研究只发现：在300名大学生中，每天运动时间越长的人，报告的睡眠质量通常越好；控制年龄和性别后，这个关联仍在。它没有随机分组，也没有跟踪同一个人随时间的变化，所以不能支持“运动导致睡眠改善”的因果结论。\n\n原因是：横断面问卷只能说明运动时间和睡眠质量同时相关。可能存在反向关系——睡眠好的人更有精力运动；也可能有第三因素，比如作息规律、压力低、健康状况好，同时影响运动和睡眠。控制年龄和性别只排除了这两个因素的干扰，没有排除其他解释。\n\n可以放进报告的表述：\n\n> 该研究对300名大学生进行问卷调查，发现每天运动时间越长，受访者报告的睡眠质量通常越好；控制年龄和性别后，这种关联仍然存在。但由于研究未随机分组，也未跟踪同一批人随时间的变化，结果只能说明运动时间与睡眠质量之间存在正相关，不能据此推断运动改善睡眠。若要检验因果关系，还需要随机对照试验或纵向追踪研究。",
+        "target": "en",
+        "context": "",
+        "output": "It cannot be stated that “exercise improves sleep”. This study only found that among 300 college students, those who exercised for longer periods each day generally reported better sleep quality. This relationship remained even after controlling for age and gender. Since there was no random assignment and no tracking of changes over time for the same individuals, it is not possible to support the causal claim that “exercise leads to improved sleep”.\n\nThe reason is that the cross-sectional survey only shows a correlation between exercise time and sleep quality. There may be an inverse relationship—people with good sleep quality have more energy to exercise; or there may be a third factor, such as regular routines, low stress levels, and good health, which also affect both exercise and sleep. By controlling for age and gender, only the influence of these two factors was excluded, but other possible explanations were not considered.\n\nA suitable statement that can be included in the report is:\n\n> This study conducted a questionnaire survey among 300 college students and found that the longer the daily exercise time, the better the sleep quality reported by the participants. After controlling for age and gender, this relationship still persisted. However, because the study did not involve random assignment or tracking of changes over time, it can only indicate a positive correlation between exercise time and sleep quality. It cannot be concluded that exercise improves sleep. To determine a causal relationship, random controlled trials or longitudinal studies are required.",
+        "seconds": 10.1164
+      },
+      {
+        "source": "It cannot be stated that “exercise improves sleep”. This study only found that among 300 college students, those who exercised for longer periods each day generally reported better sleep quality. This relationship remained even after controlling for age and gender. Since there was no random assignment and no tracking of changes over time for the same individuals, it is not possible to support the causal claim that “exercise leads to improved sleep”.\n\nThe reason is that the cross-sectional survey only shows a correlation between exercise time and sleep quality. There may be an inverse relationship—people with good sleep quality have more energy to exercise; or there may be a third factor, such as regular routines, low stress levels, and good health, which also affect both exercise and sleep. By controlling for age and gender, only the influence of these two factors was excluded, but other possible explanations were not considered.\n\nA suitable statement that can be included in the report is:\n\n> This study conducted a questionnaire survey among 300 college students and found that the longer the daily exercise time, the better the sleep quality reported by the participants. After controlling for age and gender, this relationship still persisted. However, because the study did not involve random assignment or tracking of changes over time, it can only indicate a positive correlation between exercise time and sleep quality. It cannot be concluded that exercise improves sleep. To determine a causal relationship, random controlled trials or longitudinal studies are required.",
+        "target": "zh-CN",
+        "context": "",
+        "output": "无法断言“锻炼能改善睡眠”。本研究仅发现，在300名大学生中，每天锻炼时间较长的学生，其睡眠质量通常更好。即使控制了年龄和性别因素后，这种关系依然成立。由于没有进行随机分配，也没有对同一人随时间的变化进行跟踪，因此无法支持“锻炼能改善睡眠”的因果关系主张。\n\n原因在于，这项横断面调查仅显示了锻炼时间与睡眠质量之间的相关性。可能存在相反的关系——睡眠质量好的人更有精力去锻炼；或者还有第三个因素，比如规律的生活习惯、低压力水平以及良好的健康状况，这些因素同样会影响锻炼和睡眠。通过控制年龄和性别因素后，只有这两个因素的影响被排除，但其他可能的解释则未被考虑。\n\n报告中可以使用的恰当表述如下：\n\n> 本研究对300名大学生进行了问卷调查，发现每天锻炼时间越长，参与者的睡眠质量就越好。在控制年龄和性别因素后，这种关系仍然成立。但由于研究没有进行随机分配或随时间的变化跟踪，因此只能表明锻炼时间与睡眠质量之间存在正相关关系。无法得出锻炼能改善睡眠的结论。要确定因果关系，需要进行随机对照试验或纵向研究。",
+        "seconds": 8.6632
+      }
+    ],
+    "seconds": 18.781
+  },
+  "editorial_observation": "原版开头先说“可以，但不能”，中间稿直接回答不能把这项观察研究写成因果结论，并给出可放进报告的段落。回译后的部分句子省去了“受访者报告”这一测量方式，需要对照题目理解；两边关于控制变量已排除影响的说法也偏强。"
+}
