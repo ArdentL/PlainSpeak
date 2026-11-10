@@ -1,58 +1,68 @@
 # PlainSpeak
 
-[GitHub](https://github.com/ArdentL/PlainSpeak) · [下载 / Releases](https://github.com/ArdentL/PlainSpeak/releases)
+[GitHub](https://github.com/ArdentL/PlainSpeak) · [下载 / Releases](https://github.com/ArdentL/PlainSpeak/releases) · [English](README.en.md) · 中文
 
-[English](README.en.md) · 中文
+**让 DeepSeek Harness 的回答更好读。**
 
-**为 DeepSeek Harness 的回答加一层更好读的本地译文。** 默认保留原文，每个完整助手段落下显示较浅的译文；默认注入清晰表达规则，减少初稿中的套话和重复免责。
+大模型回复常带有冗长铺垫、防御性免责声明和生硬套话。PlainSpeak 从两方面改善阅读体验：
 
-v0.7.0 面向 **Windows + DeepSeek Harness 公开预览**，提供网页 profile 与桌面 profile 安装入口。本轮联调使用已安装的 `@deepseek-ai/dsh 0.2.1-rc.5` 桌面 Host 及其网页前端；具体范围见下方。发布进度见[发布说明](docs/publishing.md)。安装方式是源码 ZIP 加本地安装脚本，尚无宿主市场条目或已发布的 npm 插件。
+1. **默认注入清晰表达规则**：减少初稿中的套话与重复免责，从下一次助手回复起生效。
+2. **本地模型逐段回译**：利用本地小模型并结合同一条回复的相邻段落上下文，先译成另一种语言，再译回目标语言，例如「中文 → 英文 → 中文」。
 
-## 安装并启动
+当前公开预览版 **v0.7.0** 首发支持 **Windows + DeepSeek Harness**，提供桌面（desktop）与网页（web）两种 profile 安装入口。目前已在实际环境中验收桌面 Host 的网页前端（Electron 原生窗口尚未完成实际验收）。Codex 与 Claude Code 仅作为实验性 skill / MCP 入口保留（见[客户端说明](docs/clients.md)），不包含自动显示译文的界面。
 
-准备已经可用的 Harness 和 Python 3.10+（也可使用 Harness 自带的 Python）。解压源码 ZIP。安装到桌面版时，先启动 Harness 一次，初始化桌面 profile，再在源码目录运行：
+## 界面效果与工作原理
 
-```powershell
-.\install-harness.ps1 --client desktop
-```
+- **段落上下对照**：默认保留原文，在每个完整的助手段落下方显示浅色译文。开启“隐藏原文”后，已就绪的段落只显示译文（翻译中或失败时仍保留原文）。
+- **表格与代码处理**：表格默认展示译文，可通过表格上方的“译文 / 原文”按钮整表切换；代码块、行内代码、链接、公式、工具输出、思考过程及含复杂媒体的内容保持原样，不作翻译。
+- **不改写原始会话**：所有译文与显示切换仅作用于前端展示层和本地缓存，不会修改 Harness 保存的原始聊天记录，也不进入后续对话的模型上下文。
+- **托管本地推理**：默认使用腾讯 **Hy-MT2 1.8B Q4_K_M** 模型（约 1.13 GB），由内置脚本自动配置 `llama.cpp` 托管启动，无需手动安装 Ollama、pip 或 npm 包。模型与运行时仅在首次安装时下载，默认模式下后续推理均在本机完成（若单独配置外部 provider，则会按所选服务发起网络请求）。
 
-安装器将原生 bundle 加入桌面 profile，保留其 JSON 中的其他字段及已有用户 YAML 的原始字节。完成后关闭并重启 Harness 桌面版即可加载，不需要额外传入 patch。
+> **注意**：回译可能改变局部含义。PlainSpeak 是改善阅读体验的辅助层，不能保证修复原回答中的事实或理解错误。处理技术细节或关键数据时，请随时对照原文。
 
-安装到网页版时，默认命令仍为：
+## 安装与启动（Windows）
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\install-harness.ps1
-```
+**前置条件**：
 
-这会安装经过哈希核验的 llama.cpp 运行时和默认 **Hy-MT2 1.8B Q4_K_M，模型约 1.13 GB**。不需要 Ollama、pip、npm、管理员权限或改 PATH。默认数据目录是 `%LOCALAPPDATA%\PlainSpeak`；安装器只添加自己的插件文件，保留原有 Harness 设置、凭据和会话。
+- 已安装并可正常运行的 DeepSeek Harness
+- Python 3.10+（安装脚本可自动发现系统 Python 或 Harness 自带的 Python，无需管理员权限或修改系统 PATH）
 
-安装器不会启动宿主。网页版安装完成后运行：
+目前通过源码包安装（尚未发布到 PyPI、npm 或宿主插件市场）。请先从 [Releases](https://github.com/ArdentL/PlainSpeak/releases) 下载源码 ZIP 并解压，在解压后的源码目录中打开 PowerShell：
 
-```powershell
-dsh --profile web --patch "$env:LOCALAPPDATA\PlainSpeak\harness.patch.yml"
-```
+### 方式一：桌面版（Desktop Profile）
 
-已有官方 GGUF 可用 `--source` 复用，其他安装位置和 profile 可用参数指定；见[安装说明](docs/harness-install.md)。首次翻译自动启动本机模型，后续打开界面不重复下载。
+1. 先启动一次 Harness 桌面版以初始化 desktop profile，然后**关闭宿主**。
+2. 在源码目录执行安装脚本：
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\install-harness.ps1 --client desktop
+   ```
+3. 等待脚本完成插件部署、运行时与默认模型下载。完成后**重新启动 Harness 桌面版**即可自动加载。
 
-## 使用
+### 方式二：网页版（Web Profile）
 
-会话标题旁的 **PlainSpeak 设置** 提供自动译文、隐藏原文、语言、清晰表达规则和保存记录设置。默认中文，也可选择英语、日语、韩语、法语、德语、西班牙语。清晰表达的调整从下一条助手回复生效。
+1. 在源码目录执行默认安装脚本：
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\install-harness.ps1
+   ```
+2. 安装器不会自动启动宿主。安装完成后，携带生成的 patch 启动 Harness 网页版：
+   ```powershell
+   dsh --profile web --patch "$env:LOCALAPPDATA\PlainSpeak\harness.patch.yml"
+   ```
 
-插件保留 Harness 原始渲染，译文也复用宿主 Markdown 组件。正文、标题和简单表格单元格中的说明文字可翻译，加粗、链接、行内代码与公式按 Markdown 显示；代码块、纯技术值、工具输出、用户消息和思考过程保留原样。复杂嵌套单元格及含未支持图片、SVG、音视频等媒体的块保留原样，避免隐藏媒体。流式回复的最后一块等到完成再处理。局部保留原文和请求失败会显示状态。
+默认数据与模型保存在 `%LOCALAPPDATA%\PlainSpeak`。如需复用已下载的官方 GGUF 文件或自定义路径，请参阅[详细安装说明](docs/harness-install.md)。
 
-回译默认携带同一条助手回答的邻近原文：前文最多 1600、后文最多 700 个 UTF-16 单位，中文→中转语言→中文两次翻译均使用这份背景。思考、工具、代码、媒体、其他回答及宿主隐藏内容不作为背景。回复生成中不因邻段变化反复翻译，完成后最多补一次最终背景；仍逐段显示。背景不同不会复用旧译文。本地 1.8B Q4 实测改善了“末班车”和地名，但仍把“不下（车）”误解为“不坐车”，上下文功能不能补足模型所有理解错误。
+## 日常使用与设置
 
-普通正文中的数字、百分比、科学计数法及数字出现次数不做保护检查，中文数字与阿拉伯数字可以互换。代码、链接和公式仍按整体内容保护。
+启动后，点击会话标题旁的 **PlainSpeak 设置** 即可打开控制面板：
 
-普通段落上下对照，完全相同的内容只显示一次。表格默认只显示译文，用表格上方“译文 / 原文”整张切换，单元格不再上下重复；这项切换不重新翻译。
-
-开启“隐藏原文”后，译文就绪的段落只显示译文，表格切换按钮也收起；翻译中或失败时保留原文。默认关闭，设置保存在本地；关闭隐藏恢复段落对照，关闭自动翻译恢复全部原文，不改写 Harness 会话。
-
-设置与最多 1000 条段落记录保存在本机 `ui/records.sqlite3`，刷新、重启后保留。记录含原文、输出、语言、模型、时间和处理报告；相同原文、背景、路线和模型可复用通过保护检查的结果。面板支持查看、导出 JSON、两步确认清空；关闭保存会停止持久写入和历史复用，已有记录可单独清空。这些记录不改写 Harness 会话、不进入其模型上下文、不上传，也不随源码分发。
-
-清空会取消当前页面的旧段落定时器与请求，保留已显示译文，新文本继续处理。禁用翻译、切换语言或卸载时也会取消旧工作；已开始的单次模型调用等待返回，之后停止后续调用。清空和淘汰记录使用 SQLite `secure_delete`，并回收旧数据库空闲页；这处理当前数据库文件，不擦除备份、快照或存储介质。
+- **显示控制**：随时开关“自动译文”与“隐藏原文”。关闭后立即恢复显示原始段落。
+- **目标输出语言**：面板支持选择简体中文（默认）、英语、日语、韩语、法语、德语、西班牙语作为译文输出语言。
+- **清晰表达规则**：开启或关闭写作规则，变更从下一条助手回复生效。
+- **本地记录管理**：默认在本地最多保存 1000 条段落翻译记录，刷新或重启后可直接复用已翻译结果。你可以在面板中关闭记录保存、导出 JSON 或确认清空。
 
 ## 模型管理
+
+内置模型库收录了腾讯官方 Hy-MT2 的 1.8B 与 7B（各含 Q4、Q6、Q8 量化）共六款模型。目前仅默认款 `hy-mt2-1.8b-q4` 已在本项目实际试用，其余升级款尚未做回译质量对比。可通过命令行查看或按需切换（详见[模型库文档](docs/models.md)）：
 
 ```powershell
 & "$env:LOCALAPPDATA\PlainSpeak\plainspeak.cmd" models list
@@ -61,19 +71,25 @@ dsh --profile web --patch "$env:LOCALAPPDATA\PlainSpeak\harness.patch.yml"
 & "$env:LOCALAPPDATA\PlainSpeak\plainspeak.cmd" models status
 ```
 
-[模型库](docs/models.md)提供腾讯官方 1.8B / 7B 的 Q4、Q6、Q8 六个选项，固定版本、大小和 SHA-256。默认小模型已实际运行，升级模型尚未做本项目质量对比。
+## 致谢与第三方组件
 
-## 预览版范围
+PlainSpeak 的实现受益于以下上游开源项目、模型与写作规则库。完整声明、固定版本号与哈希记录请参阅根目录的 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 及各技能目录下的原始许可文件。
 
-- 本轮在 Windows `0.2.1-rc.5` 桌面 Host 及其网页前端完成 12/12 段 Hy-MT2 Q4 实际回译；保存隐藏原文设置并刷新后，12 份译文仍就绪、12 个原文块隐藏，Python 代码 `print("hello")` 不变，记录面板显示 12 条。接口返回 200，未见控制台错误。Electron 原生外壳 GUI 受工具限制，尚未验收。
-- Linux/macOS 尚未运行验收；更早版本的运行记录保留在验证文档中。
-- 已复用本地权重完成安装与推理，尚未跑完干净机器上的全量网络下载安装。
-- 译文可能改变含义，代码和字面量保护不能替代内容核对。
+| 上游项目 | 项目中用途 | 归属、许可与启用方式 |
+| --- | --- | --- |
+| [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) | 原生插件宿主、官方插槽及宿主 Markdown 组件 | 调用官方公开接口，未复制宿主组件源码；宿主保留其原有许可 |
+| [tencent/Hy-MT2-1.8B-GGUF](https://huggingface.co/tencent/Hy-MT2-1.8B-GGUF) 与 [tencent/Hy-MT2-7B-GGUF](https://huggingface.co/tencent/Hy-MT2-7B-GGUF) | 默认本地翻译小模型（1.8B Q4）及可选升级模型 | 腾讯；固定版本实际 [LICENSE.txt](https://huggingface.co/tencent/Hy-MT2-1.8B-GGUF/blob/a0c709d9fac510f2c807aa3af52872340dc37a4a/LICENSE.txt) 为 Apache-2.0；安装时另行下载，不在源码包内 |
+| [ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp) | 本地 GGUF 模型托管推理运行时 | MIT；安装时另行下载官方运行时压缩包，包内附带依赖的许可随解压目录保留 |
+| [blader/humanizer](https://github.com/blader/humanizer) | 收录的英文优先写作 skill | MIT（[许可文本](third_party/blader--humanizer/LICENSE)）；位于 `third_party/`，需手动启用 |
+| [Kiterlin/anti-defensive-writing](https://github.com/Kiterlin/anti-defensive-writing) | 收录的反防御性写作 skill | MIT（[许可文本](third_party/Kiterlin--anti-defensive-writing/LICENSE)）；位于 `third_party/`，需手动启用 |
+| [op7418/Humanizer-zh](https://github.com/op7418/Humanizer-zh) | 收录的中文改写 skill | MIT（[许可文本](third_party/op7418--Humanizer-zh/LICENSE)）；位于 `third_party/`，需手动启用，并保留其[补充来源许可](third_party/op7418--Humanizer-zh/licenses/) |
+| [modelcontextprotocol/python-sdk](https://github.com/modelcontextprotocol/python-sdk) | 实验性可选 MCP 接口支持 | MIT；不包含在源码包内，仅在开发者手动安装 MCP 可选依赖时使用 |
 
-真实结果见[验证记录](docs/verification.md)，本版变化见 [CHANGELOG](CHANGELOG.md)。后续计划适配其他宿主；现有 Codex / Claude skill 与 MCP 代码保留为[开发者实验入口](docs/clients.md#advanced-experimental-skill--mcp)，不属于首发界面支持范围。
+此外，[技能目录](docs/skill-catalog.md)整理了其他外部写作规则的参考链接（仅收录来源链接，并未打包或集成全部技能；例如 goldengrape 相关指令因许可尚未确认，仅提供外部介绍链接，未包含在仓库内）。
 
-## 开发与许可
+## 许可与更多文档
 
-自有代码与 skill 使用 [MIT](LICENSE)。原生适配复用宿主官方插槽及组件，没有复制宿主组件源码。模型、运行时与第三方资料各自保留许可，见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。源码包不包含模型、运行时二进制或本地记录。
+PlainSpeak 自有代码与自有 skill 采用 [MIT 许可证](LICENSE)。第三方模型、宿主、运行时及 `third_party/` 下的收录材料各自适用其独立许可，不统一归入 PlainSpeak 的 MIT 许可。完整第三方声明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
-[客户端与开发入口](docs/clients.md) · [收集的 skill](docs/skill-catalog.md) · [发布流程](docs/publishing.md)
+- [安装与数据细节](docs/harness-install.md) · [模型库说明](docs/models.md) · [客户端与实验性 MCP](docs/clients.md)
+- [验证与验收记录](docs/verification.md) · [外部技能目录](docs/skill-catalog.md) · [更新日志](CHANGELOG.md)

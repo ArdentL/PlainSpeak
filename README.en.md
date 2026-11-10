@@ -1,58 +1,68 @@
 # PlainSpeak
 
-[GitHub](https://github.com/ArdentL/PlainSpeak) · [下载 / Releases](https://github.com/ArdentL/PlainSpeak/releases)
+[GitHub](https://github.com/ArdentL/PlainSpeak) · [Releases](https://github.com/ArdentL/PlainSpeak/releases) · English · [中文](README.md)
 
-English · [中文](README.md)
+**Make DeepSeek Harness answers easier to read.**
 
-**Readable local translations for DeepSeek Harness answers.** By default, keep the original answer with a muted translation below each complete assistant paragraph. Clear-writing instructions improve the first draft by default.
+LLM replies often suffer from stiff phrasing, wordy filler, and repetitive defensive disclaimers. PlainSpeak makes responses easier to read in two ways:
 
-v0.7.0 is a **public preview for Windows and DeepSeek Harness**, with installers for web and desktop profiles. This round used the installed `@deepseek-ai/dsh 0.2.1-rc.5` desktop Host and its web frontend; see the validation scope below and [publication status](docs/publishing.md). Distribution uses a source ZIP and local installer, with no marketplace listing or published npm plugin.
+1. **Default plain-writing rules**: Injects clear-expression prompts to reduce filler and hedging in drafts, taking effect starting from the next assistant reply.
+2. **Paragraph-by-paragraph local back-translation**: Uses a local small translation model—with adjacent paragraph context from the same reply—to translate prose through another language and back, such as Chinese → English → Chinese.
 
-## Install and start
+Public preview **v0.7.0** targets **Windows + DeepSeek Harness**, supporting both `desktop` and `web` profile installations. The web frontend hosted by the desktop Host has been verified in live testing (the native Electron window shell has not yet been verified). Codex and Claude Code entries remain experimental developer skill / MCP integrations (see [Clients Guide](docs/clients.md)) without an automatic translation UI.
 
-Use an existing working Harness installation and Python 3.10+; Harness's bundled Python is also supported. For desktop installation, launch Harness once to initialize its desktop profile, extract the source ZIP, then run:
+## How It Looks and Works
 
-```powershell
-.\install-harness.ps1 --client desktop
-```
+- **Stacked paragraph comparison**: Keeps the original text by default and renders a lighter translation directly beneath each completed assistant paragraph. When "Hide original" is enabled, completed paragraphs show only the translation (while paragraphs still translating or failing keep the original text visible).
+- **Tables and code blocks**: Tables display translated text by default with a whole-table "Translation / Original" toggle above the table. Code blocks, inline code, links, math formulas, tool outputs, thinking traces, and blocks with complex media are left untouched.
+- **Non-destructive to chat history**: Translations and display toggles only affect the UI layer and local cache. PlainSpeak never rewrites the raw conversation saved by Harness or feeds translations back into model context.
+- **Managed local inference**: Defaults to Tencent's **Hy-MT2 1.8B Q4_K_M** model (~1.13 GB) running on a managed `llama.cpp` runtime. You do not need Ollama, pip, or npm. The model and runtime are downloaded once during initial setup, and subsequent inference in the default mode runs locally (configuring an optional external provider will send requests to that provider).
 
-The installer activates the native bundle in the desktop profile, preserving other JSON fields and existing user YAML bytes. Close and restart Harness Desktop to load it; no additional patch argument is needed.
+> **Note**: Back-translation can alter meaning. PlainSpeak is a reading aid and is not guaranteed to fix factual or comprehension errors in the original reply. Always check the original text when verifying critical details.
 
-For the web profile, the default installation command remains:
+## Installation and Launch (Windows)
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\install-harness.ps1
-```
+**Prerequisites**:
 
-This installs a hash-verified llama.cpp runtime and the default **Hy-MT2 1.8B Q4_K_M model, approximately 1.13 GB**. No Ollama, pip, npm, administrator rights or PATH changes are required. The app/data directory defaults to `%LOCALAPPDATA%\PlainSpeak`. The installer adds its own plugin files while preserving existing Harness settings, credentials and chats.
+- A working DeepSeek Harness installation
+- Python 3.10+ (the installer automatically detects system Python or the Python bundled with Harness; no admin rights or PATH edits required)
 
-The installer does not launch Harness. For the web profile, start it with the generated overlay:
+PlainSpeak is currently installed from the source archive (it is not yet published on PyPI, npm, or a host marketplace). Download and extract the source ZIP from [Releases](https://github.com/ArdentL/PlainSpeak/releases), then open PowerShell in the extracted directory:
 
-```powershell
-dsh --profile web --patch "$env:LOCALAPPDATA\PlainSpeak\harness.patch.yml"
-```
+### Option 1: Desktop Profile
 
-An official GGUF can be reused with `--source`; installation and profile locations are configurable. See [installation](docs/harness-install.md). The first translation starts the local model; later UI loading does not download it again.
+1. Launch Harness Desktop once to initialize its desktop profile, then **close Harness**.
+2. Run the installer from the extracted source directory:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\install-harness.ps1 --client desktop
+   ```
+3. Once the script finishes setting up the plugin, runtime, and default model, **restart Harness Desktop**. The plugin loads automatically.
 
-## Use
+### Option 2: Web Profile
 
-Open **PlainSpeak 设置** beside the conversation title to control automatic translation, hiding originals, language, clear-writing instructions and record saving. Simplified Chinese is the default; English, Japanese, Korean, French, German and Spanish are also available. Writing-rule changes apply to the next assistant reply.
+1. Run the default installer from the extracted source directory:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\install-harness.ps1
+   ```
+2. The installer does not launch the host. Start Harness Web with the generated patch file:
+   ```powershell
+   dsh --profile web --patch "$env:LOCALAPPDATA\PlainSpeak\harness.patch.yml"
+   ```
 
-The host's original rendering remains in place; translations also use its native Markdown component. Assistant prose, headings and prose in simple table cells can be translated, with emphasis, links, inline code and formulas rendered as Markdown. Code blocks, technical-only values, tool output, user messages, thinking and complex nested cells remain unchanged. Blocks containing unsupported images, SVG, audio, video or other media also remain intact. The final streaming block waits for completion. Partial source retention and request failures have visible states.
+By default, application files and models are stored in `%LOCALAPPDATA%\PlainSpeak`. To reuse an existing official GGUF file or customize directories, see the [Installation Guide](docs/harness-install.md).
 
-Round trips now include nearby source prose from the same assistant answer (up to 1600 preceding and 700 following UTF-16 units). Both passes receive that background, and cache keys include it. Reasoning, tool output, code, media, other answers and host-hidden content are excluded. Neighbor changes do not continuously retrigger live translation; completion allows at most one final-context refresh. Outputs remain per paragraph. Local 1.8B Q4 trials improved a last-bus heading and place names, but still misread an elliptical “not getting off” line as “not taking the bus.”
+## Usage and Settings
 
-Plain prose numbers, percentages, scientific notation and occurrence counts are not guarded. Number spellings can change. Code, links and formulas remain protected as complete literals.
+Click **PlainSpeak 设置** (Settings) next to the conversation title in Harness to open the control panel:
 
-Paragraphs use stacked comparison, with identical source and translated text shown only once. Tables show one version at a time, defaulting to translation; use **译文 / 原文** above a table to switch without translating again.
+- **Display controls**: Toggle automatic translation and "Hide original" at any time. Turning them off immediately restores the original text.
+- **Output language**: Choose Simplified Chinese (default), English, Japanese, Korean, French, German, or Spanish as the translation output language.
+- **Clear-expression rules**: Enable or disable writing rules; changes apply starting from the next assistant reply.
+- **Local records**: Saves up to 1,000 translated paragraph records locally so translations persist across page refreshes and restarts. From the panel, you can disable record saving, export records as JSON, or clear stored records after confirmation.
 
-Enable **隐藏原文** (hide originals) to show only ready paragraph translations and hide table comparison controls. Originals stay visible while translation is pending or fails. This locally saved setting is off by default. Disabling it restores paragraph comparison; disabling automatic translation restores all originals without changing Harness chats.
+## Managing Models
 
-Settings and up to 1,000 paragraph records persist locally in `ui/records.sqlite3` across refreshes and restarts. Records contain source, output, language, model, time and processing report. Matching source, background, route and model can reuse successful guarded results. The panel supports viewing, JSON export and two-step clearing. Disabling saving stops persistent writes and historical reuse; existing records can be cleared separately. Records do not alter Harness chats or their model context, are not uploaded, and are excluded from source releases.
-
-Clearing cancels old paragraph timers and requests on the current page, while preserving displayed translations and allowing new text to be processed. Disabling translation, changing language or unloading also cancels old work. An already started provider call is allowed to return; no subsequent call is started. Record clearing and eviction use SQLite `secure_delete`, with legacy free pages reclaimed. This addresses the current database file, not backups, snapshots or physical storage erasure.
-
-## Models
+The built-in catalog includes six official Tencent Hy-MT2 GGUF models (1.8B and 7B in Q4, Q6, and Q8 quantizations). Only the default `hy-mt2-1.8b-q4` has been tested in this project; larger or higher-bit models have not been benchmarked for back-translation quality. Manage models via the CLI (see [Models Guide](docs/models.md)):
 
 ```powershell
 & "$env:LOCALAPPDATA\PlainSpeak\plainspeak.cmd" models list
@@ -61,19 +71,25 @@ Clearing cancels old paragraph timers and requests on the current page, while pr
 & "$env:LOCALAPPDATA\PlainSpeak\plainspeak.cmd" models status
 ```
 
-The [catalog](docs/models.md) contains six official Tencent variants: 1.8B and 7B, each in Q4/Q6/Q8, with pinned revisions, sizes and SHA-256 hashes. The small default has been run; upgrade quality has not been compared in this project.
+## Acknowledgements and Third-Party Components
 
-## Preview scope
+PlainSpeak builds on the following upstream projects, models, and writing skills. Please refer to [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the individual license files for complete terms, pinned revisions, and hashes.
 
-- On the Windows `0.2.1-rc.5` desktop Host and its web frontend, Hy-MT2 Q4 completed 12/12 paragraph round trips. After saving hide-originals and refreshing, all 12 outputs remained ready, all 12 source blocks were hidden, Python code `print("hello")` was unchanged, and the record panel showed 12 entries. API responses were 200, with no console errors. The Electron shell GUI has not been accepted because the available tools could not inspect it.
-- Linux/macOS acceptance has not been run. Earlier version evidence remains in the verification document.
-- Setup and inference reused local model weights. A clean-machine, full network installation has not been exercised.
-- Translation can change meaning; code and literal guards do not replace content review.
+| Upstream Project | Role in PlainSpeak | Attribution, License & Activation |
+| --- | --- | --- |
+| [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) | Native plugin host, official UI slots, and host Markdown component | Calls official public interfaces without copying host component source; host retains its upstream license |
+| [tencent/Hy-MT2-1.8B-GGUF](https://huggingface.co/tencent/Hy-MT2-1.8B-GGUF) & [tencent/Hy-MT2-7B-GGUF](https://huggingface.co/tencent/Hy-MT2-7B-GGUF) | Default local translation model (1.8B Q4) and optional upgrade models | Tencent; pinned revisions verified as Apache-2.0 ([LICENSE.txt](https://huggingface.co/tencent/Hy-MT2-1.8B-GGUF/blob/a0c709d9fac510f2c807aa3af52872340dc37a4a/LICENSE.txt)); downloaded separately during installation, not bundled in source |
+| [ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp) | Managed local GGUF inference runtime | MIT; official binary archive downloaded separately during installation, preserving bundled dependency notices |
+| [blader/humanizer](https://github.com/blader/humanizer) | Bundled English-first writing skill | MIT ([LICENSE](third_party/blader--humanizer/LICENSE)); located under `third_party/`, manually enabled (opt-in) |
+| [Kiterlin/anti-defensive-writing](https://github.com/Kiterlin/anti-defensive-writing) | Bundled anti-defensive writing skill | MIT ([LICENSE](third_party/Kiterlin--anti-defensive-writing/LICENSE)); located under `third_party/`, manually enabled (opt-in) |
+| [op7418/Humanizer-zh](https://github.com/op7418/Humanizer-zh) | Bundled Chinese rewriting skill | MIT ([LICENSE](third_party/op7418--Humanizer-zh/LICENSE)); located under `third_party/`, manually enabled (opt-in), with [upstream source notices](third_party/op7418--Humanizer-zh/licenses/) preserved |
+| [modelcontextprotocol/python-sdk](https://github.com/modelcontextprotocol/python-sdk) | Optional experimental MCP interface | MIT; not bundled, used only when installing optional MCP dependencies |
 
-See [verification](docs/verification.md) and [CHANGELOG](CHANGELOG.md). Other host adapters are planned. Existing Codex/Claude skill and MCP code remains an [advanced experiment](docs/clients.md#advanced-experimental-skill--mcp), outside the initial UI support scope.
+Other entries in the [Skill Catalog](docs/skill-catalog.md) are curated reference links only and are neither bundled nor enabled by default (for example, goldengrape's prompt instructions have an unconfirmed license and are linked for reference only without redistributing the text).
 
-## Development and licensing
+## License and Documentation
 
-Original code and skills use [MIT](LICENSE). The adapter uses official host slots and components without copying their implementation. Models, runtimes and third-party materials retain their own licenses: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Source releases include no weights, runtime binaries or local records.
+PlainSpeak's own code and first-party skills are released under the [MIT License](LICENSE). Third-party models, the host application, runtimes, and opt-in materials under `third_party/` are governed by their respective licenses and are not covered by PlainSpeak's MIT license. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for full details.
 
-[Clients and developer entry points](docs/clients.md) · [Skill catalog](docs/skill-catalog.md) · [Publishing](docs/publishing.md)
+- [Installation & Data Guide](docs/harness-install.md) · [Model Catalog](docs/models.md) · [Clients & Experimental MCP](docs/clients.md)
+- [Verification Records](docs/verification.md) · [Skill Catalog](docs/skill-catalog.md) · [Changelog](CHANGELOG.md)
